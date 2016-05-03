@@ -1,0 +1,34 @@
+== Openbravo POS 2.30.2  ==
+
+Openbravo POS is a point of sale application designed for touch screens, supports ESC/POS ticket printers, customer displays and barcode scanners. It is multiuser providing product entry forms, reports and charts.
+
+You can read the release notes of this version in the following link http://wiki.openbravo.com/wiki/Openbravo_POS_2.30.2_Release_notes
+
+* Installation
+
+To install Openbravo POS read the installation instructions that have been published in the following link http://wiki.openbravo.com/wiki/OpenbravoPOS_Installation
+
+* The latest version
+
+The latest version can be found on the Openbravo POS sourceforge web site http://sourceforge.net/project/showfiles.php?group_id=127939
+
+* Documentation
+
+See http://wiki.openbravo.com for more documentation.
+
+* Forums
+
+If you need help or want to collaborate helping others, sharing ideas, discussing about Openbravo POS, feel free to go to our forums http://sourceforge.net/forum/?group_id=127939
+
+* Helping out
+
+If you'd like to help out, great!
+Have a look to the Openbravo POS contributor's guide: http://wiki.openbravo.com/wiki/OpenbravoPOS_Contributor%27s_Guide
+
+Please share your changes so others can benefit.
+
+Please use svn diff to prepare patches.
+
+* Contact
+
+IRC: #openbravo in freenode
