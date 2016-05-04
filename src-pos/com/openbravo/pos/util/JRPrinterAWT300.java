@@ -62,6 +62,7 @@ import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: JRPrinterAWT.java 2123 2008-03-12 11:00:41Z teodord $
+ * @contributor Dixon Martinez <a href="dixon.22martinez@gmail.com>
  */
 public class JRPrinterAWT300 implements Printable
 {
@@ -155,9 +156,9 @@ public class JRPrinterAWT300 implements Printable
 
 		printJob.setJobName("JasperReports - " + jasperPrint.getName());
 		
-		switch (jasperPrint.getOrientation())
+		switch (jasperPrint.getOrientationValue())
 		{
-			case JRReport.ORIENTATION_LANDSCAPE :
+			case LANDSCAPE :
 			{
 				pageFormat.setOrientation(PageFormat.LANDSCAPE);
 				paper.setSize(jasperPrint.getPageHeight(), jasperPrint.getPageWidth());
@@ -169,7 +170,7 @@ public class JRPrinterAWT300 implements Printable
 					);
 				break;
 			}
-			case JRReport.ORIENTATION_PORTRAIT :
+			case PORTRAIT :
 			default :
 			{
 				pageFormat.setOrientation(PageFormat.PORTRAIT);

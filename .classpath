@@ -17,21 +17,23 @@
 	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/JasperReport/lib/iText-2.1.7.js2.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/JasperReport/lib/jasperreports-5.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/JasperReport/lib/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/jdt-compiler-3.1.1.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/JasperReport/lib/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="lib" path="lib/jpos1121.jar"/>
 	<classpathentry kind="lib" path="lib/oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/JasperReport/lib/poi-3.7-20101029.jar"/>
 	<classpathentry kind="lib" path="lib/RXTXcomm.jar"/>
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
-	<classpathentry kind="lib" path="/opt/Development/openbravo/OpenBravoPOS_2.30.2/lib/swingx-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/substance.jar"/>
 	<classpathentry kind="lib" path="lib/substance-swingx.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/servlet-api-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/iText-2.1.7.js2.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/iTextAsian.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/jasperreports-5.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/jfreechart-1.0.12.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/poi-3.7-20101029.jar"/>
+	<classpathentry kind="lib" path="lib/swingx-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
