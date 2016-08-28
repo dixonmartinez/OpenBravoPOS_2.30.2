@@ -42,26 +42,36 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class AppUser {
 
-    private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppUser");
+    private static final Logger logger = Logger.getLogger(AppUser.class.getName());
 
     private static SAXParser m_sp = null;
     private static HashMap<String, String> m_oldclasses; // This is for backwards compatibility purposes
     
-    private String m_sId;
-    private String m_sName;
-    private String m_sCard;
+    private final String m_sId;
+    private final String m_sName;
+    private final String m_sCard;
     private String m_sPassword;
-    private String m_sRole;
-    private Icon m_Icon;
+    private final String m_sRole;
+    private final Icon m_Icon;
     
     private Set<String> m_apermissions;
+    
+    private final Properties properties;
     
     static {        
         initOldClasses();
     }
     
-    /** Creates a new instance of AppUser */
-    public AppUser(String id, String name, String password, String card, String role, Icon icon) {
+    /** Creates a new instance of AppUser
+     * @param id
+     * @param name
+     * @param icon
+     * @param card
+     * @param role
+     * @param password
+     * @param properties 
+     */
+    public AppUser(String id, String name, String password, String card, String role, Icon icon, Properties properties) {
         m_sId = id;
         m_sName = name;
         m_sPassword = password;
@@ -69,6 +79,7 @@ public class AppUser {
         m_sRole = role;
         m_Icon = icon;
         m_apermissions = null;
+        this.properties = properties;
     }
     
     public Icon getIcon() {
@@ -248,4 +259,8 @@ public class AppUser {
     }     
     
     
+    public Properties getProperties() {
+        return properties;
+    }
+
 }
