@@ -19,15 +19,20 @@
 
 package com.openbravo.editor;
 
-public interface EditorKeys {
+import com.openbravo.format.Formats;
+
+public class JEditorPercent extends JEditorNumber {
     
-    public final static int MODE_STRING = 0;
-    public final static int MODE_DOUBLE = 1;
-    public final static int MODE_DOUBLE_POSITIVE = 2;
-    public final static int MODE_INTEGER = 3;
-    public final static int MODE_INTEGER_POSITIVE = 4;
-    public final static int MODE_PERCENT = 5;
-    
-    public void setActive(EditorComponent e, int imode);
-    public void setInactive(EditorComponent e);
+    public JEditorPercent() {
+    }
+
+    @Override
+    protected Formats getFormat() {
+        return Formats.PERCENT;
+    }
+
+    @Override
+    protected int getMode() {
+        return EditorKeys.MODE_PERCENT;
+    }
 }
