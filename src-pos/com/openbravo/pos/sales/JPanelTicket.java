@@ -1075,7 +1075,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
 
     public BufferedImage getResourceAsImage(String sresourcename) {
-        return DataLogicSystem.getResourceAsImage(sresourcename);
+        return dlSystem.getResourceAsImage(sresourcename);
     }
     
     private void setSelectedIndex(int i) {

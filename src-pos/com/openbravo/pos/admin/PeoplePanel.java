@@ -45,50 +45,41 @@ public class PeoplePanel extends JPanelTable {
     public PeoplePanel() {
     }
     
-    @Override
     protected void init() {      
-        DataLogicAdmin dlAdmin = (DataLogicAdmin) app.getBean(DataLogicAdmin.class.getCanonicalName());        
+        DataLogicAdmin dlAdmin = (DataLogicAdmin) app.getBean("com.openbravo.pos.admin.DataLogicAdmin");        
         tpeople = dlAdmin.getTablePeople();           
-        jeditor = new PeopleView(app, dlAdmin, dirty);    
+        jeditor = new PeopleView(dlAdmin, dirty);    
     }
     
-    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(tpeople);
     }
     
-    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(tpeople);        
     }
     
-    @Override
     public Vectorer getVectorer() {
         return tpeople.getVectorerBasic(new int[]{1});
     }
     
-    @Override
     public ComparatorCreator getComparatorCreator() {
         return tpeople.getComparatorCreator(new int[] {1, 3});
     }
     
-    @Override
     public ListCellRenderer getListCellRenderer() {
         return new ListCellRendererBasic(tpeople.getRenderStringBasic(new int[]{1}));
     }
     
-    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }
     
-    @Override
     public void activate() throws BasicException {
         
         jeditor.activate(); // primero el editor    
         super.activate(); // y luego cargamos los datos
     }      
-    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Users");
     }     

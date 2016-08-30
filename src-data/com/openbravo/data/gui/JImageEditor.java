@@ -192,7 +192,7 @@ public class JImageEditor extends javax.swing.JPanel {
         return thumb;
     }
           
-    protected static class ZoomIcon implements Icon {
+    private static class ZoomIcon implements Icon {
         
         private Icon ico;
         private double zoom;
