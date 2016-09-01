@@ -50,11 +50,11 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class JTicketLines extends javax.swing.JPanel {
 
-    private static final Logger logger = Logger.getLogger(JTicketLines.class.getName());
+    private static Logger logger = Logger.getLogger("com.openbravo.pos.sales.JTicketLines");
 
     private static SAXParser m_sp = null;
     
-    private final TicketTableModel m_jTableModel;
+    private TicketTableModel m_jTableModel;
     
     /** Creates new form JLinesTicket */
     public JTicketLines(String ticketline) {
@@ -202,7 +202,7 @@ public class JTicketLines extends javax.swing.JPanel {
     
     private static class TicketCellRenderer extends DefaultTableCellRenderer {
         
-        private final ColumnTicket[] m_acolumns;        
+        private ColumnTicket[] m_acolumns;        
         
         public TicketCellRenderer(ColumnTicket[] acolumns) {
             m_acolumns = acolumns;
@@ -221,17 +221,15 @@ public class JTicketLines extends javax.swing.JPanel {
     private static class TicketTableModel extends AbstractTableModel {
         
 //        private AppView m_App;
-        private final ColumnTicket[] m_acolumns;
-        private final ArrayList m_rows = new ArrayList();
+        private ColumnTicket[] m_acolumns;
+        private ArrayList m_rows = new ArrayList();
         
         public TicketTableModel(ColumnTicket[] acolumns) {
             m_acolumns = acolumns;
         }
-        @Override
         public int getRowCount() {
             return m_rows.size();
         }
-        @Override
         public int getColumnCount() {
             return m_acolumns.length;
         }
@@ -240,7 +238,6 @@ public class JTicketLines extends javax.swing.JPanel {
             return AppLocal.getIntString(m_acolumns[column].name);
             // return m_acolumns[column].name;
         }
-        @Override
         public Object getValueAt(int row, int column) {
             return ((String[]) m_rows.get(row))[column];
         }
@@ -321,17 +318,12 @@ public class JTicketLines extends javax.swing.JPanel {
                 c.name = attributes.getValue("name");
                 c.width = Integer.parseInt(attributes.getValue("width"));
                 String sAlign = attributes.getValue("align");
-                if (null != sAlign) 
-                    switch (sAlign) {
-                    case "right":
-                        c.align = javax.swing.SwingConstants.RIGHT;
-                        break;
-                    case "center":
-                        c.align = javax.swing.SwingConstants.CENTER;
-                        break;
-                    default:
-                        c.align = javax.swing.SwingConstants.LEFT;
-                        break;
+                if ("right".equals(sAlign)) {
+                    c.align = javax.swing.SwingConstants.RIGHT;
+                } else if ("center".equals(sAlign)) {
+                    c.align = javax.swing.SwingConstants.CENTER;
+                } else {
+                    c.align = javax.swing.SwingConstants.LEFT;
                 }
                 c.value = attributes.getValue("value");
                 m_columns.add(c);

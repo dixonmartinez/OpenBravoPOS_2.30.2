@@ -25,10 +25,9 @@ import com.openbravo.pos.forms.AppLocal;
 
 public class JTicketsBagTicketBag extends javax.swing.JPanel {
     
-    private final JTicketsBagTicket m_ticketsbagticket;
+    private JTicketsBagTicket m_ticketsbagticket;
     
-    /** Creates new form JTicketsBagTicketBag
-     * @param ticketsbagticket */
+    /** Creates new form JTicketsBagTicketBag */
     public JTicketsBagTicketBag(JTicketsBagTicket ticketsbagticket) {
         m_ticketsbagticket = ticketsbagticket;
         initComponents();

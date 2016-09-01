@@ -19,33 +19,21 @@
 
 package com.openbravo.pos.sales;
 
-import com.openbravo.data.loader.ImageUtils;
 import java.awt.BorderLayout;
 import java.util.List;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.ticket.TicketLineInfo;
-import java.util.ArrayList;
 
 public class JRefundLines extends javax.swing.JPanel {
     
-    /**
-    * 
-    */
-    private static final long serialVersionUID = 8492198142356057335L;
-
-    private final JTicketLines ticketlines;
+    private JTicketLines ticketlines;
     private List m_aLines;
-    private List m_aLinesAll; 
+
+    private JPanelTicketEdits m_jTicketEdit;
     
-    private final JPanelTicketEdits m_jTicketEdit;
-    
-    /**
-     * Creates new form JRefundLines
-     * @param dlSystem
-     * @param jTicketEdit 
-     */
-    public JRefundLines(DataLogicSystem dlSystem, JPanelTicketEdits jTicketEdit) {
+    /** Creates new form JRefundLines */
+public JRefundLines(DataLogicSystem dlSystem, JPanelTicketEdits jTicketEdit) {
         
         m_jTicketEdit = jTicketEdit;
         
@@ -53,24 +41,14 @@ public class JRefundLines extends javax.swing.JPanel {
         
         ticketlines = new JTicketLines(dlSystem.getResourceAsXML("Ticket.Line"));
         
-        m_aLinesAll = new ArrayList(0);
-        
         jPanel3.add(ticketlines, BorderLayout.CENTER);
     }
     
     public void setLines(List aRefundLines) {
         
         m_aLines = aRefundLines;
-        
-        m_aLinesAll.clear();
-        for (int i = 0; i < m_aLines.size(); i++ ){
-            byte[] aSerLine; 
-            aSerLine = ImageUtils.writeSerializable(m_aLines.get(i));
-            m_aLinesAll.add(ImageUtils.readSerializable(aSerLine)); 
-        }
-        
         ticketlines.clearTicketLines();
-
+        
         if (m_aLines != null) {
             for (int i = 0; i < m_aLines.size(); i++) {
                 ticketlines.addTicketLine((TicketLineInfo) m_aLines.get(i));
@@ -92,7 +70,6 @@ public class JRefundLines extends javax.swing.JPanel {
         m_jbtnAddOne = new javax.swing.JButton();
         m_jbtnAddLine = new javax.swing.JButton();
         m_jbtnAddAll = new javax.swing.JButton();
-        m_jbtnReset = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(15, 200));
         setLayout(new java.awt.BorderLayout());
@@ -140,18 +117,6 @@ public class JRefundLines extends javax.swing.JPanel {
         });
         jPanel2.add(m_jbtnAddAll);
 
-        m_jbtnReset.setText(AppLocal.getIntString("button.reset")); // NOI18N
-        m_jbtnReset.setFocusPainted(false);
-        m_jbtnReset.setFocusable(false);
-        m_jbtnReset.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jbtnReset.setRequestFocusEnabled(false);
-        m_jbtnReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jbtnResetActionPerformed(evt);
-            }
-        });
-        jPanel2.add(m_jbtnReset);
-
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
         jPanel3.add(jPanel1, java.awt.BorderLayout.EAST);
@@ -163,71 +128,35 @@ public class JRefundLines extends javax.swing.JPanel {
 
         for (int i = 0; i < m_aLines.size(); i++) {
             TicketLineInfo oLine = (TicketLineInfo) m_aLines.get(i);
-            if(oLine.getMultiply() > 0){
-            	TicketLineInfo oNewLine = new TicketLineInfo(oLine);            
-                oNewLine.setMultiply(-oLine.getMultiply());
-                oLine.setMultiply(oNewLine.getMultiply() + oLine.getMultiply());
-                ticketlines.removeTicketLine(i);
-                ticketlines.addTicketLine(oLine);
-                m_jTicketEdit.addTicketLine(oNewLine);
-            }
-            
-            
+            TicketLineInfo oNewLine = new TicketLineInfo(oLine);            
+            oNewLine.setMultiply(-oLine.getMultiply());
+            m_jTicketEdit.addTicketLine(oNewLine);
         }
         
     }//GEN-LAST:event_m_jbtnAddAllActionPerformed
 
     private void m_jbtnAddOneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnAddOneActionPerformed
+
         int index = ticketlines.getSelectedIndex();
         if (index >= 0) {
             TicketLineInfo oLine = (TicketLineInfo) m_aLines.get(index);
-            if(oLine.getMultiply() > 0){
-            	TicketLineInfo oNewLine = new TicketLineInfo(oLine);
-                oNewLine.setMultiply(-1.0);
-                oLine.setMultiply(oNewLine.getMultiply() + oLine.getMultiply());
-                ticketlines.removeTicketLine(index);
-                ticketlines.addTicketLine(oLine);
-                m_jTicketEdit.addTicketLine(oNewLine);
-            }
-            
+            TicketLineInfo oNewLine = new TicketLineInfo(oLine);
+            oNewLine.setMultiply(-1.0);
+            m_jTicketEdit.addTicketLine(oNewLine);
         }   
         
     }//GEN-LAST:event_m_jbtnAddOneActionPerformed
 
     private void m_jbtnAddLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnAddLineActionPerformed
+
         int index = ticketlines.getSelectedIndex();
         if (index >= 0) {
             TicketLineInfo oLine = (TicketLineInfo) m_aLines.get(index);
-            if(oLine.getMultiply() > 0){
-            	TicketLineInfo oNewLine = new TicketLineInfo(oLine);            
-                oNewLine.setMultiply(-oLine.getMultiply());
-                oLine.setMultiply(oNewLine.getMultiply() + oLine.getMultiply());
-                ticketlines.removeTicketLine(index);
-                ticketlines.addTicketLine(oLine);
-                m_jTicketEdit.addTicketLine(oNewLine);
-            }
-            
+            TicketLineInfo oNewLine = new TicketLineInfo(oLine);            
+            oNewLine.setMultiply(-oLine.getMultiply());
+            m_jTicketEdit.addTicketLine(oNewLine);
         }        
     }//GEN-LAST:event_m_jbtnAddLineActionPerformed
-
-    private void m_jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnResetActionPerformed
-        
-        //((JTicketsBagTicket)m_jTicketEdit.getJTicketsBag()).canceleditionTicket();
-        m_aLines.clear();
-        for (int i = 0; i < m_aLinesAll.size(); i++ ){
-            byte[] aSerLine; 
-            aSerLine = ImageUtils.writeSerializable(m_aLinesAll.get(i));
-            m_aLines.add(ImageUtils.readSerializable(aSerLine)); 
-        }
-       ticketlines.clearTicketLines();
-        if (m_aLines != null) {
-            for (int i = 0; i < m_aLines.size(); i++) {
-                ticketlines.addTicketLine((TicketLineInfo) m_aLines.get(i));
-            }
-        }
-        while(m_jTicketEdit.getActiveTicket().getLinesCount()>0) 
-        	m_jTicketEdit.removeTicketLine(0);
-    }//GEN-LAST:event_m_jbtnResetActionPerformed
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -237,7 +166,6 @@ public class JRefundLines extends javax.swing.JPanel {
     private javax.swing.JButton m_jbtnAddAll;
     private javax.swing.JButton m_jbtnAddLine;
     private javax.swing.JButton m_jbtnAddOne;
-    private javax.swing.JButton m_jbtnReset;
     // End of variables declaration//GEN-END:variables
     
 }

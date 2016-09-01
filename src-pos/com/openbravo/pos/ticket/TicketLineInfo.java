@@ -20,8 +20,6 @@
 package com.openbravo.pos.ticket;
 
 import java.io.*;
-
-import com.openbravo.pos.util.RoundUtils;
 import com.openbravo.pos.util.StringUtils;
 import com.openbravo.data.loader.DataRead;
 import com.openbravo.data.loader.SerializableRead;
@@ -85,16 +83,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         } else {
             pid = product.getID();
             attributes.setProperty("product.name", product.getName());
-            if (product.getName().equals("")) {
-                attributes.setProperty("product.code", "");
-            } else {
-                attributes.setProperty("product.code", product.getCode());
-            }
-            if (product.getName().equals("")) {
-                attributes.setProperty("product.reference", "");
-            } else {
-                attributes.setProperty("product.reference", product.getReference());
-            }
             attributes.setProperty("product.com", product.isCom() ? "true" : "false");
             if (product.getAttributeSetID() != null) {
                 attributes.setProperty("product.attsetid", product.getAttributeSetID());
@@ -196,79 +184,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public String getProductName() {
         return attributes.getProperty("product.name");
     }
-    
-    public String getProductCode() {
-        return attributes.getProperty("product.code");
-    }
 
-    public String getProductReference() {
-        return attributes.getProperty("product.reference");
-    }
-    
-    public Double getDiscountRate() {
-        return Double.parseDouble(attributes.getProperty("discountrate", "0.0"));
-    }
-    
-//    public void setDiscountRate(Double rate) {
-//       attributes.setProperty("product.discountrate", rate.toString());
-//    }    
-//    
-//    public void setDiscountMoney(Double money) {
-//       attributes.setProperty("product.discountmoney", money.toString());
-//    }      
-   
-    public Double getDiscountMoney() {
-        return Double.parseDouble(attributes.getProperty("discountmoney", "0.0"));
-    }
-    
-    public Double getPriceNoDiscount() {
-        Double discountrate = getDiscountRate();
-        Double discountmoney = getDiscountMoney() / (1.0 + getTaxRate());
-        Double pricenodiscount = 0.0;
-
-        if (discountrate != 1.0) {
-            pricenodiscount = getPrice() / (1 - getDiscountRate());
-        }
-
-        if (discountmoney != 0.0) {
-            pricenodiscount = pricenodiscount + discountmoney;
-        }
-
-        return RoundUtils.round(pricenodiscount);
-    }
-
-    public Double getPriceTaxNoDiscount() {
-        Double discountrate = getDiscountRate();
-        Double discountmoney = getDiscountMoney();
-        Double pricenodiscount = 0.0;
-
-        if (discountrate != 1.0) {
-            pricenodiscount = getPriceTax() / (1 - getDiscountRate());
-        }
-
-        if (discountmoney != 0.0) {
-            pricenodiscount = pricenodiscount + discountmoney;
-        }
-
-        return RoundUtils.round(pricenodiscount);
-    }
-
-    public Double getDiscountSubValue() {
-        return RoundUtils.round(getPriceNoDiscount() - getPrice());
-    }
-
-    public Double getDiscountValue() {
-        return RoundUtils.round(getPriceTaxNoDiscount() - getPriceTax());
-    }
-
-    public Double getDiscountSubTotalLine() {
-        return RoundUtils.round(getDiscountSubValue() * multiply);
-    }
-
-    public Double getDiscountTotalLine() {
-        return RoundUtils.round(getDiscountValue() * multiply);
-    }    
-    
     public String getProductAttSetId() {
         return attributes.getProperty("product.attsetid");
     }
@@ -279,7 +195,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public void setProductAttSetInstDesc(String value) {
         if (value == null) {
-            attributes.remove("product.attsetdesc");
+            attributes.remove(value);
         } else {
             attributes.setProperty("product.attsetdesc", value);
         }
@@ -314,19 +230,19 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     }
 
     public double getPrice() {
-        return RoundUtils.round(price);
+        return price;
     }
 
     public void setPrice(double dValue) {
-        price = RoundUtils.round(dValue);
+        price = dValue;
     }
 
     public double getPriceTax() {
-        return RoundUtils.round(price * (1.0 + getTaxRate()));
+        return price * (1.0 + getTaxRate());
     }
 
     public void setPriceTax(double dValue) {
-        price = RoundUtils.round(dValue / (1.0 + getTaxRate()));
+        price = dValue / (1.0 + getTaxRate());
     }
 
     public TaxInfo getTaxInfo() {
@@ -358,35 +274,19 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     }
 
     public double getSubValue() {
-        return RoundUtils.round(price * multiply);
+        return price * multiply;
     }
 
     public double getTax() {
-        return RoundUtils.round(price * multiply * getTaxRate());
+        return price * multiply * getTaxRate();
     }
 
     public double getValue() {
-        return RoundUtils.round(price * multiply * (1.0 + getTaxRate()));
+        return price * multiply * (1.0 + getTaxRate());
     }
 
-    public double getSubValueNoDiscount() {
-        return getPriceNoDiscount() * multiply;
-    }
-
-    public double getValueNoDiscount() {
-        return getPriceNoDiscount() * multiply * (1.0 + getTaxRate());
-    }
-    
     public String printName() {
-        return StringUtils.encodeXML(getProductName());
-    }
-    
-    public String printCode() {
-        return StringUtils.encodeXML(getProductCode());
-    }    
-
-    public String printReference() {
-        return StringUtils.encodeXML(getProductReference());
+        return StringUtils.encodeXML(attributes.getProperty("product.name"));
     }
 
     public String printMultiply() {
@@ -416,44 +316,4 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public String printValue() {
         return Formats.CURRENCY.formatValue(getValue());
     }
-
-    public String printSubValueNoDiscount() {
-        return Formats.CURRENCY.formatValue(getSubValueNoDiscount());
-    }
-
-    public String printValueNoDiscount() {
-        return Formats.CURRENCY.formatValue(getValueNoDiscount());
-    }    
-    
-    public String printDiscountRate() {
-        return Formats.PERCENT.formatValue(getDiscountRate());
-    }
-
-    public String printDiscountMoney() {
-        return Formats.CURRENCY.formatValue(getDiscountMoney());
-    }  
-    
-    public String printDiscountSubValue() {
-        return Formats.CURRENCY.formatValue(getDiscountSubValue());
-    }        
-
-    public String printDiscountValue() {
-        return Formats.CURRENCY.formatValue(getDiscountValue());
-    }    
-    
-    public String printDiscountSubTotalLine() {
-        return Formats.CURRENCY.formatValue(getDiscountSubTotalLine());
-    }   
-
-    public String printDiscountTotalLine() {
-        return Formats.CURRENCY.formatValue(getDiscountTotalLine());
-    }   
-
-    public String printPriceNoDiscount() {
-        return Formats.CURRENCY.formatValue(getPriceNoDiscount());
-    }       
-    
-    public String printPriceTaxNoDiscount() {
-        return Formats.CURRENCY.formatValue(getPriceTaxNoDiscount());
-    } 
 }

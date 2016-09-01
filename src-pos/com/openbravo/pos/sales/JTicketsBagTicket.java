@@ -43,26 +43,24 @@ public class JTicketsBagTicket extends JTicketsBag {
     private DataLogicSystem m_dlSystem = null;
     protected DataLogicCustomers dlCustomers = null;
 
-    private final DeviceTicket m_TP;    
-    private final TicketParser m_TTP;    
-    private final TicketParser m_TTP2; 
+    private DeviceTicket m_TP;    
+    private TicketParser m_TTP;    
+    private TicketParser m_TTP2; 
     
     private TicketInfo m_ticket;
     private TicketInfo m_ticketCopy;
     
-    private final JTicketsBagTicketBag m_TicketsBagTicketBag;
+    private JTicketsBagTicketBag m_TicketsBagTicketBag;
     
-    private final JPanelTicketEdits m_panelticketedit;
+    private JPanelTicketEdits m_panelticketedit;
 
-    /** Creates new form JTicketsBagTicket
-     * @param app
-     * @param panelticket */
+    /** Creates new form JTicketsBagTicket */
     public JTicketsBagTicket(AppView app, JPanelTicketEdits panelticket) {
         
         super(app, panelticket);
         m_panelticketedit = panelticket; 
-        m_dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
-        dlCustomers = (DataLogicCustomers) m_App.getBean(DataLogicCustomers.class.getName());
+        m_dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        dlCustomers = (DataLogicCustomers) m_App.getBean("com.openbravo.pos.customers.DataLogicCustomers");
         
         // Inicializo la impresora...
         m_TP = new DeviceTicket();
@@ -104,7 +102,6 @@ public class JTicketsBagTicket extends JTicketsBag {
         // postcondicion es que tenemos ticket activado aqui y ticket en el panel
     }
     
-    @Override
     public boolean deactivate() {
         
         // precondicion es que tenemos ticket activado aqui y ticket en el panel        
@@ -114,7 +111,6 @@ public class JTicketsBagTicket extends JTicketsBag {
         // postcondicion es que no tenemos ticket activado ni ticket en el panel
     }
     
-    @Override
     public void deleteTicket() {
         
         if (m_ticketCopy != null) {           
@@ -145,12 +141,10 @@ public class JTicketsBagTicket extends JTicketsBag {
         m_panelticketedit.setActiveTicket(null, null); 
     }
     
-    @Override
     protected JComponent getBagComponent() {
         return m_TicketsBagTicketBag;
     }
     
-    @Override
     protected JComponent getNullComponent() {
         return this;
     }
@@ -207,8 +201,11 @@ public class JTicketsBagTicket extends JTicketsBag {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("ticket", m_ticket);
                 m_TTP.printTicket(script.eval(m_dlSystem.getResourceAsXML("Printer.TicketPreview")).toString());
-            } catch (ScriptException | TicketPrinterException e) {
+            } catch (ScriptException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                msg.show(this);
+            } catch (TicketPrinterException eTP) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), eTP);
                 msg.show(this);
             }
         }
@@ -396,7 +393,9 @@ public class JTicketsBagTicket extends JTicketsBag {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("ticket", m_ticket);
                 m_TTP2.printTicket(script.eval(m_dlSystem.getResourceAsXML("Printer.TicketPreview")).toString());
-            } catch (ScriptException | TicketPrinterException e) {
+            } catch (ScriptException e) {
+                JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotprint"), e));
+            } catch (TicketPrinterException e) {
                 JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotprint"), e));
             }
         }  

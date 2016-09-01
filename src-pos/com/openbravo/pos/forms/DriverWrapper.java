@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 /**
  *
  * @author adrianromero
- * @contributor Dixon Martinez <a href="dixon.22martinez
  */
 public class DriverWrapper implements Driver {
     
@@ -61,5 +60,4 @@ public class DriverWrapper implements Driver {
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return driver.getParentLogger();
 	}
-	
 }
