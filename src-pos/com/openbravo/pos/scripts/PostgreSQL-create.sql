@@ -48,6 +48,7 @@ CREATE TABLE PEOPLE (
     ROLE VARCHAR NOT NULL,
     VISIBLE BOOLEAN NOT NULL,
     IMAGE BYTEA,
+    PROPERTIES BYTEA,
     PRIMARY KEY (ID),
     CONSTRAINT PEOPLE_FK_1 FOREIGN KEY (ROLE) REFERENCES ROLES(ID)
 );
@@ -98,6 +99,10 @@ INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('27', 'coin.5cent', 1, 
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('28', 'coin.2cent', 1, $FILE{/com/openbravo/pos/templates/coin.2cent.png});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('29', 'coin.1cent', 1, $FILE{/com/openbravo/pos/templates/coin.1cent.png});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('30', 'Printer.PartialCash', 0, $FILE{/com/openbravo/pos/templates/Printer.PartialCash.xml});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('30', 'Window.DescLogo', 0, $FILE{/com/openbravo/pos/templates/Window.Logo.png});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('30', 'Window.Description', 0, $FILE{/com/openbravo/pos/templates/Window.Description.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('30', 'Window.SupportBy', 0, null);
+
 
 CREATE TABLE TAXCUSTCATEGORIES (
     ID VARCHAR NOT NULL,

@@ -113,7 +113,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         
         try {
 
-            m_jPanelLeft.setViewportView(getScriptMenu(m_dlSystem.getResourceAsText("Menu.Root")));
+            m_jPanelLeft.setViewportView(getScriptMenu(DataLogicSystem.getResourceAsText("Menu.Root")));
         } catch (ScriptException e) {
             logger.log(Level.SEVERE, "Cannot read Menu.Root resource. Trying defaut menu.", e);
             try {
