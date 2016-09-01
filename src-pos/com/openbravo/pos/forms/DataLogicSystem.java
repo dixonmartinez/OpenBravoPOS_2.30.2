@@ -51,7 +51,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     private SentenceExec m_changepassword;    
     private SentenceFind m_locationfind;
     
-    private static SentenceFind m_resourcebytes;
+    private SentenceFind m_resourcebytes;
     private SentenceExec m_resourcebytesinsert;
     private SentenceExec m_resourcebytesupdate;
 
@@ -59,7 +59,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     protected SentenceFind m_activecash;
     protected SentenceExec m_insertcash;
     
-    private static Map<String, byte[]> resourcescache;
+    private Map<String, byte[]> resourcescache;
     
     /** Creates a new instance of DataLogicSystem */
     public DataLogicSystem() {            
@@ -74,35 +74,24 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
          
         final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "com/openbravo/images/yast_sysadmin.png");        
         peopleread = new SerializerRead() {
-            @Override
             public Object readValues(DataRead dr) throws BasicException {
-                Properties properties = new Properties();
-                if (dr.getBytes(7) != null) {
-                    try {
-                        properties.loadFromXML(new ByteArrayInputStream((byte[]) dr.getBytes(7)));
-                    } catch (IOException ex) {
-                        throw new BasicException(ex);
-                    }
-                }
                 return new AppUser(
                         dr.getString(1),
                         dr.getString(2),
                         dr.getString(3),
                         dr.getString(4),
                         dr.getString(5),
-                        new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))),
-                        properties
-                        );                
+                        new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))));                
             }
         };
 
         m_peoplevisible = new StaticSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, PROPERTIES FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()  + " ORDER BY NAME ASC"
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
             , null
             , peopleread);
 
         m_peoplebycard = new PreparedSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, PROPERTIES FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
             , SerializerWriteString.INSTANCE
             , peopleread);
          
@@ -186,7 +175,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         resourcescache = new HashMap<String, byte[]>();      
     }
     
-    private static byte[] getResource(String name) {
+    private final byte[] getResource(String name) {
 
         byte[] resource;
         
@@ -225,7 +214,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return getResource(sName);
     }
     
-    public static String getResourceAsText(String sName) {
+    public final String getResourceAsText(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
     }
     
@@ -233,7 +222,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return Formats.BYTEA.formatValue(getResource(sName));
     }    
     
-    public static BufferedImage getResourceAsImage(String sName) {
+    public final BufferedImage getResourceAsImage(String sName) {
         try {
             byte[] img = getResource(sName); // , ".png"
             return img == null ? null : ImageIO.read(new ByteArrayInputStream(img));

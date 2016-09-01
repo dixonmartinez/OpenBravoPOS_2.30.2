@@ -51,21 +51,5 @@ public interface AppView {
     public void waitCursorEnd();
     
     public AppUserView getAppUserView();
-    
-    public String getGenerateProductReference();
-    public String getGenerateProductBarcode();
-
-    public String getCustomerCard();
-    public String getUserCard();
-
-    public String getUserBarcode();
-    public String getPriceBarcode();
-    public String getUnitBarcode();
-    public String getProductPriceBarcode();
-
-    public String getDefaultInventoryLocation();
-    public String getDefaultTaxCategory();
-    public String getDefaultProductCategory();
-
 }
 

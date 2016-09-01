@@ -13,7 +13,7 @@ import com.openbravo.pos.ticket.TicketLineInfo;
 public class DiscountMoney {
     
     public TicketLineInfo LineDiscountMoney(TicketLineInfo TicketLine, Double dMoney) {
-
+    	
         double linedicountmoney = TicketLine.getDiscountMoney();
         double lineprice = TicketLine.getPriceTax();
         double linenodisount = TicketLine.getPriceTaxNoDiscount();

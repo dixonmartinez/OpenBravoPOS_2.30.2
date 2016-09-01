@@ -32,18 +32,9 @@ public class TableDefinition {
     private Formats[] fieldformat;
     
     private int[] idinx;
-    private String sortField;
-    private String[] sortFieldArray;
    
     
-    /** Creates a new instance of TableDefinition
-     * @param s
-     * @param tablename
-     * @param fieldname
-     * @param fieldtran
-     * @param fielddata
-     * @param fieldformat
-     * @param idinx */
+    /** Creates a new instance of TableDefinition */
     public TableDefinition(
             Session s,
             String tablename, 
@@ -60,16 +51,6 @@ public class TableDefinition {
   
         this.idinx = idinx;
     }  
-    
-    /**
-     * Creates a new instance of TableDefinition
-     * @param s
-     * @param tablename
-     * @param fieldname
-     * @param fielddata
-     * @param fieldformat
-     * @param idinx 
-     */
     public TableDefinition(
             Session s,
             String tablename, 
@@ -77,56 +58,6 @@ public class TableDefinition {
             int[] idinx) {
         this(s, tablename, fieldname, fieldname, fielddata, fieldformat, idinx);
     }    
-    
-    /**
-     * Creates a new instance of TableDefinition
-     * @param s
-     * @param tablename
-     * @param fieldname
-     * @param fieldtran
-     * @param fielddata
-     * @param fieldformat
-     * @param sortField
-     * @param idinx 
-     */
-    public TableDefinition(
-            Session s,
-            String tablename, 
-            String[] fieldname, String[] fieldtran, Datas[] fielddata, Formats[] fieldformat,
-            String sortField,
-            int[] idinx) {
-        this(s, tablename, fieldname, fielddata, fieldformat, idinx);
-        this.sortField = sortField;
-    }
-    
-     /**
-     * Creates a new instance of TableDefinition
-     * @param s
-     * @param tablename
-     * @param fieldname
-     * @param fieldtran
-     * @param fielddata
-     * @param fieldformat
-     * @param sortFieldArray
-     * @param idinx 
-     */
-    public TableDefinition(
-            Session s,
-            String tablename, 
-            String[] fieldname, String[] fieldtran, Datas[] fielddata, Formats[] fieldformat,
-            String[] sortFieldArray,
-            int[] idinx) {
-        this(s, tablename, fieldname, fielddata, fieldformat, idinx);
-        this.sortFieldArray = sortFieldArray;
-    }
-    
-    /**
-     * Set Order Field
-     * @param sortField
-     */
-    public void setSortField(String sortField) {
-        this.sortField = sortField;
-    }
     
     public String getTableName() {
         return tablename;
@@ -202,25 +133,6 @@ public class TableDefinition {
         sent.append(" from ");        
         sent.append(tablename);
         
-        //  Order Field of consult
-        if(sortField != null
-                && sortField.length() > 0) {
-            sent.append(" order by ");
-            sent.append(sortField);
-        }
-        
-        if(sortFieldArray != null
-                && sortField.length() >-1) {
-            sent.append(" order by ");
-            for(int i = 0; i < sortFieldArray.length; i++) {
-                if(i > 0)
-                    sent.append(", ");
-                sent.append(sortFieldArray[i]);
-            }
-                    
-        }
-            
-                  
         return sent.toString();    
     }
    

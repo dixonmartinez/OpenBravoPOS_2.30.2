@@ -64,20 +64,6 @@ public class JRootApp extends JPanel implements AppView {
     private Date m_dActiveCashDateEnd;
     
     private String m_sInventoryLocation;
-    private String m_sDefaultTaxCategory;
-    private String m_sDefaultProductCategory;
-    
-    private String m_sGenerateProductReference;
-    private String m_sGenerateProductBarcode;
-
-    private String m_sCustomerCard;
-    private String m_sUserCard;
-
-    private String m_sUserBarcode;
-    private String m_sPriceBarcode;
-    private String m_sUnitBarcode;
-    private String m_sProductPriceBarcode;
-    private String m_sDefaultInventoryLocation;
     
     private StringBuffer inputtext;
    
@@ -122,7 +108,7 @@ public class JRootApp extends JPanel implements AppView {
             return false;
         }
 
-        m_dlSystem = (DataLogicSystem) getBean(DataLogicSystem.class.getName());
+        m_dlSystem = (DataLogicSystem) getBean("com.openbravo.pos.forms.DataLogicSystem");
         
         // Create or upgrade the database if database version is not the expected
         String sDBVersion = readDataBaseVersion();        
@@ -196,83 +182,12 @@ public class JRootApp extends JPanel implements AppView {
             return false;
         }  
         
-        String sPropertySettings = m_props.getHost() + "/properties";
         // Leo la localizacion de la caja (Almacen).
-        m_sDefaultInventoryLocation = m_propsdb.getProperty("location");
-        if (m_sDefaultInventoryLocation == null) {
-            m_sDefaultInventoryLocation = "0";
-            m_propsdb.setProperty("location", m_sDefaultInventoryLocation);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-        
-        m_sGenerateProductReference = m_propsdb.getProperty("genreference");
-        if (m_sGenerateProductReference == null) {
-            m_sGenerateProductReference = "true";
-            m_propsdb.setProperty("genreference", m_sGenerateProductReference);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sGenerateProductBarcode = m_propsdb.getProperty("genbarcode");
-        if (m_sGenerateProductBarcode == null) {
-            m_sGenerateProductBarcode = "true";
-            m_propsdb.setProperty("genbarcode", m_sGenerateProductBarcode);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sUserBarcode = m_propsdb.getProperty("userbarcode");
-        if (m_sUserBarcode == null) {
-            m_sUserBarcode = "200";
-            m_propsdb.setProperty("userbarcode", m_sUserBarcode);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sPriceBarcode = m_propsdb.getProperty("pricebarcode");
-        if (m_sPriceBarcode == null) {
-            m_sPriceBarcode = "210";
-            m_propsdb.setProperty("pricebarcode", m_sPriceBarcode);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sUnitBarcode = m_propsdb.getProperty("unitbarcode");
-        if (m_sUnitBarcode == null) {
-            m_sUnitBarcode = "220";
-            m_propsdb.setProperty("unitbarcode", m_sUnitBarcode);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sProductPriceBarcode = m_propsdb.getProperty("productpricebarcode");
-        if (m_sProductPriceBarcode == null) {
-            m_sProductPriceBarcode = "250";
-            m_propsdb.setProperty("productpricebarcode", m_sProductPriceBarcode);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sCustomerCard = m_propsdb.getProperty("customercard");
-        if (m_sCustomerCard == null) {
-            m_sCustomerCard = "c";
-            m_propsdb.setProperty("customercard", m_sCustomerCard);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sUserCard = m_propsdb.getProperty("usercard");
-        if (m_sUserCard == null) {
-            m_sUserCard = "u";
-            m_propsdb.setProperty("usercard", m_sUserCard);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sDefaultTaxCategory = m_propsdb.getProperty("taxcategoryid");
-        if (m_sDefaultTaxCategory == null) {
-            m_sDefaultTaxCategory = "000";
-            m_propsdb.setProperty("taxcategoryid", m_sDefaultTaxCategory);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
-        }
-
-        m_sDefaultProductCategory = m_propsdb.getProperty("productcategoryid");
-        if (m_sDefaultProductCategory == null) {
-            m_sDefaultProductCategory = "000";
-            m_propsdb.setProperty("productcategoryid", m_sDefaultProductCategory);
-            m_dlSystem.setResourceAsProperties(sPropertySettings, m_propsdb);
+        m_sInventoryLocation = m_propsdb.getProperty("location");
+        if (m_sInventoryLocation == null) {
+            m_sInventoryLocation = "0";
+            m_propsdb.setProperty("location", m_sInventoryLocation);
+            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
         }
         
         // Inicializo la impresora...
@@ -293,43 +208,25 @@ public class JRootApp extends JPanel implements AppView {
         m_jLblTitle.setIcon(imgicon == null ? null : new ImageIcon(imgicon));
         m_jLblTitle.setText(m_dlSystem.getResourceAsText("Window.Title"));  
         
-        
-        BufferedImage imgdesclogo1 = DataLogicSystem.getResourceAsImage("Window.DescLogo");
-        m_jLblDescriptionFirst.setIcon(imgdesclogo1 == null ? new ImageIcon(getClass().getResource("/com/openbravo/images/logo.png")) : new ImageIcon(imgdesclogo1));
-        m_jLblDescriptionFirst.setText(DataLogicSystem.getResourceAsText("Window.Description"));
-
-        BufferedImage imgdesclogo2 = DataLogicSystem.getResourceAsImage("Window.DescLogoSecond");
-        m_jLblDescriptionSecond.setIcon(imgdesclogo2 == null ? null : new ImageIcon(imgdesclogo2));
-        m_jLblDescriptionSecond.setText(DataLogicSystem.getResourceAsText("Window.DescriptionSecond"));
-
-        BufferedImage imgpoweredby = DataLogicSystem.getResourceAsImage("Window.PoweredBy");
-        m_jLblPoweredBy.setIcon(imgpoweredby == null ? new ImageIcon(getClass().getResource("/com/openbravo/images/poweredby.png")) : new ImageIcon(imgpoweredby));
-
-        BufferedImage imgsupportby = DataLogicSystem.getResourceAsImage("Window.SupportBy");
-        m_jLblSupportBy.setIcon(imgsupportby == null ? null : new ImageIcon(imgsupportby));
-        
-        showHostAndLocation(m_sDefaultInventoryLocation);
-        showLogin();
-
-        return true;
-    }
-    
-    private void showHostAndLocation(String sWareHouseId) {
-        String sWareHouseName;
+        String sWareHouse;
         try {
-            sWareHouseName = m_dlSystem.findLocationName(sWareHouseId);
+            sWareHouse = m_dlSystem.findLocationName(m_sInventoryLocation);
         } catch (BasicException e) {
-            sWareHouseName = null; // no he encontrado el almacen principal
-        }
-
+            sWareHouse = null; // no he encontrado el almacen principal
+        }        
+        
         // Show Hostname, Warehouse and URL in taskbar
         String url;
         try {
             url = session.getURL();
         } catch (SQLException e) {
             url = "";
-        }
-        m_jHost.setText("<html>" + m_props.getHost() + " - " + sWareHouseName + "<br>" + url);
+        }        
+        m_jHost.setText("<html>" + m_props.getHost() + " - " + sWareHouse + "<br>" + url);
+        
+        showLogin();
+
+        return true;
     }
     
     private String readDataBaseVersion() {
@@ -357,51 +254,36 @@ public class JRootApp extends JPanel implements AppView {
     }
     
     // Interfaz de aplicacion
-    @Override
     public DeviceTicket getDeviceTicket(){
         return m_TP;
     }
     
-    @Override
     public DeviceScale getDeviceScale() {
         return m_Scale;
     }
-    @Override
     public DeviceScanner getDeviceScanner() {
         return m_Scanner;
     }
     
-    @Override
     public Session getSession() {
         return session;
     } 
-    
-    @Override
-    public String getDefaultInventoryLocation() {
-        return m_sDefaultInventoryLocation;
-    }
 
-    @Override
     public String getInventoryLocation() {
         return m_sInventoryLocation;
     }   
-    @Override
     public String getActiveCashIndex() {
         return m_sActiveCashIndex;
     }
-    @Override
     public int getActiveCashSequence() {
         return m_iActiveCashSequence;
     }
-    @Override
     public Date getActiveCashDateStart() {
         return m_dActiveCashDateStart;
     }
-    @Override
     public Date getActiveCashDateEnd(){
         return m_dActiveCashDateEnd;
     }
-    @Override
     public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
         m_sActiveCashIndex = sIndex;
         m_iActiveCashSequence = iSeq;
@@ -412,12 +294,10 @@ public class JRootApp extends JPanel implements AppView {
         m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
     }   
        
-    @Override
     public AppProperties getProperties() {
         return m_props;
     }
     
-    @Override
     public Object getBean(String beanfactory) throws BeanFactoryException {
         
         // For backwards compatibility
@@ -493,17 +373,14 @@ public class JRootApp extends JPanel implements AppView {
        
     }
     
-    @Override
     public void waitCursorBegin() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     }
     
-    @Override
     public void waitCursorEnd(){
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
     
-    @Override
     public AppUserView getAppUserView() {
         return m_principalapp;
     }
@@ -556,60 +433,10 @@ public class JRootApp extends JPanel implements AppView {
             ee.printStackTrace();
         }
     }
-
-    @Override
-    public String getGenerateProductReference() {
-        return m_sGenerateProductReference;
-    }
-
-    @Override
-    public String getGenerateProductBarcode() {
-        return m_sGenerateProductBarcode;
-    }
-
-    @Override
-    public String getCustomerCard() {
-        return m_sCustomerCard;
-    }
-
-    @Override
-    public String getUserCard() {
-        return m_sUserCard;
-    }
-
-    @Override
-    public String getUserBarcode() {
-        return m_sUserBarcode;
-    }
-
-    @Override
-    public String getPriceBarcode() {
-        return m_sPriceBarcode;
-    }
-
-    @Override
-    public String getUnitBarcode() {
-        return m_sUnitBarcode;
-    }
-
-    @Override
-    public String getProductPriceBarcode() {
-        return m_sProductPriceBarcode;
-    }
-
-    @Override
-    public String getDefaultTaxCategory() {
-        return m_sDefaultTaxCategory;
-    }
-
-    @Override
-    public String getDefaultProductCategory() {
-        return m_sDefaultProductCategory;
-    }
     // La accion del selector
     private class AppUserAction extends AbstractAction {
         
-        private final AppUser m_actionuser;
+        private AppUser m_actionuser;
         
         public AppUserAction(AppUser user) {
             m_actionuser = user;
@@ -621,7 +448,6 @@ public class JRootApp extends JPanel implements AppView {
             return m_actionuser;
         }
         
-        @Override
         public void actionPerformed(ActionEvent evt) {
             // String sPassword = m_actionuser.getPassword();
             if (m_actionuser.authenticate()) {
@@ -660,12 +486,9 @@ public class JRootApp extends JPanel implements AppView {
             jPanel3.add(m_principalapp.getNotificator());
             jPanel3.revalidate();
             
-            m_sInventoryLocation = user.getProperties().getProperty("user.location.id", m_sDefaultInventoryLocation);
-             
             // The main panel
             m_jPanelContainer.add(m_principalapp, "_" + m_principalapp.getUser().getId());
             showView("_" + m_principalapp.getUser().getId());
-            showHostAndLocation(m_sInventoryLocation);
 
             m_principalapp.activate();
         }
@@ -687,8 +510,6 @@ public class JRootApp extends JPanel implements AppView {
             m_jPanelContainer.remove(m_principalapp);
             m_principalapp = null;
 
-            m_sInventoryLocation = m_sDefaultInventoryLocation;
-            showHostAndLocation(m_sInventoryLocation);
             showLogin();
             
             return true;
@@ -708,7 +529,6 @@ public class JRootApp extends JPanel implements AppView {
         inputtext = new StringBuffer();
         m_txtKeys.setText(null);       
         java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 m_txtKeys.requestFocus();
             }
@@ -751,13 +571,12 @@ public class JRootApp extends JPanel implements AppView {
 
         m_jPanelTitle = new javax.swing.JPanel();
         m_jLblTitle = new javax.swing.JLabel();
-        m_jLblPoweredBy = new javax.swing.JLabel();
-        m_jLblSupportBy = new javax.swing.JLabel();
+        poweredby = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         m_jPanelContainer = new javax.swing.JPanel();
         m_jPanelLogin = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        m_jLblDescriptionFirst = new javax.swing.JLabel();
-        m_jLblDescriptionSecond = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         m_jLogonName = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -781,12 +600,12 @@ public class JRootApp extends JPanel implements AppView {
         m_jLblTitle.setText("Window.Title");
         m_jPanelTitle.add(m_jLblTitle, java.awt.BorderLayout.CENTER);
 
-        m_jLblPoweredBy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/poweredby.png"))); // NOI18N
-        m_jLblPoweredBy.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        m_jPanelTitle.add(m_jLblPoweredBy, java.awt.BorderLayout.LINE_END);
+        poweredby.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/poweredby.png"))); // NOI18N
+        poweredby.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        m_jPanelTitle.add(poweredby, java.awt.BorderLayout.LINE_END);
 
-        m_jLblSupportBy.setPreferredSize(new java.awt.Dimension(142, 34));
-        m_jPanelTitle.add(m_jLblSupportBy, java.awt.BorderLayout.LINE_START);
+        jLabel2.setPreferredSize(new java.awt.Dimension(142, 34));
+        m_jPanelTitle.add(jLabel2, java.awt.BorderLayout.LINE_START);
 
         add(m_jPanelTitle, java.awt.BorderLayout.NORTH);
 
@@ -796,22 +615,23 @@ public class JRootApp extends JPanel implements AppView {
 
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.Y_AXIS));
 
-        m_jLblDescriptionFirst.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        m_jLblDescriptionFirst.setText("Window.Description");
-        m_jLblDescriptionFirst.setAlignmentX(0.5F);
-        m_jLblDescriptionFirst.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        m_jLblDescriptionFirst.setMaximumSize(new java.awt.Dimension(976, 800));
-        m_jLblDescriptionFirst.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(m_jLblDescriptionFirst);
-
-        m_jLblDescriptionSecond.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        m_jLblDescriptionSecond.setText("Window.Description");
-        m_jLblDescriptionSecond.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        m_jLblDescriptionSecond.setAlignmentX(0.5F);
-        m_jLblDescriptionSecond.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        m_jLblDescriptionSecond.setMaximumSize(new java.awt.Dimension(976, 800));
-        m_jLblDescriptionSecond.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(m_jLblDescriptionSecond);
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/logo.png"))); // NOI18N
+        jLabel1.setText("<html><center>Openbravo POS is a point of sale application designed for touch screens.<br>" +
+            "Copyright \u00A9 2007-2009 Openbravo, S.L.<br>" +
+            "http://www.openbravo.com/product/pos<br>" +
+            "<br>" +
+            "Openbravo POS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br>" +
+            "<br>" +
+            "Openbravo POS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.<br>" +
+            "<br>" +
+            "You should have received a copy of the GNU General Public License along with Openbravo POS.  If not, see http://www.gnu.org/licenses/.<br>" +
+            "</center>");
+        jLabel1.setAlignmentX(0.5F);
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel1.setMaximumSize(new java.awt.Dimension(800, 1024));
+        jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel1);
 
         m_jPanelLogin.add(jPanel4, java.awt.BorderLayout.CENTER);
 
@@ -888,7 +708,7 @@ public class JRootApp extends JPanel implements AppView {
 
     private void m_txtKeysKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_m_txtKeysKeyTyped
 
-        m_txtKeys.setText("c");
+        m_txtKeys.setText("0");
         
         processKey(evt.getKeyChar());
 
@@ -896,6 +716,8 @@ public class JRootApp extends JPanel implements AppView {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -905,10 +727,6 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton m_jClose;
     private javax.swing.JLabel m_jHost;
-    private javax.swing.JLabel m_jLblDescriptionFirst;
-    private javax.swing.JLabel m_jLblDescriptionSecond;
-    private javax.swing.JLabel m_jLblPoweredBy;
-    private javax.swing.JLabel m_jLblSupportBy;
     private javax.swing.JLabel m_jLblTitle;
     private javax.swing.JPanel m_jLogonName;
     private javax.swing.JPanel m_jPanelContainer;
@@ -917,5 +735,6 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JPanel m_jPanelTitle;
     private javax.swing.JTextField m_txtKeys;
     private javax.swing.JPanel panelTask;
+    private javax.swing.JLabel poweredby;
     // End of variables declaration//GEN-END:variables
 }

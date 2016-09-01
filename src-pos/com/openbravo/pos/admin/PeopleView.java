@@ -30,48 +30,26 @@ import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.*;
 import com.openbravo.format.Formats;
-import com.openbravo.pos.forms.AppView;
-import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.util.StringUtils;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  *
  * @author adrianromero
  */
-public final class PeopleView extends JPanel implements EditorRecord {
+public class PeopleView extends JPanel implements EditorRecord {
 
     private Object m_oId;
     private String m_sPassword;
     
-    private final DirtyManager m_Dirty;
+    private DirtyManager m_Dirty;
     
-    private final SentenceList m_sentrole;
+    private SentenceList m_sentrole;
     private ComboBoxValModel m_RoleModel;  
     
-    private static final String LOCATION_ID_KEY = "user.location.id";
-    private final SentenceList m_Location;
-    private ComboBoxValModel m_LocationModel;
-
-    private final AppView m_App;
-
-    private Properties properties;
-    /** 
-     * Creates new form PeopleEditor
-     * @param app
-     * @param dlAdmin
-     * @param dirty 
-     */
-    public PeopleView(AppView app, DataLogicAdmin dlAdmin, DirtyManager dirty) {
+    /** Creates new form PeopleEditor */
+    public PeopleView(DataLogicAdmin dlAdmin, DirtyManager dirty) {
         initComponents();
                 
-        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
-
-        m_App = app;
-
         // El modelo de roles
         m_sentrole = dlAdmin.getRolesList();
         m_RoleModel = new ComboBoxValModel();
@@ -82,16 +60,10 @@ public final class PeopleView extends JPanel implements EditorRecord {
         m_jVisible.addActionListener(dirty);
         m_jImage.addPropertyChangeListener("image", dirty);
 
-        //  Location Model
-        m_Location = dlSales.getLocationsList();
-        m_LocationModel = new ComboBoxValModel();
-        m_JLocation.addActionListener(dirty);
-        properties = new Properties();
-
+        
         writeValueEOF();
     }
 
-    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jName.setText(null);
@@ -108,13 +80,8 @@ public final class PeopleView extends JPanel implements EditorRecord {
         jButton1.setEnabled(false);
         jButton2.setEnabled(false);
         jButton3.setEnabled(false);
-        
-        m_LocationModel.setSelectedKey(null);
-        m_JLocation.setEnabled(false);
-        
     }
     
-    @Override
     public void writeValueInsert() {
         m_oId = null;
         m_jName.setText(null);
@@ -131,19 +98,15 @@ public final class PeopleView extends JPanel implements EditorRecord {
         jButton1.setEnabled(true);
         jButton2.setEnabled(true);
         jButton3.setEnabled(true);
-        
-        m_LocationModel.setSelectedKey(null);
-        m_JLocation.setEnabled(true);
     }
     
-    @Override
     public void writeValueDelete(Object value) {
         Object[] people = (Object[]) value;
         m_oId = people[0];
         m_jName.setText(Formats.STRING.formatValue(people[1]));
         m_sPassword = Formats.STRING.formatValue(people[2]);
         m_RoleModel.setSelectedKey(people[3]);
-        m_jVisible.setSelected(((Boolean) people[4]));
+        m_jVisible.setSelected(((Boolean) people[4]).booleanValue());
         jcard.setText(Formats.STRING.formatValue(people[5]));
         m_jImage.setImage((BufferedImage) people[6]);
         m_jName.setEnabled(false);
@@ -154,29 +117,15 @@ public final class PeopleView extends JPanel implements EditorRecord {
         jButton1.setEnabled(false);
         jButton2.setEnabled(false);
         jButton3.setEnabled(false);
-        
-         if (people[7] == null) {
-            properties = new Properties();
-        } else {
-            try {
-                properties.loadFromXML(new ByteArrayInputStream((byte[]) people[7]));
-            } catch (IOException ex) {
-                properties = new Properties();
-            }
-        }
-        m_LocationModel.setSelectedKey(properties.getProperty(LOCATION_ID_KEY));
-
-        
     }    
     
-    @Override
     public void writeValueEdit(Object value) {
         Object[] people = (Object[]) value;
         m_oId = people[0];
         m_jName.setText(Formats.STRING.formatValue(people[1]));
         m_sPassword = Formats.STRING.formatValue(people[2]);
         m_RoleModel.setSelectedKey(people[3]);
-        m_jVisible.setSelected(((Boolean) people[4]));
+        m_jVisible.setSelected(((Boolean) people[4]).booleanValue());
         jcard.setText(Formats.STRING.formatValue(people[5]));
         m_jImage.setImage((BufferedImage) people[6]);
         m_jName.setEnabled(true);
@@ -187,44 +136,20 @@ public final class PeopleView extends JPanel implements EditorRecord {
         jButton1.setEnabled(true);
         jButton2.setEnabled(true);
         jButton3.setEnabled(true);
-        
-        properties = new Properties();
-        if (people[7] != null) {
-            try {
-                properties.loadFromXML(new ByteArrayInputStream((byte[]) people[7]));
-            } catch (IOException ex) {
-                properties = new Properties();
-            }
-        }
-        m_LocationModel.setSelectedKey(properties.getProperty(LOCATION_ID_KEY));
-        m_JLocation.setEnabled(true);
     }
     
-    @Override
     public Object createValue() throws BasicException {
-        Object[] people = new Object[8];
+        Object[] people = new Object[7];
         people[0] = m_oId == null ? UUID.randomUUID().toString() : m_oId;
         people[1] = Formats.STRING.parseValue(m_jName.getText());
         people[2] = Formats.STRING.parseValue(m_sPassword);
         people[3] = m_RoleModel.getSelectedKey();
-        people[4] = m_jVisible.isSelected();
+        people[4] = Boolean.valueOf(m_jVisible.isSelected());
         people[5] = Formats.STRING.parseValue(jcard.getText());
         people[6] = m_jImage.getImage();
-        if(m_LocationModel.getSelectedKey() != null){
-            properties.setProperty(LOCATION_ID_KEY, (String) m_LocationModel.getSelectedKey());
-        }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            properties.storeToXML(outputStream, "User properties", "UTF-8");
-        } catch (IOException ex) {
-            throw new BasicException(ex);
-        }
-        people[7] = outputStream.toByteArray();
         return people;
     }    
     
-    @Override
     public Component getComponent() {
         return this;
     }    
@@ -233,12 +158,8 @@ public final class PeopleView extends JPanel implements EditorRecord {
         
         m_RoleModel = new ComboBoxValModel(m_sentrole.list());
         m_jRole.setModel(m_RoleModel);
-        
-        m_LocationModel = new ComboBoxValModel(m_Location.list());
-        m_JLocation.setModel(m_LocationModel);
     }
     
-    @Override
     public void refresh() {
     }
      
@@ -263,8 +184,6 @@ public final class PeopleView extends JPanel implements EditorRecord {
         jcard = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        m_JLocation = new javax.swing.JComboBox<>();
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileclose.png"))); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -301,9 +220,6 @@ public final class PeopleView extends JPanel implements EditorRecord {
 
         jLabel5.setText(AppLocal.getIntString("label.card")); // NOI18N
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
-        jLabel6.setText(bundle.getString("label.warehouse")); // NOI18N
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -319,32 +235,26 @@ public final class PeopleView extends JPanel implements EditorRecord {
                         .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jcard, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(m_jRole, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(m_jImage, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(m_jVisible)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(m_JLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(2, 2, 2))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jcard, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(m_jRole, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)))
+                            .addComponent(m_jVisible))))
                 .addContainerGap(129, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -367,11 +277,7 @@ public final class PeopleView extends JPanel implements EditorRecord {
                             .addComponent(jLabel2)
                             .addComponent(m_jRole, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(m_JLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(m_jVisible))
@@ -379,7 +285,7 @@ public final class PeopleView extends JPanel implements EditorRecord {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(m_jImage, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addGap(200, 200, 200))
+                .addGap(246, 246, 246))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -422,9 +328,7 @@ public final class PeopleView extends JPanel implements EditorRecord {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField jcard;
-    private javax.swing.JComboBox<String> m_JLocation;
     private com.openbravo.data.gui.JImageEditor m_jImage;
     private javax.swing.JTextField m_jName;
     private javax.swing.JComboBox m_jRole;
