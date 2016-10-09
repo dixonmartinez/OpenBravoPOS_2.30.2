@@ -35,6 +35,7 @@ public class JPanelTicketEdits extends JPanelTicket {
     public JPanelTicketEdits() {
     }
     
+    @Override
     public String getTitle() {
         return null;
     }
@@ -57,10 +58,12 @@ public class JPanelTicketEdits extends JPanelTicket {
         m_catandlines.showRefundLines(aRefundLines);
     }
     
+    @Override
     protected JTicketsBag getJTicketsBag() {
         return new JTicketsBagTicket(m_App, this);
     }
 
+    @Override
     protected Component getSouthComponent() {
 
         m_catandlines = new JTicketCatalogLines(m_App, this,                
@@ -75,10 +78,12 @@ public class JPanelTicketEdits extends JPanelTicket {
         return m_catandlines;
     } 
 
+    @Override
     protected void resetSouthComponent() {
     }
     
     private class CatalogListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             buttonTransition((ProductInfoExt) e.getSource());
         }  

@@ -32,26 +32,34 @@ import java.awt.Dimension;
 
 public class JTicketCatalogLines extends javax.swing.JPanel {
     
-    private JRefundLines m_reflines;
-    private CatalogSelector m_catalog;
+    private final JRefundLines m_reflines;
+    private final CatalogSelector m_catalog;
     
-    /** Creates new form JTicketCatalogLines */
+    /** 
+     * Creates new form JTicketCatalogLines
+     * @param app
+     * @param jTicketEdit
+     * @param pricevisible
+     * @param taxesincluded
+     * @param width
+     * @param height 
+     */
     public JTicketCatalogLines(AppView app, JPanelTicketEdits jTicketEdit, boolean pricevisible, boolean taxesincluded, int width, int height) {
         
         DataLogicSystem dlSystem = null;
         DataLogicSales dlSales = null;
-        dlSystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystem");
-        dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        dlSystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
+        dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         
         initComponents();
         
         m_reflines = new JRefundLines(dlSystem, jTicketEdit);        
-        add(m_reflines, "reflines");
+        super.add(m_reflines, "reflines");
         
         m_catalog = new JCatalog(dlSales, pricevisible, taxesincluded, width, height);
         m_catalog.getComponent().setPreferredSize(new Dimension(0, 245));
         // m_catalog.addActionListener(new CatalogListener());        
-        add(m_catalog.getComponent(), "catalog");
+        super.add(m_catalog.getComponent(), "catalog");
     }
     
     public void showCatalog() {

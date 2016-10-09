@@ -56,6 +56,7 @@ import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.util.JRPrinterAWT300;
 import com.openbravo.pos.util.ReportUtils;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.print.PrintService;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -133,12 +135,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         initComponents ();
     }
    
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         
         m_App = app;
-        dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
-        dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
-        dlCustomers = (DataLogicCustomers) m_App.getBean("com.openbravo.pos.customers.DataLogicCustomers");
+        dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
+        dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
+        dlCustomers = (DataLogicCustomers) m_App.getBean(DataLogicCustomers.class.getName());
                     
         // borramos el boton de bascula si no hay bascula conectada
         if (!m_App.getDeviceScale().existsScale()) {
@@ -175,14 +178,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_oTicketExt = null;      
     }
     
+    @Override
     public Object getBean() {
         return this;
     }
     
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public void activate() throws BasicException {
 
         paymentdialogreceipt = JPaymentSelectReceipt.getDialog(this);
@@ -195,9 +201,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         // Inicializamos el combo de los impuestos.
         java.util.List<TaxInfo> taxlist = senttax.list();
-        taxcollection = new ListKeyed<TaxInfo>(taxlist);
+        taxcollection = new ListKeyed<>(taxlist);
         java.util.List<TaxCategoryInfo> taxcategorieslist = senttaxcategories.list();
-        taxcategoriescollection = new ListKeyed<TaxCategoryInfo>(taxcategorieslist);
+        taxcategoriescollection = new ListKeyed<>(taxcategorieslist);
         
         taxcategoriesmodel = new ComboBoxValModel(taxcategorieslist);
         m_jTax.setModel(taxcategoriesmodel);
@@ -232,6 +238,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_ticketsbag.activate();        
     }
     
+    @Override
     public boolean deactivate() {
 
         return m_ticketsbag.deactivate();
@@ -241,6 +248,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected abstract Component getSouthComponent();
     protected abstract void resetSouthComponent();
      
+    @Override
     public void setActiveTicket(TicketInfo oTicket, Object oTicketExt) {
        
         m_oTicket = oTicket;
@@ -258,6 +266,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         refreshTicket();               
     }
     
+    @Override
     public TicketInfo getActiveTicket() {
         return m_oTicket;
     }
@@ -288,9 +297,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
             
             // Refresh ticket taxes
-            for (TicketLineInfo line : m_oTicket.getLines()) {
+            m_oTicket.getLines().stream().forEach((line) -> {
                 line.setTaxInfo(taxeslogic.getTaxInfo(line.getProductTaxCategoryID(), m_oTicket.getDate(), m_oTicket.getCustomer()));
-            }  
+            });  
         
             // The ticket name
             m_jTicketId.setText(m_oTicket.getName(m_oTicketExt));
@@ -310,10 +319,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             
             // activo el tecleador...
             m_jKeyFactory.setText(null);       
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    m_jKeyFactory.requestFocus();
-                }
+            java.awt.EventQueue.invokeLater(() -> {
+                m_jKeyFactory.requestFocus();
             });
         }
     }
@@ -374,15 +381,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 }
 
                 if (i >= 0) {
-                    m_oTicket.insertLine(i, oLine);
-                    m_ticketlines.insertTicketLine(i, oLine); // Pintamos la linea en la vista...                 
+                    oLine = getUpdateLine(m_oTicket, oLine, i);
                 } else {
                     Toolkit.getDefaultToolkit().beep();                                   
                 }
-            } else {    
-                // Producto normal, entonces al finalnewline.getMultiply() 
-                m_oTicket.addLine(oLine);            
-                m_ticketlines.addTicketLine(oLine); // Pintamos la linea en la vista... 
+            } else {
+            	getUpdateLine(m_oTicket, oLine);
             }
 
             visorTicketLine(oLine);
@@ -394,7 +398,32 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }    
     
-    private void removeTicketLine(int i){
+    private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine) {
+        return getUpdateLine(m_oTicket, oLine, -1);
+    }
+    
+    private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine, int index) {
+        int i=0;               
+        boolean update = false;
+        while (i < m_oTicket.getLinesCount()) {
+            if(m_oTicket.getLine(i).getProductID().equals(oLine.getProductID())) {
+                update = true;
+                Double cant = m_oTicket.getLine(i).getMultiply()+ oLine.getMultiply();
+                m_oTicket.getLine(i).setMultiply(cant);
+                paintTicketLine(i,m_oTicket.getLine(i));
+                i = m_oTicket.getLinesCount();
+            }
+            i++;
+        }
+        if(!update){
+            // Producto normal, entonces al finalnewline.getMultiply()
+            m_oTicket.addLine(oLine);            
+            m_ticketlines.addTicketLine(oLine); // Pintamos la linea en la vista... 
+        }
+        return oLine;
+    }
+    
+    protected void removeTicketLine(int i){
         
         if (executeEventAndRefresh("ticket.removeline", new ScriptArg("index", i)) == null) {
         
@@ -455,9 +484,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private double getPorValue() {
         try {
             return Double.parseDouble(m_jPor.getText().substring(1));                
-        } catch (NumberFormatException e){
-            return 1.0;
-        } catch (StringIndexOutOfBoundsException e){
+        } catch (NumberFormatException | StringIndexOutOfBoundsException e){
             return 1.0;
         }
     }
@@ -522,7 +549,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             try {
                 Double value = m_App.getDeviceScale().readWeight();
                 if (value != null) {
-                    incProduct(value.doubleValue(), prod);
+                    incProduct(value, prod);
                 }
             } catch (ScaleException e) {
                 Toolkit.getDefaultToolkit().beep();                
@@ -684,7 +711,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         Double value = m_App.getDeviceScale().readWeight();
                         if (value != null) {
                             ProductInfoExt product = getInputProduct();
-                            addTicketLine(product, value.doubleValue(), product.getPriceSell());
+                            addTicketLine(product, value, product.getPriceSell());
                         }
                     } catch (ScaleException e) {
                         Toolkit.getDefaultToolkit().beep();
@@ -706,7 +733,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         Double value = m_App.getDeviceScale().readWeight();
                         if (value != null) {
                             TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
-                            newline.setMultiply(value.doubleValue());
+                            newline.setMultiply(value);
                             newline.setPrice(Math.abs(newline.getPrice()));
                             paintTicketLine(i, newline);
                         }
@@ -941,10 +968,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 script.put("ticket", ticket);
                 script.put("place", ticketext);
                 m_TTP.printTicket(script.eval(sresource).toString());
-            } catch (ScriptException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
-                msg.show(JPanelTicket.this);
-            } catch (TicketPrinterException e) {
+            } catch (ScriptException | TicketPrinterException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(JPanelTicket.this);
             }
@@ -963,10 +987,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 JasperDesign jd = JRXmlLoader.load(getClass().getResourceAsStream(resourcefile + ".jrxml"));            
                 jr = JasperCompileManager.compileReport(jd);    
             } else {
-                // read the compiled reporte
-                ObjectInputStream oin = new ObjectInputStream(in);
-                jr = (JasperReport) oin.readObject();
-                oin.close();
+                try ( // read the compiled reporte
+                        ObjectInputStream oin = new ObjectInputStream(in)) {
+                    jr = (JasperReport) oin.readObject();
+                }
             }
            
             // Construyo el mapa de los parametros.
@@ -988,7 +1012,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             
             JRPrinterAWT300.printPages(jp, 0, jp.getPages().size() - 1, service);
             
-        } catch (Exception e) {
+        } catch (JRException | IOException | ClassNotFoundException e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotloadreport"), e);
             msg.show(this);
         }               
@@ -1002,10 +1026,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("ticketline", oLine);
                 m_TTP.printTicket(script.eval(dlSystem.getResourceAsXML("Printer.TicketLine")).toString());
-            } catch (ScriptException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintline"), e);
-                msg.show(JPanelTicket.this);
-            } catch (TicketPrinterException e) {
+            } catch (ScriptException | TicketPrinterException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintline"), e);
                 msg.show(JPanelTicket.this);
             }
@@ -1088,8 +1109,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
      
     public static class ScriptArg {
-        private String key;
-        private Object value;
+        private final String key;
+        private final Object value;
         
         public ScriptArg(String key, Object value) {
             this.key = key;
@@ -1105,8 +1126,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     
     public class ScriptObject {
         
-        private TicketInfo ticket;
-        private Object ticketext;
+        private final TicketInfo ticket;
+        private final Object ticketext;
         
         private int selectedindex;
         
@@ -1559,13 +1580,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jbtnScaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnScaleActionPerformed
-
-        stateTransition('\u00a7');
-        
+    stateTransition('\u00a7');    
     }//GEN-LAST:event_m_jbtnScaleActionPerformed
 
     private void m_jEditLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jEditLineActionPerformed
-        
         int i = m_ticketlines.getSelectedIndex();
         if (i < 0){
             Toolkit.getDefaultToolkit().beep(); // no line selected
@@ -1580,66 +1598,49 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 new MessageInf(e).show(this);
             }
         }
-
     }//GEN-LAST:event_m_jEditLineActionPerformed
 
     private void m_jEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jEnterActionPerformed
-
         stateTransition('\n');
-
     }//GEN-LAST:event_m_jEnterActionPerformed
 
     private void m_jNumberKeysKeyPerformed(com.openbravo.beans.JNumberEvent evt) {//GEN-FIRST:event_m_jNumberKeysKeyPerformed
-
         stateTransition(evt.getKey());
-
     }//GEN-LAST:event_m_jNumberKeysKeyPerformed
 
     private void m_jKeyFactoryKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_m_jKeyFactoryKeyTyped
-
         m_jKeyFactory.setText(null);
         stateTransition(evt.getKeyChar());
-
     }//GEN-LAST:event_m_jKeyFactoryKeyTyped
 
     private void m_jDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDeleteActionPerformed
-
         int i = m_ticketlines.getSelectedIndex();
         if (i < 0){
             Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
         } else {               
             removeTicketLine(i); // elimino la linea           
-        }   
-        
+        }           
     }//GEN-LAST:event_m_jDeleteActionPerformed
 
     private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jUpActionPerformed
-        
         m_ticketlines.selectionUp();
-
     }//GEN-LAST:event_m_jUpActionPerformed
 
     private void m_jDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDownActionPerformed
-
         m_ticketlines.selectionDown();
-
     }//GEN-LAST:event_m_jDownActionPerformed
 
     private void m_jListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jListActionPerformed
-
         ProductInfoExt prod = JProductFinder.showMessage(JPanelTicket.this, dlSales);    
         if (prod != null) {
             buttonTransition(prod);
-        }
-        
+        }        
     }//GEN-LAST:event_m_jListActionPerformed
 
     private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
-
         JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
         finder.search(m_oTicket.getCustomer());
-        finder.setVisible(true);
-        
+        finder.setVisible(true);       
         try {
             m_oTicket.setCustomer(finder.getSelectedCustomer() == null
                     ? null
@@ -1648,13 +1649,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
             msg.show(this);            
         }
-
-        refreshTicket();
-        
+        refreshTicket();       
 }//GEN-LAST:event_btnCustomerActionPerformed
 
     private void btnSplitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSplitActionPerformed
-
         if (m_oTicket.getLinesCount() > 0) {
             ReceiptSplit splitdialog = ReceiptSplit.getDialog(this, dlSystem.getResourceAsXML("Ticket.Line"), dlSales, dlCustomers, taxeslogic);
             
@@ -1667,12 +1665,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     setActiveTicket(ticket1, m_oTicketExt);// set result ticket
                 }
             }
-        }
-        
+        }        
 }//GEN-LAST:event_btnSplitActionPerformed
 
     private void jEditAttributesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jEditAttributesActionPerformed
-
         int i = m_ticketlines.getSelectedIndex();
         if (i < 0) {
             Toolkit.getDefaultToolkit().beep(); // no line selected
@@ -1692,8 +1688,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindattributes"), ex);
                 msg.show(this);
             }
-        }
-        
+        }        
 }//GEN-LAST:event_jEditAttributesActionPerformed
 
 

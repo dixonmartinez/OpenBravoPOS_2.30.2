@@ -44,6 +44,7 @@ public class DataLogicReceipts extends BeanFactoryDataSingle {
     public DataLogicReceipts() {
     }
     
+    @Override
     public void init(Session s){
         this.s = s;
     }
