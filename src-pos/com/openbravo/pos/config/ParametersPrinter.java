@@ -32,7 +32,8 @@ public class ParametersPrinter extends javax.swing.JPanel implements ParametersC
 
     private String othersizename = "standard";
 
-    /** Creates new form ParametersPrinter */
+    /** Creates new form ParametersPrinter
+     * @param printernames */
     public ParametersPrinter(String [] printernames) {
         initComponents();
         
@@ -43,15 +44,18 @@ public class ParametersPrinter extends javax.swing.JPanel implements ParametersC
         }
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
 
+    @Override
     public void addDirtyManager(DirtyManager dirty) {
         jPrinters.addActionListener(dirty);
         jReceiptPrinter.addActionListener(dirty);
     }
 
+    @Override
     public void setParameters(StringParser p) {
         jPrinters.setSelectedItem(p.nextToken(','));
         String sizename = p.nextToken(',');
@@ -59,6 +63,7 @@ public class ParametersPrinter extends javax.swing.JPanel implements ParametersC
         othersizename = "receipt".equals(sizename) ? "standard" : sizename;
     }
 
+    @Override
     public String getParameters() {
         return comboValue(jPrinters.getSelectedItem()) + "," + boolValue(jReceiptPrinter.isSelected());
     }

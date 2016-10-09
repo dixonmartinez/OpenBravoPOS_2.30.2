@@ -31,7 +31,7 @@ import com.openbravo.pos.util.AltEncrypter;
  */
 public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
 
-    private DirtyManager dirty = new DirtyManager();
+    private final DirtyManager dirty = new DirtyManager();
         
     /** Creates new form JPanelConfigERP */
     public JPanelConfigERP() {
@@ -45,14 +45,22 @@ public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
         jtxtUrl.getDocument().addDocumentListener(dirty);
     }
     
+    @Override
     public boolean hasChanged() {
         return dirty.isDirty();
     }    
     
+    @Override
     public Component getConfigComponent() {
         return this;
     }
-   
+
+    @Override
+    public String getPanelConfigName() {
+        return AppLocal.getIntString("label.configerp");
+    }
+    
+    @Override
     public void loadProperties(AppConfig config) {
 
         jtxtUrl.setText(config.getProperty("erp.URL"));    
@@ -73,6 +81,7 @@ public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
         dirty.setDirty(false);
     }
     
+    @Override
     public void saveProperties(AppConfig config) {
         
         config.setProperty("erp.URL", jtxtUrl.getText());
@@ -108,8 +117,6 @@ public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
         jtxtName = new javax.swing.JTextField();
         jLabelProperties = new javax.swing.JLabel();
         jtxtPassword = new javax.swing.JPasswordField();
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("label.configerp"))); // NOI18N
 
         jlabelUrl.setText(AppLocal.getIntString("label.erpurl")); // NOI18N
 
@@ -154,7 +161,7 @@ public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
                         .addComponent(jLabelProperties, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtxtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(201, Short.MAX_VALUE))
+                .addContainerGap(211, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -200,7 +207,7 @@ public class JPanelConfigERP extends javax.swing.JPanel implements PanelConfig {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     

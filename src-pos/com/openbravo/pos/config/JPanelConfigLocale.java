@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfig {
     
-    private DirtyManager dirty = new DirtyManager();
+    private final DirtyManager dirty = new DirtyManager();
     
     private final static String DEFAULT_VALUE = "(Default)";
 
@@ -53,7 +53,7 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         jcboTime.addActionListener(dirty);
         jcboDatetime.addActionListener(dirty);
         
-        List<Locale> availablelocales = new ArrayList<Locale>();
+        List<Locale> availablelocales = new ArrayList<>();
         availablelocales.addAll(Arrays.asList(Locale.getAvailableLocales())); // Available java locales
         addLocale(availablelocales, new Locale("eu", "ES", "")); // Basque
         addLocale(availablelocales, new Locale("gl", "ES", "")); // Gallegan
@@ -95,14 +95,22 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         }
     }
     
+    @Override
     public boolean hasChanged() {
         return dirty.isDirty();
     }
     
+    @Override
     public Component getConfigComponent() {
         return this;
     }
+    
+    @Override
+    public String getPanelConfigName() {
+        return AppLocal.getIntString("label.locale");
+    }
    
+    @Override
     public void loadProperties(AppConfig config) {
         
         String slang = config.getProperty("user.language");
@@ -133,6 +141,7 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         dirty.setDirty(false);
     }
     
+    @Override
     public void saveProperties(AppConfig config) {
         
         Locale l = ((LocaleInfo) jcboLocale.getSelectedItem()).getLocale();
@@ -169,12 +178,12 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         if (value == null || value.equals("") || value.equals(DEFAULT_VALUE)) {
             return DEFAULT_VALUE;
         } else {
-            return value.toString();
+            return value;
         }
     }
     
     private static class LocaleInfo {
-        private Locale locale;
+        private final Locale locale;
         
         public LocaleInfo(Locale locale) {
             this.locale = locale;
@@ -215,8 +224,6 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         jcboTime = new javax.swing.JComboBox();
         jLabel8 = new javax.swing.JLabel();
         jcboDatetime = new javax.swing.JComboBox();
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("label.locale"))); // NOI18N
 
         jLabel5.setText(AppLocal.getIntString("label.locale")); // NOI18N
 
@@ -287,7 +294,7 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcboDatetime, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(265, Short.MAX_VALUE))
+                .addContainerGap(275, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
