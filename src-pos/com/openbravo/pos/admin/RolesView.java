@@ -31,11 +31,12 @@ import com.openbravo.pos.forms.AppLocal;
  *
  * @author adrianromero
  */
-public class RolesView extends javax.swing.JPanel implements EditorRecord {
+public final class RolesView extends javax.swing.JPanel implements EditorRecord {
     
     private Object m_oId;
     
-    /** Creates new form RolesEditor */
+    /** Creates new form RolesEditor
+     * @param dirty */
     public RolesView(DirtyManager dirty) {
         initComponents();
         
@@ -45,6 +46,7 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         writeValueEOF();
     }
     
+    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jName.setText(null);
@@ -53,6 +55,7 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         m_jText.setEnabled(false);
     }
     
+    @Override
     public void writeValueInsert() {
         m_oId = null;
         m_jName.setText(null);
@@ -61,6 +64,7 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         m_jText.setEnabled(true);
     }
     
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] role = (Object[]) value;
@@ -72,6 +76,7 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         m_jText.setEnabled(false);
     }   
     
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] role = (Object[]) value;
@@ -83,6 +88,7 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         m_jText.setEnabled(true);
     }    
     
+    @Override
     public Object createValue() throws BasicException {
 
         Object[] role = new Object[3];
@@ -92,10 +98,12 @@ public class RolesView extends javax.swing.JPanel implements EditorRecord {
         return role;
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
     

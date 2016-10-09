@@ -39,7 +39,10 @@ public class SQLTableModel extends AbstractTableModel {
     private DataField[] m_df;
     private Datas[] m_classes;
     
-    /** Creates a new instance of SQLTableModel */
+    /** 
+     * Creates a new instance of SQLTableModel
+     * @param df 
+     */
     public SQLTableModel(DataField[] df) {
         m_aRows = new ArrayList();
 
@@ -106,7 +109,7 @@ public class SQLTableModel extends AbstractTableModel {
     }     
     public String getColumnString(int row) {
         Object [] rowvalues = (Object[]) m_aRows.get(row);
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for(int i = 0; i < rowvalues.length; i++) {
             if (i > 0) {
                 s.append(", ");
@@ -116,18 +119,23 @@ public class SQLTableModel extends AbstractTableModel {
         return s.toString();
     }
     
+    @Override
     public Class getColumnClass(int columnIndex) {
         return m_classes[columnIndex].getClassValue();
     }
+    @Override
     public String getColumnName(int columnIndex) {
         return m_df[columnIndex].Name;
     }    
+    @Override
     public int getRowCount() {
         return m_aRows.size();
     }
+    @Override
     public int getColumnCount() {
         return m_df.length;
     }
+    @Override
     public Object getValueAt(int row, int column) {
         Object [] rowvalues = (Object[]) m_aRows.get(row);
         return rowvalues[column];

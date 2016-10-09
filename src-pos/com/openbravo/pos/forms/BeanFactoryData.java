@@ -31,6 +31,7 @@ public class BeanFactoryData implements BeanFactoryApp {
     public BeanFactoryData() {
     }
     
+    @Override
     public void init(AppView app) throws BeanFactoryException {  
         
         try {
@@ -41,11 +42,12 @@ public class BeanFactoryData implements BeanFactoryApp {
             }
             bf = (BeanFactoryApp) Class.forName(sfactoryname + app.getSession().DB.getName()).newInstance();
             bf.init(app);                     
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | BeanFactoryException ex) {
             throw new BeanFactoryException(ex);
         }
     }   
     
+    @Override
     public Object getBean() {
         return bf.getBean();
     }         

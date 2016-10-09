@@ -48,7 +48,12 @@ public class BrowsableEditableData {
     
     private boolean iseditable = true;
     
-    /** Creates a new instance of BrowsableEditableData */
+    /** 
+     * Creates a new instance of BrowsableEditableData
+     * @param bd
+     * @param ed
+     * @param dirty 
+     */
     public BrowsableEditableData(BrowsableData bd, EditorRecord ed, DirtyManager dirty) {
         m_bd = bd;
 
@@ -78,7 +83,7 @@ public class BrowsableEditableData {
         return m_bIsAdjusting || m_bd.isAdjusting();
     }
     
-    private final Object getCurrentElement() {           
+    private Object getCurrentElement() {           
         return (m_iIndex >= 0 && m_iIndex < m_bd.getSize()) ? m_bd.getElementAt(m_iIndex) : null;
     }    
     public final int getIndex() {
@@ -111,8 +116,8 @@ public class BrowsableEditableData {
     private void fireStateUpdate() { 
         EventListener[] l = listeners.getListeners(StateListener.class);
         int iState = getState();
-        for (int i = 0; i < l.length; i++) {
-            ((StateListener) l[i]).updateState(iState);	       
+        for (EventListener l1 : l) {
+            ((StateListener) l1).updateState(iState);	       
         }
     }
     protected void fireDataBrowse() { 
@@ -136,13 +141,13 @@ public class BrowsableEditableData {
         
         // Invoco a los Editor Listener
         EventListener[] l = listeners.getListeners(EditorListener.class);
-        for (int i = 0; i < l.length; i++) {
-            ((EditorListener) l[i]).updateValue(obj);
+        for (EventListener l1 : l) {
+            ((EditorListener) l1).updateValue(obj);
         }
         // Y luego a los Browse Listener
         l = listeners.getListeners(BrowseListener.class);
-        for (int i = 0; i < l.length; i++) {
-            ((BrowseListener) l[i]).updateIndex(iIndex, iCount);
+        for (EventListener l1 : l) {
+            ((BrowseListener) l1).updateIndex(iIndex, iCount);
         }
         m_bIsAdjusting = false;
     }
@@ -235,19 +240,31 @@ public class BrowsableEditableData {
     public void saveData() throws BasicException {
             
         if (m_Dirty.isDirty()) {
-            if (m_iState == ST_UPDATE) {
-                int i = m_bd.updateRecord(m_iIndex, m_editorrecord.createValue());
-                m_editorrecord.refresh();
-                baseMoveTo(i);
-            } else if (m_iState == ST_INSERT) {
-                int i = m_bd.insertRecord(m_editorrecord.createValue());
-                m_editorrecord.refresh();
-                baseMoveTo(i);
-            } else if (m_iState == ST_DELETE) {
-                int i = m_bd.removeRecord(m_iIndex);
-                m_editorrecord.refresh();
-                baseMoveTo(i);
-            } // queda ST_NORECORD  
+            switch (m_iState) {
+                case ST_UPDATE:
+                    {
+                        int i = m_bd.updateRecord(m_iIndex, m_editorrecord.createValue());
+                        m_editorrecord.refresh();
+                        baseMoveTo(i);
+                        break;
+                    }
+                case ST_INSERT:
+                    {
+                        int i = m_bd.insertRecord(m_editorrecord.createValue());
+                        m_editorrecord.refresh();
+                        baseMoveTo(i);
+                        break;
+                    }
+                case ST_DELETE:
+                    {
+                        int i = m_bd.removeRecord(m_iIndex);
+                        m_editorrecord.refresh();
+                        baseMoveTo(i);
+                        break;
+                    } // queda ST_NORECORD
+                default:
+                    break;
+            }
         }   
     }
       
@@ -261,14 +278,15 @@ public class BrowsableEditableData {
     public boolean actionClosingForm(Component c) throws BasicException {
         if (m_Dirty.isDirty()) {
             int res = JOptionPane.showConfirmDialog(c, LocalRes.getIntString("message.wannasave"), LocalRes.getIntString("title.editor"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (res == JOptionPane.YES_OPTION) {
-                saveData();
-                return true;
-            } else if (res == JOptionPane.NO_OPTION) {
-                refreshCurrent();
-                return true;
-            } else {
-                return false;
+            switch (res) {
+                case JOptionPane.YES_OPTION:
+                    saveData();
+                    return true;
+                case JOptionPane.NO_OPTION:
+                    refreshCurrent();
+                    return true;
+                default:
+                    return false;
             }
         } else {
             return true;
@@ -318,7 +336,7 @@ public class BrowsableEditableData {
         }
     }   
     
-    private final void baseMoveTo(int i) {
+    private void baseMoveTo(int i) {
     // Este senor y el constructor a INX_EOF, son los unicos que tienen potestad de modificar m_iIndex.
         if (i >= 0 && i < m_bd.getSize()) {
             m_iIndex = i;

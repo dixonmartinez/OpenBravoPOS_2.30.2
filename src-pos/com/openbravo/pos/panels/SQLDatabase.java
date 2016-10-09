@@ -30,16 +30,20 @@ import javax.swing.tree.TreeNode;
  */
 public class SQLDatabase implements TreeNode {
     
-    private ArrayList m_aTables;
-    private HashMap m_mTables;
-    private String m_sName;
+    private final ArrayList m_aTables;
+    private final HashMap m_mTables;
+    private final String m_sName;
     
-    /** Creates a new instance of SQLDatabase */
+    /** 
+     * Creates a new instance of SQLDatabase
+     * @param name 
+     */
     public SQLDatabase(String name) {
         m_sName = name;
         m_aTables = new ArrayList();
         m_mTables = new HashMap();
     }
+    @Override
     public String toString() {
         return m_sName;
     }
@@ -53,25 +57,32 @@ public class SQLDatabase implements TreeNode {
         return (SQLTable) m_mTables.get(sTable);
     }
     
+    @Override
     public Enumeration children(){
         return new EnumerationIter(m_aTables.iterator());
     }
+    @Override
     public boolean getAllowsChildren() {
         return true;
     }
+    @Override
     public TreeNode getChildAt(int childIndex) {
         return (TreeNode) m_aTables.get(childIndex);
     }
+    @Override
     public int getChildCount() {
         return m_aTables.size();
     }
+    @Override
     public int getIndex(TreeNode node){
         return m_aTables.indexOf(node);
     }
+    @Override
     public TreeNode getParent() {
         return null;
     }
+    @Override
     public boolean isLeaf() {
-        return m_aTables.size() == 0;
+        return m_aTables.isEmpty();
     }    
 }

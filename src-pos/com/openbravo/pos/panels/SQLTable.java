@@ -29,12 +29,16 @@ import java.util.ArrayList;
  */
 public class SQLTable implements TreeNode { 
     
-    private SQLDatabase m_db;
-    private String m_sName;
+    private final SQLDatabase m_db;
+    private final String m_sName;
     
-    private ArrayList m_aColumns;
+    private final ArrayList m_aColumns;
     
-    /** Creates a new instance of SQLTable */
+    /** 
+     * Creates a new instance of SQLTable
+     * @param db
+     * @param name 
+     */
     public SQLTable(SQLDatabase db, String name) {
         m_db = db;
         m_sName = name;
@@ -50,30 +54,38 @@ public class SQLTable implements TreeNode {
         m_aColumns.add(c);
     }
     
+    @Override
     public String toString() {
         return m_sName;
     }
     
+    @Override
     public Enumeration children(){
         return new EnumerationIter(m_aColumns.iterator());
     }
+    @Override
     public boolean getAllowsChildren() {
         return true;
     }
+    @Override
     public TreeNode getChildAt(int childIndex) {
         return (TreeNode) m_aColumns.get(childIndex);
     }
+    @Override
     public int getChildCount() {
         return m_aColumns.size();
     }
+    @Override
     public int getIndex(TreeNode node){
         return m_aColumns.indexOf(node);
     }
+    @Override
     public TreeNode getParent() {
         return m_db;
     }
+    @Override
     public boolean isLeaf() {
-        return m_aColumns.size() == 0;
+        return m_aColumns.isEmpty();
     }   
 //    public Enumeration children(){
 //    }

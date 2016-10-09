@@ -32,6 +32,7 @@ public class MenuTitleDefinition implements MenuElement {
     
     public String KeyText;
     
+    @Override
     public void addComponent(JPanelMenu menu) {
        
 //        if (p.x > 20) {

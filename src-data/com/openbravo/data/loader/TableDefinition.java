@@ -34,7 +34,16 @@ public class TableDefinition {
     private int[] idinx;
    
     
-    /** Creates a new instance of TableDefinition */
+    /** 
+     * Creates a new instance of TableDefinition
+     * @param s
+     * @param tablename
+     * @param fieldname
+     * @param fieldtran
+     * @param fielddata
+     * @param fieldformat
+     * @param idinx 
+     */
     public TableDefinition(
             Session s,
             String tablename, 
@@ -100,12 +109,8 @@ public class TableDefinition {
         
         int[] aindex = new int[fieldindx.length + idinx.length];
 
-        for (int i = 0; i < fieldindx.length; i++) {
-            aindex[i] = fieldindx[i];
-        } 
-        for (int i = 0; i < idinx.length; i++) {
-            aindex[i + fieldindx.length] = idinx[i];
-        }       
+        System.arraycopy(fieldindx, 0, aindex, 0, fieldindx.length); 
+        System.arraycopy(idinx, 0, aindex, fieldindx.length, idinx.length);       
  
         return new SerializerWriteBasicExt(fielddata, aindex);
     }
@@ -120,7 +125,7 @@ public class TableDefinition {
     
     public String getListSQL() {
         
-        StringBuffer sent = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
         sent.append("select ");
 
         for (int i = 0; i < fieldname.length; i ++) {
@@ -146,7 +151,7 @@ public class TableDefinition {
     
     public String getDeleteSQL() {
         
-        StringBuffer sent = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
         sent.append("delete from ");
         sent.append(tablename);
         
@@ -169,8 +174,8 @@ public class TableDefinition {
     
     private String getInsertSQL(int[] fieldindx) {
         
-        StringBuffer sent = new StringBuffer();
-        StringBuffer values = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
+        StringBuilder values = new StringBuilder();
         
         sent.append("insert into ");
         sent.append(tablename);
@@ -211,7 +216,7 @@ public class TableDefinition {
     
     private String getUpdateSQL(int[] fieldindx) {
         
-        StringBuffer sent = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
         
         sent.append("update ");
         sent.append(tablename);

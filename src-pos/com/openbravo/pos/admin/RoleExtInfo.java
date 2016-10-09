@@ -38,6 +38,7 @@ public class RoleExtInfo extends RoleInfo {
         m_aPermissions = null;
     }
     
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sName = dr.getString(1);
         m_aPermissions = dr.getBytes(2);

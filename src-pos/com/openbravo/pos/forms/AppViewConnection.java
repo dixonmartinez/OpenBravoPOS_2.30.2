@@ -40,36 +40,26 @@ public class AppViewConnection {
     private AppViewConnection() {
     }
     
-    public static Session createSession(AppProperties props) throws BasicException {
-               
+    public static Session createSession(AppProperties props) throws BasicException {               
         try{
-
             // register the database driver
             if (isJavaWebStart()) {
-                Class.forName(props.getProperty("db.driver"), true, Thread.currentThread().getContextClassLoader());
+                Class.forName(props.getDBDriver(), true, Thread.currentThread().getContextClassLoader());
             } else {
-                ClassLoader cloader = new URLClassLoader(new URL[] {new File(props.getProperty("db.driverlib")).toURI().toURL()});
-                DriverManager.registerDriver(new DriverWrapper((Driver) Class.forName(props.getProperty("db.driver"), true, cloader).newInstance()));
+                ClassLoader cloader = new URLClassLoader(new URL[] {new File(props.getDBDriverLib()).toURI().toURL()});
+                DriverManager.registerDriver(new DriverWrapper((Driver) Class.forName(props.getDBDriver(), true, cloader).newInstance()));
             }
-
-            String sDBUser = props.getProperty("db.user");
-            String sDBPassword = props.getProperty("db.password");        
+            String sDBUser = props.getDBUser();
+            String sDBPassword = props.getDBPassword();        
             if (sDBUser != null && sDBPassword != null && sDBPassword.startsWith("crypt:")) {
                 // the password is encrypted
                 AltEncrypter cypher = new AltEncrypter("cypherkey" + sDBUser);
                 sDBPassword = cypher.decrypt(sDBPassword.substring(6));
             }   
+            return new Session(props.getDBURL(), sDBUser,sDBPassword);     
 
-             return new Session(props.getProperty("db.URL"), sDBUser,sDBPassword);     
-
-        } catch (InstantiationException e) {
+        } catch (InstantiationException | IllegalAccessException | MalformedURLException | ClassNotFoundException e) {
             throw new BasicException(AppLocal.getIntString("message.databasedrivererror"), e);
-        } catch (IllegalAccessException eIA) {
-            throw new BasicException(AppLocal.getIntString("message.databasedrivererror"), eIA);
-        } catch (MalformedURLException eMURL) {
-            throw new BasicException(AppLocal.getIntString("message.databasedrivererror"), eMURL);
-        } catch (ClassNotFoundException eCNF) {
-            throw new BasicException(AppLocal.getIntString("message.databasedrivererror"), eCNF);
         } catch (SQLException eSQL) {
             throw new BasicException(AppLocal.getIntString("message.databaseconnectionerror"), eSQL);
         }   

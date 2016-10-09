@@ -29,10 +29,12 @@ public abstract class BeanFactoryCache implements BeanFactoryApp {
 
     public abstract Object constructBean(AppView app) throws BeanFactoryException;
            
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         bean = constructBean(app);
     }
     
+    @Override
     public Object getBean() {
         return bean;
     }

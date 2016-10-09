@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class AppConfig implements AppProperties {
 
-    private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
+    private static final Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
      
     private Properties m_propsconfig;
     private File configfile;
@@ -56,21 +57,24 @@ public class AppConfig implements AppProperties {
         this.configfile = configfile;
         m_propsconfig = new Properties();
 
-        logger.info("Reading configuration file: " + configfile.getAbsolutePath());
+        logger.log(Level.INFO, "Reading configuration file: {0}", configfile.getAbsolutePath());
     }
     
     private File getDefaultConfig() {
         return new File(new File(System.getProperty("user.home")), AppLocal.APP_ID + ".properties");
     }
     
+    @Override
     public String getProperty(String sKey) {
         return m_propsconfig.getProperty(sKey);
     }
     
+    @Override
     public String getHost() {
         return getProperty("machine.hostname");
     } 
     
+    @Override
     public File getConfigFile() {
         return configfile;
     }
@@ -101,10 +105,8 @@ public class AppConfig implements AppProperties {
         loadDefault();
 
         try {
-            InputStream in = new FileInputStream(configfile);
-            if (in != null) {
+            try (InputStream in = new FileInputStream(configfile)) {
                 m_propsconfig.load(in);
-                in.close();
             }
         } catch (IOException e){
             loadDefault();
@@ -112,12 +114,9 @@ public class AppConfig implements AppProperties {
     
     }
     
-    public void save() throws IOException {
-        
-        OutputStream out = new FileOutputStream(configfile);
-        if (out != null) {
+    public void save() throws IOException {        
+        try (OutputStream out = new FileOutputStream(configfile)) {
             m_propsconfig.store(out, AppLocal.APP_NAME + ". Configuration file.");
-            out.close();
         }
     }
     
@@ -127,12 +126,12 @@ public class AppConfig implements AppProperties {
         
         String dirname = System.getProperty("dirname.path");
         dirname = dirname == null ? "./" : dirname;
-        
+        /*m_propsconfig.setProperty("db.type", "Derby Client");
         m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/derby.jar").getAbsolutePath());
         m_propsconfig.setProperty("db.driver", "org.apache.derby.jdbc.EmbeddedDriver");
         m_propsconfig.setProperty("db.URL", "jdbc:derby:" + new File(new File(System.getProperty("user.home")), AppLocal.APP_ID + "-database").getAbsolutePath() + ";create=true");
         m_propsconfig.setProperty("db.user", "");
-        m_propsconfig.setProperty("db.password", "");
+        m_propsconfig.setProperty("db.password", "");*/
 
 //        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/hsqldb.jar").getAbsolutePath());
 //        m_propsconfig.setProperty("db.driver", "org.hsqldb.jdbcDriver");
@@ -145,10 +144,12 @@ public class AppConfig implements AppProperties {
 //        m_propsconfig.setProperty("db.user", "user");         
 //        m_propsconfig.setProperty("db.password", "password");
         
-//        m_propsconfig.setProperty("db.driver", "org.postgresql.Driver");
-//        m_propsconfig.setProperty("db.URL", "jdbc:postgresql://localhost:5432/database");
-//        m_propsconfig.setProperty("db.user", "user");         
-//        m_propsconfig.setProperty("db.password", "password");        
+        m_propsconfig.setProperty("db.type", "PostgreSQL");
+        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/derby.jar").getAbsolutePath());
+        m_propsconfig.setProperty("db.driver", "org.postgresql.Driver");
+        m_propsconfig.setProperty("db.URL", "jdbc:postgresql://localhost:5432/database");
+        m_propsconfig.setProperty("db.user", "user");         
+        m_propsconfig.setProperty("db.password", "password");        
 
         m_propsconfig.setProperty("machine.hostname", getLocalHostName());
         
@@ -191,5 +192,30 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("paper.standard.mediasizename", "A4");
 
         m_propsconfig.setProperty("machine.uniqueinstance", "false");
+    }
+
+    @Override
+    public String getDBDriver() {
+        return getProperty("db.driver");
+    }
+
+    @Override
+    public String getDBDriverLib() {
+        return getProperty("db.driverlib");
+    }
+
+    @Override
+    public String getDBUser() {
+        return getProperty("db.user");
+    }
+
+    @Override
+    public String getDBPassword() {
+        return getProperty("db.password");
+    }
+
+    @Override
+    public String getDBURL() {
+        return getProperty("db.URL");
     }
 }

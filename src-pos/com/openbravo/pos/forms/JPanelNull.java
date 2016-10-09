@@ -29,7 +29,9 @@ import com.openbravo.basic.BasicException;
  */
 public class JPanelNull extends JPanel implements JPanelView {
 
-    /** Creates new form JPanelNull */
+    /** Creates new form JPanelNull
+     * @param oApp
+     * @param o */
     public JPanelNull(AppView oApp, Object o) {
        
         initComponents ();
@@ -39,14 +41,18 @@ public class JPanelNull extends JPanel implements JPanelView {
         jtxtException.setText(o.toString());
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
+    @Override
     public String getTitle() {
         return null;
     }
+    @Override
     public void activate() throws BasicException {
     }
+    @Override
     public boolean deactivate() {
         return true;
     }    

@@ -48,7 +48,7 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
  */
 public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
 
-    private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.JPrincipalApp");
+    private static final Logger logger = Logger.getLogger("com.openbravo.pos.forms.JPrincipalApp");
     
     private JRootApp m_appview;
     private AppUser m_appuser;
@@ -66,30 +66,32 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     private Icon menu_open;
     private Icon menu_close;
         
-    /** Creates new form JPrincipalApp */
-    public JPrincipalApp(JRootApp appview, AppUser appuser) {
-        
+    /** 
+     * Creates new form JPrincipalApp
+     * @param appview
+     * @param appuser 
+     */
+    public JPrincipalApp(JRootApp appview, AppUser appuser) {        
         m_appview = appview; 
-        m_appuser = appuser;
-                   
-        m_dlSystem = (DataLogicSystem) m_appview.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        m_appuser = appuser;                   
+        m_dlSystem = (DataLogicSystem) m_appview.getBean(DataLogicSystem.class.getName());
         
         // Cargamos los permisos del usuario
         m_appuser.fillPermissions(m_dlSystem);
                
         m_actionfirst = null;
         m_jLastView = null;
-        m_aPreparedViews = new HashMap<String, JPanelView>();
-        m_aCreatedViews = new HashMap<String, JPanelView>();
+        m_aPreparedViews = new HashMap<>();
+        m_aCreatedViews = new HashMap<>();
                 
         initComponents();
         
         jPanel2.add(Box.createVerticalStrut(50), 0);        
         
-        applyComponentOrientation(appview.getComponentOrientation());
+        super.applyComponentOrientation(appview.getComponentOrientation());
         
         m_principalnotificator = new JLabel();
-        m_principalnotificator.applyComponentOrientation(getComponentOrientation());
+        m_principalnotificator.applyComponentOrientation(super.getComponentOrientation());
         m_principalnotificator.setText(m_appuser.getName());
         m_principalnotificator.setIcon(m_appuser.getIcon());
 //        m_principalnotificator.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("TextField.shadow")), javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5)));        
@@ -118,10 +120,8 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
             logger.log(Level.SEVERE, "Cannot read Menu.Root resource. Trying defaut menu.", e);
             try {
                 m_jPanelLeft.setViewportView(getScriptMenu(StringUtils.readResource("/com/openbravo/pos/templates/Menu.Root.txt")));
-            } catch (IOException ex) {
+            } catch (IOException | ScriptException ex) {
                 logger.log(Level.SEVERE, "Cannot read default menu", ex);
-            } catch (ScriptException es) {
-                logger.log(Level.SEVERE, "Cannot read default menu", es);
             }
         }               
     }
@@ -144,7 +144,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     
     public class ScriptMenu {
 //        private JTaskPane taskPane = new JTaskPane();
-        private JXTaskPaneContainer taskPane;
+        private final JXTaskPaneContainer taskPane;
         
         private ScriptMenu() {
             taskPane = new JXTaskPaneContainer();
@@ -166,7 +166,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     
     public class ScriptGroup {
 //        private JTaskPaneGroup taskGroup;
-        private JXTaskPane taskGroup;
+        private final JXTaskPane taskGroup;
         
         private ScriptGroup(String key) {
 //            taskGroup = new JTaskPaneGroup();
@@ -221,7 +221,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     }
     
     public class ScriptSubmenu {
-        private MenuDefinition menudef;
+        private final MenuDefinition menudef;
         
         private ScriptSubmenu(String key) {
             menudef = new MenuDefinition(key);
@@ -292,10 +292,11 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     private class ExitAction extends AbstractAction {
         
         public ExitAction(String icon, String keytext) {
-            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
-            putValue(Action.NAME, AppLocal.getIntString(keytext));
-            putValue(AppUserView.ACTION_TASKNAME, keytext);
+            super.putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            super.putValue(Action.NAME, AppLocal.getIntString(keytext));
+            super.putValue(AppUserView.ACTION_TASKNAME, keytext);
         }
+        @Override
         public void actionPerformed(ActionEvent evt) {
             m_appview.closeAppView();
         }
@@ -305,11 +306,12 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     // La accion de cambio de password..
     private class ChangePasswordAction extends AbstractAction {
         public ChangePasswordAction(String icon, String keytext) {
-            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
-            putValue(Action.NAME, AppLocal.getIntString(keytext));
-            putValue(AppUserView.ACTION_TASKNAME, keytext);
+            super.putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            super.putValue(Action.NAME, AppLocal.getIntString(keytext));
+            super.putValue(AppUserView.ACTION_TASKNAME, keytext);
 
         }
+        @Override
         public void actionPerformed(ActionEvent evt) {
                        
             String sNewPassword = Hashcypher.changePassword(JPrincipalApp.this, m_appuser.getPassword());
@@ -330,10 +332,12 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         cl.show(m_jPanelContainer, sView);       
     }
     
+    @Override
     public AppUser getUser() {
         return m_appuser;
     }
     
+    @Override
     public void showTask(String sTaskClass) {
          
         m_appview.waitCursorBegin();       
@@ -389,6 +393,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         m_appview.waitCursorEnd();       
     }
     
+    @Override
     public void executeTask(String sTaskClass) {
         
         m_appview.waitCursorBegin();       

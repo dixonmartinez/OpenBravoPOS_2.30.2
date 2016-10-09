@@ -28,11 +28,12 @@ import javax.swing.Action;
  */
 public class MenuDefinition {
     
-    private String m_sKey;
+    private final String m_sKey;
     
-    private ArrayList m_aMenuElements;
+    private final ArrayList m_aMenuElements;
     
-    /** Creates a new instance of MenuDefinition */
+    /** Creates a new instance of MenuDefinition
+     * @param skey */
     public MenuDefinition(String skey) {
         m_sKey = skey;
         m_aMenuElements = new ArrayList();

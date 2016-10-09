@@ -30,12 +30,13 @@ import javax.swing.SwingConstants;
  */
 public class MenuItemDefinition implements MenuElement {
     
-    private Action act;
+    private final Action act;
     
     public MenuItemDefinition(Action act) {
         this.act = act;
     }
     
+    @Override
     public void addComponent(JPanelMenu menu) {
         
         JButton btn = new JButton(act); 

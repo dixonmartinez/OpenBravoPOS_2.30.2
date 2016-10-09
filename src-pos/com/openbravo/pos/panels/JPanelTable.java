@@ -57,6 +57,7 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
         initComponents();
     }
     
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         
         this.app = app;
@@ -66,6 +67,7 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
         init();
     }
 
+    @Override
     public Object getBean() {
         return this;
     }
@@ -73,7 +75,6 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
     protected void startNavigation() {
         
         if (bd == null) {
-            
             // init browsable editable data
             bd = new BrowsableEditableData(getListProvider(), getSaveProvider(), getEditor(), dirty);
 
@@ -96,7 +97,7 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
             if (cr != null) {
                 JListNavigator nl = new JListNavigator(bd);
                 nl.applyComponentOrientation(getComponentOrientation());
-                if (cr != null) nl.setCellRenderer(cr);
+                nl.setCellRenderer(cr);
                 container.add(nl, java.awt.BorderLayout.LINE_START);
             }
 
@@ -151,15 +152,18 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
         return null;
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public void activate() throws BasicException {
         startNavigation();
         bd.actionLoad();
     }    
     
+    @Override
     public boolean deactivate() {
 
         try {

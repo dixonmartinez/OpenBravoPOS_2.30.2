@@ -30,4 +30,10 @@ public interface AppProperties {
     public File getConfigFile(); 
     public String getHost();    
     public String getProperty(String sKey); // Config property.
+    //  Dixon Martinez
+    public String getDBDriver();
+    public String getDBDriverLib();
+    public String getDBUser();
+    public String getDBPassword();
+    public String getDBURL();
 }

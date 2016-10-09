@@ -32,12 +32,13 @@ import java.io.IOException;
 public class BeanFactoryScript implements BeanFactoryApp {
     
     private BeanFactory bean = null;
-    private String script;
+    private final String script;
     
     public BeanFactoryScript(String script) {
         this.script = script;
     }
     
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         
         // Resource
@@ -55,13 +56,12 @@ public class BeanFactoryScript implements BeanFactoryApp {
             if (bean instanceof BeanFactoryApp) {
                 ((BeanFactoryApp) bean).init(app);
             }
-        } catch (ScriptException e) {
-            throw new BeanFactoryException(e);
-        } catch (IOException e) {
+        } catch (ScriptException | IOException e) {
             throw new BeanFactoryException(e);
         }     
     }
 
+    @Override
     public Object getBean() {
         return bean.getBean();
     }

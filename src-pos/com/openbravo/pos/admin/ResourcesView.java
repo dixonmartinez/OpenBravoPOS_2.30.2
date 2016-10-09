@@ -164,10 +164,12 @@ public class ResourcesView extends JPanel implements EditorRecord {
         return resource;
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
     

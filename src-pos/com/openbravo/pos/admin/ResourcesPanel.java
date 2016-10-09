@@ -41,6 +41,7 @@ public class ResourcesPanel extends JPanelTable {
     public ResourcesPanel() {
     }
     
+    @Override
     protected void init() {
         DataLogicAdmin dlAdmin = (DataLogicAdmin) app.getBean("com.openbravo.pos.admin.DataLogicAdmin"); 
         tresources = dlAdmin.getTableResources();         
@@ -58,10 +59,12 @@ public class ResourcesPanel extends JPanelTable {
         }    
     }
     
+    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(tresources);
     }
     
+    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(tresources);        
     }
@@ -81,10 +84,12 @@ public class ResourcesPanel extends JPanelTable {
         return new ListCellRendererBasic(tresources.getRenderStringBasic(new int[] {1}));
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Resources");
     }        

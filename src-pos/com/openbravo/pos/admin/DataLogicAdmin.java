@@ -44,6 +44,7 @@ public class DataLogicAdmin extends BeanFactoryDataSingle {
     public DataLogicAdmin() {
     }
     
+    @Override
     public void init(Session s){
         this.s = s;
         

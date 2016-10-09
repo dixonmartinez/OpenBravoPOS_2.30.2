@@ -42,10 +42,12 @@ public class RoleInfo implements SerializableRead, IKeyed {
         m_sName = null;
     }
    
+    @Override
     public Object getKey() {
         return m_sID;
     }
     
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sID = dr.getString(1);
         m_sName = dr.getString(2);
@@ -67,6 +69,7 @@ public class RoleInfo implements SerializableRead, IKeyed {
         m_sName = sValue;
     }    
     
+    @Override
     public String toString() {
         return m_sName;
     }

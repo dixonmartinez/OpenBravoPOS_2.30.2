@@ -30,10 +30,11 @@ import java.awt.Component;
  */
 public class JPanelMenu extends JPanel implements JPanelView {
     
-    private MenuDefinition m_menu;
+    private final MenuDefinition m_menu;
     private boolean created = false;
     
-    /** Creates new form JStockMenu */
+    /** Creates new form JStockMenu
+     * @param menu */
     public JPanelMenu(MenuDefinition menu) {
         
         m_menu = menu;
@@ -42,14 +43,17 @@ public class JPanelMenu extends JPanel implements JPanelView {
         initComponents();       
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
     
+    @Override
     public String getTitle() {
         return m_menu.getTitle();
     }  
     
+    @Override
     public void activate() throws BasicException {
         
         if (created == false) {
@@ -62,6 +66,7 @@ public class JPanelMenu extends JPanel implements JPanelView {
         }
     }    
     
+    @Override
     public boolean deactivate() {  
         return true;
     }

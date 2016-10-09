@@ -65,6 +65,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     public DataLogicSystem() {            
     }
     
+    @Override
     public void init(Session s){
 
         m_sInitScript = "/com/openbravo/pos/scripts/" + s.DB.getName();
@@ -73,17 +74,13 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         m_dummy = new StaticSentence(s, "SELECT * FROM PEOPLE WHERE 1 = 0");
          
         final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "com/openbravo/images/yast_sysadmin.png");        
-        peopleread = new SerializerRead() {
-            public Object readValues(DataRead dr) throws BasicException {
-                return new AppUser(
-                        dr.getString(1),
-                        dr.getString(2),
-                        dr.getString(3),
-                        dr.getString(4),
-                        dr.getString(5),
-                        new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))));                
-            }
-        };
+        peopleread = (DataRead dr) -> new AppUser(
+                dr.getString(1),
+                dr.getString(2),
+                dr.getString(3),
+                dr.getString(4),
+                dr.getString(5),
+                new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))));
 
         m_peoplevisible = new StaticSentence(s
             , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
@@ -172,10 +169,10 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
     
     public final void resetResourcesCache() {
-        resourcescache = new HashMap<String, byte[]>();      
+        resourcescache = new HashMap<>();      
     }
     
-    private final byte[] getResource(String name) {
+    private byte[] getResource(String name) {
 
         byte[] resource;
         
@@ -196,7 +193,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     
     public final void setResource(String name, int type, byte[] data) {
         
-        Object[] value = new Object[] {UUID.randomUUID().toString(), name, new Integer(type), data};
+        Object[] value = new Object[] {UUID.randomUUID().toString(), name, type, data};
         try {
             if (m_resourcebytesupdate.exec(value) == 0) {
                 m_resourcebytesinsert.exec(value);
@@ -259,7 +256,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
     public final int getSequenceCash(String host) throws BasicException {
         Integer i = (Integer) m_sequencecash.find(host);
-        return (i == null) ? 1 : i.intValue();
+        return (i == null) ? 1 : i;
     }
 
     public final Object[] findActiveCash(String sActiveCashIndex) throws BasicException {

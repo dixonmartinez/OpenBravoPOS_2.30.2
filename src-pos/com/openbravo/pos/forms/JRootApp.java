@@ -43,6 +43,7 @@ import com.openbravo.data.loader.Session;
 import com.openbravo.pos.scale.DeviceScale;
 import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerFactory;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -72,7 +73,7 @@ public class JRootApp extends JPanel implements AppView {
     private DeviceTicket m_TP;   
     private TicketParser m_TTP;
     
-    private Map<String, BeanFactory> m_aBeanFactories;
+    private final Map<String, BeanFactory> m_aBeanFactories;
     
     private JPrincipalApp m_principalapp = null;
     
@@ -85,7 +86,7 @@ public class JRootApp extends JPanel implements AppView {
     /** Creates new form JRootApp */
     public JRootApp() {    
 
-        m_aBeanFactories = new HashMap<String, BeanFactory>();
+        m_aBeanFactories = new HashMap<>();
         
         // Inicializo los componentes visuales
         initComponents ();            
@@ -254,36 +255,46 @@ public class JRootApp extends JPanel implements AppView {
     }
     
     // Interfaz de aplicacion
+    @Override
     public DeviceTicket getDeviceTicket(){
         return m_TP;
     }
     
+    @Override
     public DeviceScale getDeviceScale() {
         return m_Scale;
     }
+    @Override
     public DeviceScanner getDeviceScanner() {
         return m_Scanner;
     }
     
+    @Override
     public Session getSession() {
         return session;
     } 
 
+    @Override
     public String getInventoryLocation() {
         return m_sInventoryLocation;
     }   
+    @Override
     public String getActiveCashIndex() {
         return m_sActiveCashIndex;
     }
+    @Override
     public int getActiveCashSequence() {
         return m_iActiveCashSequence;
     }
+    @Override
     public Date getActiveCashDateStart() {
         return m_dActiveCashDateStart;
     }
+    @Override
     public Date getActiveCashDateEnd(){
         return m_dActiveCashDateEnd;
     }
+    @Override
     public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
         m_sActiveCashIndex = sIndex;
         m_iActiveCashSequence = iSeq;
@@ -294,10 +305,11 @@ public class JRootApp extends JPanel implements AppView {
         m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
     }   
        
+    @Override
     public AppProperties getProperties() {
         return m_props;
     }
-    
+    @Override
     public Object getBean(String beanfactory) throws BeanFactoryException {
         
         // For backwards compatibility
@@ -325,8 +337,7 @@ public class JRootApp extends JPanel implements AppView {
                         bf = new BeanFactoryObj(bean);
                     }
 
-                } catch (Exception e) {
-                    // ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
                     throw new BeanFactoryException(e);
                 }
             }
@@ -350,7 +361,7 @@ public class JRootApp extends JPanel implements AppView {
     }
     
     private static void initOldClasses() {
-        m_oldclasses = new HashMap<String, String>();
+        m_oldclasses = new HashMap<>();
         
         // update bean names from 2.00 to 2.20    
         m_oldclasses.put("com.openbravo.pos.reports.JReportCustomers", "/com/openbravo/reports/customers.bs");
@@ -372,15 +383,15 @@ public class JRootApp extends JPanel implements AppView {
         m_oldclasses.put("com.openbravo.pos.panels.JPanelTax", "com.openbravo.pos.inventory.TaxPanel");
        
     }
-    
+    @Override
     public void waitCursorBegin() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     }
-    
+    @Override
     public void waitCursorEnd(){
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-    
+    @Override
     public AppUserView getAppUserView() {
         return m_principalapp;
     }
@@ -436,18 +447,18 @@ public class JRootApp extends JPanel implements AppView {
     // La accion del selector
     private class AppUserAction extends AbstractAction {
         
-        private AppUser m_actionuser;
+        private final AppUser m_actionuser;
         
         public AppUserAction(AppUser user) {
             m_actionuser = user;
-            putValue(Action.SMALL_ICON, m_actionuser.getIcon());
-            putValue(Action.NAME, m_actionuser.getName());
+            super.putValue(Action.SMALL_ICON, m_actionuser.getIcon());
+            super.putValue(Action.NAME, m_actionuser.getName());
         }
         
         public AppUser getUser() {
             return m_actionuser;
         }
-        
+        @Override
         public void actionPerformed(ActionEvent evt) {
             // String sPassword = m_actionuser.getPassword();
             if (m_actionuser.authenticate()) {
@@ -528,10 +539,8 @@ public class JRootApp extends JPanel implements AppView {
         // keyboard listener activation
         inputtext = new StringBuffer();
         m_txtKeys.setText(null);       
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                m_txtKeys.requestFocus();
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            m_txtKeys.requestFocus();
         });  
     }
     
