@@ -34,7 +34,11 @@ public class ComboBoxValModel extends AbstractListModel implements ComboBoxModel
     private IKeyGetter m_keygetter;
     private Object m_selected;
     
-    /** Creates a new instance of ComboBoxValModel */
+    /** 
+     * Creates a new instance of ComboBoxValModel
+     * @param aData
+     * @param keygetter 
+     */
     public ComboBoxValModel(List aData, IKeyGetter keygetter) {
         m_aData = aData;
         m_keygetter = keygetter;
@@ -84,7 +88,7 @@ public class ComboBoxValModel extends AbstractListModel implements ComboBoxModel
     }
     
     public void setSelectedFirst() {
-        m_selected = (m_aData.size() == 0) ? null : m_aData.get(0);
+        m_selected = (m_aData.isEmpty()) ? null : m_aData.get(0);
     }
     
     public Object getElementByKey(Object aKey) {
@@ -100,18 +104,22 @@ public class ComboBoxValModel extends AbstractListModel implements ComboBoxModel
         return null;
     }
     
+    @Override
     public Object getElementAt(int index) {
         return m_aData.get(index);
     }
     
+    @Override
     public Object getSelectedItem() {
         return m_selected;
     }
     
+    @Override
     public int getSize() {
         return m_aData.size();
     }
     
+    @Override
     public void setSelectedItem(Object anItem) {
         
         if ((m_selected != null && !m_selected.equals(anItem)) || m_selected == null && anItem != null) {

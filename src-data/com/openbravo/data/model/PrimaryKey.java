@@ -29,6 +29,7 @@ public class PrimaryKey extends Column {
         super(name);
     }
     
+    @Override
     public boolean isPK() {
         return true;
     }

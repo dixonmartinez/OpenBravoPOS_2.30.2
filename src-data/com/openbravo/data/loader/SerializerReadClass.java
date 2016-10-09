@@ -25,21 +25,19 @@ public class SerializerReadClass implements SerializerRead {
 
     private Class m_clazz;
     
-    /** Creates a new instance of DefaultSerializerRead */
+    /** Creates a new instance of DefaultSerializerRead
+     * @param clazz */
     public SerializerReadClass(Class clazz) {
         m_clazz = clazz;
     }
-    
+
+    @Override    
     public Object readValues(DataRead dr) throws BasicException {
         try {
             SerializableRead sr = (SerializableRead) m_clazz.newInstance();
             sr.readValues(dr);
             return sr;
-        } catch (java.lang.InstantiationException eIns) {
-            return null;
-        } catch (IllegalAccessException eIA) {
-            return null;
-        } catch (ClassCastException eCC) {
+        } catch (java.lang.InstantiationException | IllegalAccessException | ClassCastException eIns) {
             return null;
         }
     }

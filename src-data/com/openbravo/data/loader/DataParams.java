@@ -32,30 +32,37 @@ public abstract class DataParams implements DataWrite {
     
     public abstract void writeValues() throws BasicException;
 
+    @Override
     public void setInt(int paramIndex, Integer iValue) throws BasicException {
         dw.setInt(paramIndex, iValue);
     }
 
+    @Override
     public void setString(int paramIndex, String sValue) throws BasicException {
         dw.setString(paramIndex, sValue);
     }
 
+    @Override
     public void setDouble(int paramIndex, Double dValue) throws BasicException {
         dw.setDouble(paramIndex, dValue);
     }
 
+    @Override
     public void setBoolean(int paramIndex, Boolean bValue) throws BasicException {
         dw.setBoolean(paramIndex, bValue);
     }
 
+    @Override
     public void setTimestamp(int paramIndex, Date dValue) throws BasicException {
         dw.setTimestamp(paramIndex, dValue);
     }
 
+    @Override
     public void setBytes(int paramIndex, byte[] value) throws BasicException {
         dw.setBytes(paramIndex, value);
     }
 
+    @Override
     public void setObject(int paramIndex, Object value) throws BasicException {
         dw.setObject(paramIndex, value);
     }

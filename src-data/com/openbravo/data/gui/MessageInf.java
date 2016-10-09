@@ -47,7 +47,12 @@ public class MessageInf {
     // CAUSE
     private Object m_eCause;
     
-    /** Creates a new instance of MessageInf */
+    /**
+     * Creates a new instance of MessageInf
+     * @param iSignalWord
+     * @param sHazard
+     * @param e 
+     */
     public MessageInf(int iSignalWord, String sHazard, Object e) {
         m_iMsgNumber = iSignalWord | CLS_GENERIC;
         m_sHazard = sHazard;
@@ -55,12 +60,19 @@ public class MessageInf {
         m_sAvoiding = "";
         m_eCause = e;
     }
-    /** Creates a new instance of MessageInf */
+    /**
+     * Creates a new instance of MessageInf
+     * @param iSignalWord
+     * @param sHazard 
+     */
     public MessageInf(int iSignalWord, String sHazard) {
         this (iSignalWord, sHazard, null);
     }
     
-    /** Creates a new instance of MessageInf */
+    /**
+     * Creates a new instance of MessageInf
+     * @param e 
+     */
     public MessageInf(Throwable e) {
         this(SGN_WARNING, e.getLocalizedMessage(), e);
     }
@@ -79,41 +91,50 @@ public class MessageInf {
     
     public Icon getSignalWordIcon() {
         int iSignalWord = getSignalWord();
-        if (iSignalWord == SGN_DANGER) {
-            return UIManager.getIcon("OptionPane.errorIcon");
-        } else if (iSignalWord == SGN_WARNING) {
-            return UIManager.getIcon("OptionPane.warningIcon");
-       } else if (iSignalWord == SGN_CAUTION) {
-            return UIManager.getIcon("OptionPane.warningIcon");
-        } else if (iSignalWord == SGN_NOTICE) {
-            return UIManager.getIcon("OptionPane.informationIcon");
-        } else if (iSignalWord == SGN_IMPORTANT) {
-            return UIManager.getIcon("OptionPane.informationIcon");
-        } else if (iSignalWord == SGN_SUCCESS) {
-            return UIManager.getIcon("OptionPane.informationIcon");
-        } else {
-            return UIManager.getIcon("OptionPane.questionIcon");
+        switch (iSignalWord) {
+            case SGN_DANGER:
+                return UIManager.getIcon("OptionPane.errorIcon");
+            case SGN_WARNING:
+                return UIManager.getIcon("OptionPane.warningIcon");
+            case SGN_CAUTION:
+                return UIManager.getIcon("OptionPane.warningIcon");
+            case SGN_NOTICE:
+                return UIManager.getIcon("OptionPane.informationIcon");
+            case SGN_IMPORTANT:
+                return UIManager.getIcon("OptionPane.informationIcon");
+            case SGN_SUCCESS:
+                return UIManager.getIcon("OptionPane.informationIcon");
+            default:
+                return UIManager.getIcon("OptionPane.questionIcon");
         }
     }
     
     public String getErrorCodeMsg() {
         
-        StringBuffer sb = new StringBuffer();       
+        StringBuilder sb = new StringBuilder();       
         int iSignalWord = getSignalWord();
-        if (iSignalWord == SGN_DANGER) {
-            sb.append("DNG_");
-        } else if (iSignalWord == SGN_WARNING) {
-            sb.append("WRN_");
-        } else if (iSignalWord == SGN_CAUTION) {
-            sb.append("CAU_");
-        } else if (iSignalWord == SGN_NOTICE) {
-            sb.append("NOT_");
-        } else if (iSignalWord == SGN_IMPORTANT) {
-            sb.append("IMP_");
-        } else if (iSignalWord == SGN_SUCCESS) {
-            sb.append("INF_");
-        } else {
-            sb.append("UNK_");
+        switch (iSignalWord) {
+            case SGN_DANGER:
+                sb.append("DNG_");
+                break;
+            case SGN_WARNING:
+                sb.append("WRN_");
+                break;
+            case SGN_CAUTION:
+                sb.append("CAU_");
+                break;
+            case SGN_NOTICE:
+                sb.append("NOT_");
+                break;
+            case SGN_IMPORTANT:
+                sb.append("IMP_");
+                break;
+            case SGN_SUCCESS:
+                sb.append("INF_");
+                break;
+            default:
+                sb.append("UNK_");
+                break;
         }
         sb.append(toHex((m_iMsgNumber & 0x00FF0000) >> 16, 2));
         sb.append('_');
@@ -139,20 +160,28 @@ public class MessageInf {
         
         StringBuffer sb = new StringBuffer();     
         int iSignalWord = getSignalWord();
-        if (iSignalWord == SGN_DANGER) {
-            sb.append(LocalRes.getIntString("sgn.danger"));
-        } else if (iSignalWord == SGN_WARNING) {
-            sb.append(LocalRes.getIntString("sgn.warning"));
-        } else if (iSignalWord == SGN_CAUTION) {
-            sb.append(LocalRes.getIntString("sgn.caution"));
-        } else if (iSignalWord == SGN_NOTICE) {
-            sb.append(LocalRes.getIntString("sgn.notice"));
-        } else if (iSignalWord == SGN_IMPORTANT) {
-            sb.append(LocalRes.getIntString("sgn.important"));
-        } else if (iSignalWord == SGN_SUCCESS) {
-            sb.append(LocalRes.getIntString("sgn.success"));
-        } else {
-            sb.append(LocalRes.getIntString("sgn.unknown"));
+        switch (iSignalWord) {
+            case SGN_DANGER:
+                sb.append(LocalRes.getIntString("sgn.danger"));
+                break;
+            case SGN_WARNING:
+                sb.append(LocalRes.getIntString("sgn.warning"));
+                break;
+            case SGN_CAUTION:
+                sb.append(LocalRes.getIntString("sgn.caution"));
+                break;
+            case SGN_NOTICE:
+                sb.append(LocalRes.getIntString("sgn.notice"));
+                break;
+            case SGN_IMPORTANT:
+                sb.append(LocalRes.getIntString("sgn.important"));
+                break;
+            case SGN_SUCCESS:
+                sb.append(LocalRes.getIntString("sgn.success"));
+                break;
+            default:
+                sb.append(LocalRes.getIntString("sgn.unknown"));
+                break;
         }
         sb.append(m_sHazard);
         sb.append(m_sConsequences);

@@ -25,7 +25,7 @@ package com.openbravo.data.model;
  */
 public class Column {
     
-    private String name;
+    private final String name;
     
     public Column(String name) {
         this.name = name;

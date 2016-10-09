@@ -30,27 +30,33 @@ public class JFind extends JDialog {
     private FindInfo m_FindInfo;
     private Vectorer m_vec;
         
-    /** Creates new form JFind */
+    /**
+     * Creates new form JFind
+     * @param parent
+     * @param modal 
+     */
     private JFind(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
     }
-    /** Creates new form JFind */
+    /**
+     * Creates new form JFind
+     * @param parent
+     * @param modal 
+     */
     private JFind(java.awt.Dialog parent, boolean modal) {
         super(parent, modal);
     }
     
     private FindInfo init(FindInfo lastFindInfo) throws BasicException {
-        
         initComponents();
-
         getRootPane().setDefaultButton(jcmdOK);   
    
         // El texto
         m_jFind.setText(lastFindInfo.getText());
         // Pinto la caja
         m_jWhere.removeAllItems();
-        for (int i = 0; i < lastFindInfo.getVectorer().getHeaders().length; i++) {
-            m_jWhere.addItem(lastFindInfo.getVectorer().getHeaders()[i]);
+        for (String header : lastFindInfo.getVectorer().getHeaders()) {
+            m_jWhere.addItem(header);
         }
         m_jWhere.setSelectedIndex(lastFindInfo.getField());
         // El Match
@@ -173,38 +179,13 @@ public class JFind extends JDialog {
     }//GEN-END:initComponents
 
     private void jcmdCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdCancelActionPerformed
-        
-        // TODO add your handling code here:
-        dispose();
-        
+        dispose();       
     }//GEN-LAST:event_jcmdCancelActionPerformed
 
     private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdOKActionPerformed
-        
-        // TODO add your handling code here:
         m_FindInfo = new FindInfo(m_vec, m_jFind.getText(), m_jWhere.getSelectedIndex(), m_jMatchCase.isSelected(), m_jMatch.getSelectedIndex());
-        
         dispose();
-        
     }//GEN-LAST:event_jcmdOKActionPerformed
-    
-//    /**
-//     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        //new JFind(new javax.swing.JFrame(), true).show();
-//        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//            //UIManager.setLookAndFeel("com.shfarr.ui.plaf.fh.FhLookAndFeel");
-//        } catch(Exception ex) {
-//        }
-//        try {
-//            showMessage(new javax.swing.JFrame(), null);
-//        } catch (DataException eD) {
-//        }
-//        System.exit(0);
-//    }
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

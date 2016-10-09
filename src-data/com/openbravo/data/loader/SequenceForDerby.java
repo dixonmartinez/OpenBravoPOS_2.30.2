@@ -24,11 +24,15 @@ import com.openbravo.basic.BasicException;
 
 public class SequenceForDerby extends BaseSentence {
 
-    private BaseSentence sent1;
-    private BaseSentence sent2;
-    private BaseSentence sent3;
+    private final BaseSentence sent1;
+    private final BaseSentence sent2;
+    private final BaseSentence sent3;
 
-    /** Creates a new instance of SequenceForMySQL */
+    /** 
+     * Creates a new instance of SequenceForMySQL 
+     * @param s
+     * @param sSeqTable 
+     */
     public SequenceForDerby(Session s, String sSeqTable) {
 
         sent1 = new StaticSentence(s, "DELETE FROM  " + sSeqTable);
@@ -37,14 +41,17 @@ public class SequenceForDerby extends BaseSentence {
     }
 
     // Funciones de bajo nivel
+    @Override
     public DataResultSet openExec(Object params) throws BasicException {
         sent1.exec();
         sent2.exec();
         return sent3.openExec(null);
     }
+    @Override
     public DataResultSet moreResults() throws BasicException {
         return sent3.moreResults();
     }
+    @Override
     public void closeExec() throws BasicException {
         sent3.closeExec();
     }

@@ -42,11 +42,11 @@ import com.openbravo.data.loader.LocalRes;
 public class JImageEditor extends javax.swing.JPanel {
     
     private Dimension m_maxsize;
-    private ZoomIcon m_icon;
+    private final ZoomIcon m_icon;
     private BufferedImage m_Img = null;
     
     private static File m_fCurrentDirectory = null;
-    private static NumberFormat m_percentformat = new DecimalFormat("#,##0.##%");
+    private static final NumberFormat m_percentformat = new DecimalFormat("#,##0.##%");
     
     /** Creates new form JImageEditor */
     public JImageEditor() {
@@ -67,6 +67,7 @@ public class JImageEditor extends javax.swing.JPanel {
         return m_maxsize;
     }
     
+    @Override
     public void setEnabled(boolean value) {
 
         privateSetEnabled(value);
@@ -201,12 +202,15 @@ public class JImageEditor extends javax.swing.JPanel {
             this.ico = null;
             this.zoom = 1.0;
         }
+        @Override
         public int getIconHeight() {
             return ico == null ? 0 : (int) (zoom * ico.getIconHeight());
         }
+        @Override
         public int getIconWidth() {
             return ico == null ? 0 : (int) (zoom * ico.getIconWidth());
         }
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             if (ico != null) {
                 Graphics2D g2d = (Graphics2D) g;
@@ -231,14 +235,15 @@ public class JImageEditor extends javax.swing.JPanel {
     }    
     private static class ExtensionsFilter extends FileFilter {
         
-        private String message;
-        private String[] extensions;
+        private final String message;
+        private final String[] extensions;
         
         public ExtensionsFilter(String message, String... extensions) {
             this.message = message;
             this.extensions = extensions;            
         }
         
+        @Override
         public boolean accept(java.io.File f) {
             if (f.isDirectory()) {
                 return true;
@@ -257,6 +262,7 @@ public class JImageEditor extends javax.swing.JPanel {
             }   
         }
         
+        @Override
         public String getDescription() {
             return message;
         }      
@@ -337,27 +343,19 @@ public class JImageEditor extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jbtnzoomoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnzoomoutActionPerformed
-
-        decZoom();
-        
+       decZoom();
     }//GEN-LAST:event_m_jbtnzoomoutActionPerformed
 
     private void m_jbtnzoominActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnzoominActionPerformed
-
-        incZoom();
-        
+        incZoom();       
     }//GEN-LAST:event_m_jbtnzoominActionPerformed
 
     private void m_jbtncloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtncloseActionPerformed
-        
         setImage(null);
-        
     }//GEN-LAST:event_m_jbtncloseActionPerformed
 
     private void m_jbtnopenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnopenActionPerformed
-        
-        doLoad();
-        
+        doLoad();        
     }//GEN-LAST:event_m_jbtnopenActionPerformed
     
     

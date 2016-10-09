@@ -51,22 +51,22 @@ public class JSort extends JDialog {
         
         m_jSort1.removeAllItems();
         m_jSort1.addItem("");
-        for (int i = 0; i < sHeaders.length; i++) {
-            m_jSort1.addItem(sHeaders[i]);
+        for (String sHeader : sHeaders) {
+            m_jSort1.addItem(sHeader);
         }
         m_jSort1.setSelectedItem(0);
         
         m_jSort2.removeAllItems();
         m_jSort2.addItem("");
-        for (int i = 0; i < sHeaders.length; i++) {
-            m_jSort2.addItem(sHeaders[i]);
+        for (String sHeader : sHeaders) {
+            m_jSort2.addItem(sHeader);
         }
         m_jSort2.setSelectedItem(0);
         
         m_jSort3.removeAllItems();
         m_jSort3.addItem("");
-        for (int i = 0; i < sHeaders.length; i++) {
-            m_jSort3.addItem(sHeaders[i]);
+        for (String sHeader : sHeaders) {
+            m_jSort3.addItem(sHeader);
         }
         m_jSort3.setSelectedItem(0);
         

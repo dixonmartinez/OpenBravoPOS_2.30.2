@@ -28,7 +28,7 @@ public class SerializerReadDouble implements SerializerRead {
     /** Creates a new instance of SerializerReadInteger */
     public SerializerReadDouble() {
     }
-    
+    @Override
     public Object readValues(DataRead dr) throws BasicException {
         return Datas.DOUBLE.getValue(dr,1);
     }    

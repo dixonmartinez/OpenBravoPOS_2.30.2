@@ -31,13 +31,17 @@ import com.openbravo.data.user.StateListener;
  */
 public class JCounter extends JPanel implements BrowseListener, StateListener  {
     
-    /** Creates new form JCounter */
+    /**
+     * Creates new form JCounter
+     * @param bd 
+     */
     public JCounter(BrowsableEditableData bd) {
         initComponents();
         bd.addBrowseListener(this);
         bd.addStateListener(this);
     }
     
+    @Override
     public void updateState(int iState) {
         if (iState == BrowsableEditableData.ST_INSERT) {
              // Insert
@@ -45,14 +49,15 @@ public class JCounter extends JPanel implements BrowseListener, StateListener  {
         }
     }  
 
+    @Override
     public void updateIndex(int iIndex, int iCounter) {
 
         if (iIndex >= 0 && iIndex < iCounter) {
-            jlblIndex.setText(Formats.INT.formatValue(new Integer(iIndex + 1)));
+            jlblIndex.setText(Formats.INT.formatValue(iIndex + 1));
         } else {
             jlblIndex.setText("-");
         }
-        jlblCounter.setText(Formats.INT.formatValue(new Integer(iCounter)));
+        jlblCounter.setText(Formats.INT.formatValue(iCounter));
     }    
     
     /** This method is called from within the constructor to

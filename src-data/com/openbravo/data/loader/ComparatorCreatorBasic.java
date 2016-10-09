@@ -27,7 +27,12 @@ public class ComparatorCreatorBasic implements ComparatorCreator {
     private Datas[] m_aDatas;
     private int[] m_iAvailableIndexes;
     
-    /** Creates a new instance of ComparatorCreatorBasic */
+    /** 
+     * Creates a new instance of ComparatorCreatorBasic
+     * @param sHeaders
+     * @param aDatas
+     * @param iAvailableIndexes 
+     */
     public ComparatorCreatorBasic(String[] sHeaders, Datas[] aDatas, int[] iAvailableIndexes) {
         
         m_sHeaders = sHeaders;
@@ -43,6 +48,7 @@ public class ComparatorCreatorBasic implements ComparatorCreator {
         }
     }
     
+    @Override
     public String[] getHeaders() {
         
         String[] sTempHeaders = new String[m_iAvailableIndexes.length];
@@ -53,18 +59,23 @@ public class ComparatorCreatorBasic implements ComparatorCreator {
         return sTempHeaders;
     }
     
+    @Override
     public Comparator createComparator(int[] aiOrderBy) {
         return new ComparatorBasic(aiOrderBy);
     }
     
     public class ComparatorBasic implements Comparator {
 
-        private int[] m_aiOrderBy;
+        private final int[] m_aiOrderBy;
 
-        /** Creates a new instance of ComparatorBasic */
+        /** 
+         * Creates a new instance of ComparatorBasic
+         * @param aiOrderBy 
+         */
         public ComparatorBasic(int[] aiOrderBy) {
             m_aiOrderBy = aiOrderBy;
         }
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1 == null) {
                 if (o2 == null) {

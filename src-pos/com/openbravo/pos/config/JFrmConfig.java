@@ -26,6 +26,7 @@ import com.openbravo.pos.forms.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -35,13 +36,16 @@ public class JFrmConfig extends javax.swing.JFrame {
     
     private JPanelConfiguration config;
     
-    /** Creates new form JFrmConfig */
+    /** 
+     * Creates new form JFrmConfig
+     * @param props 
+     */
     public JFrmConfig(AppProperties props) {
         
         initComponents();
         
         try {
-            this.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
+            setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
         } catch (IOException e) {
         }   
         setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION + " - " + AppLocal.getIntString("Menu.Configuration"));
@@ -60,11 +64,13 @@ public class JFrmConfig extends javax.swing.JFrame {
     
     private class MyFrameListener extends WindowAdapter{
         
+        @Override
         public void windowClosing(WindowEvent evt) {
             if (config.deactivate()) {
                 dispose();
             }
         }
+        @Override
         public void windowClosed(WindowEvent evt) {
             System.exit(0);
         }
@@ -88,6 +94,7 @@ public class JFrmConfig extends javax.swing.JFrame {
      */
     public static void main(final String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 
                 AppConfig config = new AppConfig(args);
@@ -96,7 +103,7 @@ public class JFrmConfig extends javax.swing.JFrame {
                 // Set the look and feel.
                 try {                    
                     UIManager.setLookAndFeel(config.getProperty("swing.defaultlaf"));
-                } catch (Exception e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
                 }
                 
                 new JFrmConfig(config).setVisible(true);

@@ -28,7 +28,10 @@ public class JLabelDirty extends JLabel {
     private static Icon m_IconModif = null;
     private static Icon m_IconNull = null;
 
-    /** Creates a new instance of JDirtyPicture */
+    /** 
+     * Creates a new instance of JDirtyPicture
+     * @param dm 
+     */
     public JLabelDirty(DirtyManager dm) {
         
         if (m_IconModif == null) {
@@ -38,10 +41,8 @@ public class JLabelDirty extends JLabel {
             m_IconNull = new NullIcon(16, 16);
         }
         
-        dm.addDirtyListener(new DirtyListener() {
-            public void changedDirty(boolean bDirty) {
-                setIcon(bDirty ? m_IconModif : m_IconNull);
-            }
+        dm.addDirtyListener((boolean bDirty) -> {
+            setIcon(bDirty ? m_IconModif : m_IconNull);
         });
     }  
 }

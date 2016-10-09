@@ -25,8 +25,8 @@ package com.openbravo.data.model;
  */
 public class Table {
     
-    private String name;
-    private Column[] columns;
+    private final String name;
+    private final Column[] columns;
     
     public Table(String name, Column... columns) {
         this.name = name;
@@ -42,7 +42,7 @@ public class Table {
     }
     
     public String getListSQL() {
-        StringBuffer sent = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
         sent.append("select ");
 
         for (int i = 0; i < columns.length; i ++) {
@@ -60,8 +60,8 @@ public class Table {
     
     public String getInsertSQL() {
         
-        StringBuffer sent = new StringBuffer();
-        StringBuffer values = new StringBuffer();
+        StringBuilder sent = new StringBuilder();
+        StringBuilder values = new StringBuilder();
         
         sent.append("insert into ");
         sent.append(name);
@@ -88,20 +88,20 @@ public class Table {
         StringBuffer values = new StringBuffer();
         StringBuffer filter = new StringBuffer();
         
-        for (int i = 0; i < columns.length; i ++) {
-            if (columns[i].isPK()) {
+        for (Column column : columns) {
+            if (column.isPK()) {
                 if (filter.length() == 0) {
                     filter.append(" where ");
                 } else  {
                     filter.append(" and ");
                 }
-                filter.append(columns[i].getName());
+                filter.append(column.getName());
                 filter.append(" = ?");                
             } else {
                 if (values.length() > 0) {
                     values.append(", ");
                 }
-                values.append(columns[i].getName());
+                values.append(column.getName());
                 values.append(" = ?");                
             }
         }
@@ -113,14 +113,14 @@ public class Table {
         
         StringBuffer filter = new StringBuffer();
 
-        for (int i = 0; i < columns.length; i ++) {
-            if (columns[i].isPK()) {
+        for (Column column : columns) {
+            if (column.isPK()) {
                 if (filter.length() == 0) {
                     filter.append(" where ");
                 } else  {
                     filter.append(" and ");
                 }
-                filter.append(columns[i].getName());
+                filter.append(column.getName());
                 filter.append(" = ?"); 
             }
         }

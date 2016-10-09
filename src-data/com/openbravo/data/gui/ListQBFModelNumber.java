@@ -28,7 +28,7 @@ import com.openbravo.data.loader.QBFCompareEnum;
  */
 public class ListQBFModelNumber extends AbstractListModel implements ComboBoxModel {
     
-    private Object[] m_items;
+    private final Object[] m_items;
     private Object m_sel;
     
     /** Creates a new instance of ListQBFModelNumber */
@@ -91,18 +91,22 @@ public class ListQBFModelNumber extends AbstractListModel implements ComboBoxMod
         );
     }
     
+    @Override
     public Object getElementAt(int index) {
         return m_items[index];
     }
    
+    @Override
     public int getSize() {
         return m_items.length;
     }
     
+    @Override
     public Object getSelectedItem() {
         return m_sel;
     }
      
+    @Override
     public void setSelectedItem(Object anItem) {
         m_sel = anItem;
     }

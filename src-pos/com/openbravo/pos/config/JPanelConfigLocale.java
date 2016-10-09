@@ -61,9 +61,9 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
         Collections.sort(availablelocales, new LocaleComparator());
         
         jcboLocale.addItem(new LocaleInfo (null));
-        for (Locale l : availablelocales) {
+        availablelocales.stream().forEach((l) -> {
             jcboLocale.addItem(new LocaleInfo(l));
-        }
+        });
         
         jcboInteger.addItem(DEFAULT_VALUE);
         jcboInteger.addItem("#0");

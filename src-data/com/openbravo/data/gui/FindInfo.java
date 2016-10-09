@@ -41,7 +41,14 @@ public class FindInfo implements Finder {
     
     private Vectorer m_vec;
     
-    /** Creates a new instance of FindInfo */
+    /** 
+     * Creates a new instance of FindInfo
+     * @param vec
+     * @param sText
+     * @param iField
+     * @param bMatchCase
+     * @param iMatch 
+     */
     public FindInfo(Vectorer vec, String sText, int iField, boolean bMatchCase, int iMatch) {
         m_vec = vec;
         m_sText = sText;
@@ -60,7 +67,10 @@ public class FindInfo implements Finder {
         }
     }
     
-    /** Creates a new instance of FindInfo */
+    /**
+     * Creates a new instance of FindInfo
+     * @param vec 
+     */
     public FindInfo(Vectorer vec) {
         this(vec,  "", 0, true, MATCH_ANYPARTFIELD);
     }
@@ -81,6 +91,7 @@ public class FindInfo implements Finder {
         return m_iMatch;
     }
    
+    @Override
     public boolean match(Object obj) throws BasicException {
         
         String[] v = m_vec.getValues(obj);
@@ -95,7 +106,7 @@ public class FindInfo implements Finder {
         case MATCH_WHOLEFIELD:
             return sField.equals(m_sTextCompare);
         case MATCH_ANYPARTFIELD:   
-            return sField.indexOf(m_sTextCompare) >= 0;
+            return sField.contains(m_sTextCompare);
         case MATCH_REGEXP:
             return m_TextPattern.matcher(sField).matches();
         default:

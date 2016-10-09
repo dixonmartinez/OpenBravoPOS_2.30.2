@@ -19,7 +19,6 @@
 
 package com.openbravo.data.gui;
 
-import java.util.*;
 import javax.swing.*;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.LocalRes;
@@ -30,17 +29,18 @@ public class JSaver extends JPanel implements StateListener {
     
     protected BrowsableEditableData m_bd;
         
-    /** Creates new form JSaver */
+    /**
+     * Creates new form JSaver
+     * @param bd 
+     */
     public JSaver(BrowsableEditableData bd) {
-
         initComponents();
+        m_bd = bd;        
         
-        m_bd = bd;
-        
-        // m_bd.addBrowseListener(this);
         m_bd.addStateListener(this);
     }
 
+    @Override
     public void updateState(int iState) {
         switch  (iState) {
         case BrowsableEditableData.ST_INSERT:
@@ -124,7 +124,6 @@ public class JSaver extends JPanel implements StateListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnSaveActionPerformed
-        // Add your handling code here:
         try {
             m_bd.saveData();
         } catch (BasicException eD) {
@@ -134,7 +133,6 @@ public class JSaver extends JPanel implements StateListener {
     }//GEN-LAST:event_jbtnSaveActionPerformed
 
     private void jbtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnDeleteActionPerformed
-        // Add your handling code here:
         try {
             m_bd.actionDelete();
         } catch (BasicException eD) {
@@ -144,7 +142,6 @@ public class JSaver extends JPanel implements StateListener {
     }//GEN-LAST:event_jbtnDeleteActionPerformed
 
     private void jbtnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNewActionPerformed
-        // Add your handling code here:
         try {
             m_bd.actionInsert();
         } catch (BasicException eD) {

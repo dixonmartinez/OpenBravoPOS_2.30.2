@@ -47,7 +47,13 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
     private javax.swing.JButton jbtnRefresh = null;
     private javax.swing.JButton jbtnReload = null;    
     
-    /** Creates new form JNavigator */
+    /**
+     * Creates new form JNavigator
+     * @param bd
+     * @param vec
+     * @param cc
+     * @param iButtons 
+     */
     public JNavigator(BrowsableEditableData bd, Vectorer vec, ComparatorCreator cc, int iButtons) {
 
         initComponents();
@@ -59,10 +65,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnFirst.setFocusPainted(false);
             jbtnFirst.setFocusable(false);
             jbtnFirst.setRequestFocusEnabled(false);
-            jbtnFirst.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnFirstActionPerformed(evt);
-                }
+            jbtnFirst.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnFirstActionPerformed(evt);
             });
             add(jbtnFirst);
         }
@@ -74,10 +78,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnPrev.setFocusPainted(false);
             jbtnPrev.setFocusable(false);
             jbtnPrev.setRequestFocusEnabled(false);
-            jbtnPrev.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnPrevActionPerformed(evt);
-                }
+            jbtnPrev.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnPrevActionPerformed(evt);
             });
             add(jbtnPrev);
         }
@@ -88,10 +90,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         jbtnRefresh.setFocusPainted(false);
         jbtnRefresh.setFocusable(false);
         jbtnRefresh.setRequestFocusEnabled(false);
-        jbtnRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnRefreshActionPerformed(evt);
-            }
+        jbtnRefresh.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jbtnRefreshActionPerformed(evt);
         });
         add(jbtnRefresh);
 
@@ -102,10 +102,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnNext.setFocusPainted(false);
             jbtnNext.setFocusable(false);
             jbtnNext.setRequestFocusEnabled(false);
-            jbtnNext.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnNextActionPerformed(evt);
-                }
+            jbtnNext.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnNextActionPerformed(evt);
             });
             add(jbtnNext);
         }
@@ -117,10 +115,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnLast.setFocusPainted(false);
             jbtnLast.setFocusable(false);
             jbtnLast.setRequestFocusEnabled(false);
-            jbtnLast.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnLastActionPerformed(evt);
-                }
+            jbtnLast.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnLastActionPerformed(evt);
             });
             add(jbtnLast);
         }
@@ -134,10 +130,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnReload.setFocusPainted(false);
             jbtnReload.setFocusable(false);
             jbtnReload.setRequestFocusEnabled(false);
-            jbtnReload.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnReloadActionPerformed(evt);
-                }
+            jbtnReload.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnReloadActionPerformed(evt);
             });
             add(jbtnReload);
 
@@ -154,10 +148,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnFind.setFocusPainted(false);
             jbtnFind.setFocusable(false);
             jbtnFind.setRequestFocusEnabled(false);
-            jbtnFind.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnFindActionPerformed(evt);
-                }
+            jbtnFind.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnFindActionPerformed(evt);
             });
             add(jbtnFind);  
         }
@@ -170,10 +162,8 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
             jbtnSort.setFocusPainted(false);
             jbtnSort.setFocusable(false);
             jbtnSort.setRequestFocusEnabled(false);
-            jbtnSort.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jbtnSortActionPerformed(evt);
-                }
+            jbtnSort.addActionListener((java.awt.event.ActionEvent evt) -> {
+                jbtnSortActionPerformed(evt);
             });
             add(jbtnSort);
         }       
@@ -190,6 +180,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         this(bd, vec, cc, BUTTONS_ALL);
     }
 
+    @Override
     public void updateState(int iState) {
         if (iState == BrowsableEditableData.ST_INSERT || iState == BrowsableEditableData.ST_DELETE) {
              // Insert o Delete
@@ -201,6 +192,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         }
     }  
     
+    @Override
     public void updateIndex(int iIndex, int iCounter) {
         
         if (iIndex >= 0 && iIndex < iCounter) {

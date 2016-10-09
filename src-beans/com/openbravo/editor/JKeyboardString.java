@@ -17,27 +17,28 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.openbravo.data.loader;
+package com.openbravo.editor;
 
 /**
- *
  * @author adrianromero
- * Created on 27 de febrero de 2007, 22:09
- *
+ * @author Andrey Svininykh <svininykh@gmail.com>
  */
-public class KeyGetterBuilder implements IKeyGetter {
-  
-    public final static IKeyGetter INSTANCE = new KeyGetterBuilder();
+public class JKeyboardString extends JKeyboardText {
     
-    /** Creates a new instance of KeyGetterBuilder */
-    public KeyGetterBuilder() {
+    /** Creates a new instance of JEditorString */
+    public JKeyboardString() {
+        super();
     }
     
     @Override
-    public Object getKey(Object value) {
+    protected final int getMode() {
+        return EditorKeys.MODE_STRING;
+    }
         
-        return (value == null) 
-            ? null
-            : ((IKeyed) value).getKey();
-    }   
+    @Override
+    protected int getStartMode() {
+        return MODE_Abc1;
+    }
+    
 }
+

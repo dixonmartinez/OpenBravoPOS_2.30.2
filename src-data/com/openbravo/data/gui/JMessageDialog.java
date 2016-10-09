@@ -84,16 +84,16 @@ public class JMessageDialog extends javax.swing.JDialog {
                 }
             } else if (inf.getCause() instanceof Throwable[]) {
                 Throwable[] m_aExceptions = (Throwable[]) inf.getCause();
-                for (int i = 0; i < m_aExceptions.length; i++) {
-                    sb.append(m_aExceptions[i].getClass().getName());
+                for (Throwable m_aException : m_aExceptions) {
+                    sb.append(m_aException.getClass().getName());
                     sb.append(": \n");
-                    sb.append(m_aExceptions[i].getMessage());
+                    sb.append(m_aException.getMessage());
                     sb.append("\n\n");
                 }             
             } else if (inf.getCause() instanceof Object[]) {
                 Object [] m_aObjects = (Object []) inf.getCause();
-                for (int i = 0; i < m_aObjects.length; i++) {
-                    sb.append(m_aObjects[i].toString());
+                for (Object m_aObject : m_aObjects) {
+                    sb.append(m_aObject.toString());
                     sb.append("\n\n");
                 }             
             } else if (inf.getCause() instanceof String) {
@@ -191,17 +191,13 @@ public class JMessageDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jcmdMoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdMoreActionPerformed
-        
-        // Add your handling code here:
         jcmdMore.setEnabled(false);
         jscrException.setVisible(true);
         setSize(getWidth(), 310);
-        validateTree();
-        
+        validateTree();        
     }//GEN-LAST:event_jcmdMoreActionPerformed
 
     private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdOKActionPerformed
-        // Add your handling code here:
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jcmdOKActionPerformed

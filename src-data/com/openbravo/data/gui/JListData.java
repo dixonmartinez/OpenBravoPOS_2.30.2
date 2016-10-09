@@ -25,7 +25,10 @@ public class JListData extends javax.swing.JDialog {
     
     private Object m_selected;
     
-    /** Creates new form JListData */
+    /**
+     * Creates new form JListData
+     * @param parent 
+     */
     public JListData(java.awt.Frame parent) {
         super(parent, true);
         initComponents();
@@ -52,16 +55,18 @@ public class JListData extends javax.swing.JDialog {
     
     private static class MyListData extends javax.swing.AbstractListModel {
         
-        private List m_data;
+        private final List m_data;
         
         public MyListData(List data) {
             m_data = data;
         }
         
+        @Override
         public Object getElementAt(int index) {
             return m_data.get(index);
         }
         
+        @Override
         public int getSize() {
             return m_data.size();
         } 
@@ -124,12 +129,10 @@ public class JListData extends javax.swing.JDialog {
     }//GEN-END:initComponents
 
     private void m_jCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jCancelActionPerformed
-        // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_m_jCancelActionPerformed
 
     private void m_jOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jOKActionPerformed
-        // TODO add your handling code here:
         m_selected = m_jData.getSelectedValue();
         dispose();
     }//GEN-LAST:event_m_jOKActionPerformed

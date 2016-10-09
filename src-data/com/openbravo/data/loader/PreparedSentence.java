@@ -21,6 +21,7 @@ package com.openbravo.data.loader;
 
 import java.sql.*;
 import com.openbravo.basic.BasicException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class PreparedSentence extends JDBCSentence {
 
-    private static Logger logger = Logger.getLogger("com.openbravo.data.loader.PreparedSentence");
+    private static final Logger logger = Logger.getLogger("com.openbravo.data.loader.PreparedSentence");
 
     private String m_sentence;
     protected SerializerWrite m_SerWrite = null;
@@ -54,13 +55,14 @@ public class PreparedSentence extends JDBCSentence {
     
     private static final class PreparedSentencePars implements DataWrite {
 
-        private PreparedStatement m_ps;
+        private final PreparedStatement m_ps;
 
         /** Creates a new instance of SQLParameter */
         PreparedSentencePars(PreparedStatement ps) {
             m_ps = ps;
         }
 
+        @Override
         public void setInt(int paramIndex, Integer iValue) throws BasicException {
             try {
                 m_ps.setObject(paramIndex, iValue, Types.INTEGER);
@@ -68,6 +70,7 @@ public class PreparedSentence extends JDBCSentence {
                 throw new BasicException(eSQL);
             }
         }
+        @Override
         public void setString(int paramIndex, String sValue) throws BasicException {
             try {
                 m_ps.setString(paramIndex, sValue);
@@ -75,6 +78,7 @@ public class PreparedSentence extends JDBCSentence {
                 throw new BasicException(eSQL);
             }
         }
+        @Override
         public void setDouble(int paramIndex, Double dValue) throws BasicException {
             try {
                 m_ps.setObject(paramIndex, dValue, Types.DOUBLE);
@@ -82,18 +86,20 @@ public class PreparedSentence extends JDBCSentence {
                 throw new BasicException(eSQL);
             }
         }   
+        @Override
         public void setBoolean(int paramIndex, Boolean bValue) throws BasicException {
             try {
                 if (bValue == null) {
                     m_ps.setObject(paramIndex, null);
                 } else {
-                    m_ps.setBoolean(paramIndex, bValue.booleanValue());
+                    m_ps.setBoolean(paramIndex, bValue);
                 }
                 // m_ps.setObject(paramIndex, bValue, Types.BOOLEAN);
             } catch (SQLException eSQL) {
                 throw new BasicException(eSQL);
             }
         }   
+        @Override
         public void setTimestamp(int paramIndex, java.util.Date dValue) throws BasicException {        
             try {
                 m_ps.setObject(paramIndex, dValue == null ? null : new Timestamp(dValue.getTime()), Types.TIMESTAMP);
@@ -101,13 +107,7 @@ public class PreparedSentence extends JDBCSentence {
                 throw new BasicException(eSQL);
             }
         }       
-//        public void setBinaryStream(int paramIndex, java.io.InputStream in, int length) throws DataException {
-//            try {
-//                m_ps.setBinaryStream(paramIndex, in, length);
-//            } catch (SQLException eSQL) {
-//                throw new DataException(eSQL);
-//            }
-//        }
+        @Override
         public void setBytes(int paramIndex, byte[] value) throws BasicException {
             try {
                 m_ps.setBytes(paramIndex, value);
@@ -115,6 +115,7 @@ public class PreparedSentence extends JDBCSentence {
                 throw new BasicException(eSQL);
             }
         }
+        @Override
         public void setObject(int paramIndex, Object value) throws BasicException {
             try {
                 m_ps.setObject(paramIndex, value);
@@ -124,15 +125,15 @@ public class PreparedSentence extends JDBCSentence {
         }
     } 
     
+    @Override
     public DataResultSet openExec(Object params) throws BasicException {
         // true -> un resultset
         // false -> un updatecount (si -1 entonces se acabo)
-        
         closeExec();
 
         try {
 
-            logger.info("Executing prepared SQL: " + m_sentence);
+            logger.log(Level.INFO, "Executing prepared SQL: {0}", m_sentence);
 
             m_Stmt = m_s.getConnection().prepareStatement(m_sentence);
  
@@ -156,6 +157,7 @@ public class PreparedSentence extends JDBCSentence {
         }
     }
     
+    @Override
     public final DataResultSet moreResults() throws BasicException {
         // true -> un resultset
         // false -> un updatecount (si -1 entonces se acabo)
@@ -178,6 +180,7 @@ public class PreparedSentence extends JDBCSentence {
         }
     }
 
+    @Override
     public final void closeExec() throws BasicException {
         
         if (m_Stmt != null) {

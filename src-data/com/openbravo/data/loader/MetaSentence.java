@@ -21,7 +21,6 @@ package com.openbravo.data.loader;
 
 import java.sql.*;
 import java.util.*; 
-import javax.sql.DataSource;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.JDBCSentence.JDBCDataResultSet;
 
@@ -31,7 +30,13 @@ public class MetaSentence extends JDBCSentence {
     protected SerializerRead m_SerRead = null;
     protected SerializerWrite m_SerWrite = null;
 
-    /** Creates a new instance of MetaDataSentence */
+    /** 
+     * Creates a new instance of MetaDataSentence
+     * @param s
+     * @param sSentence
+     * @param serwrite
+     * @param serread 
+     */
     public MetaSentence(Session s, String sSentence, SerializerWrite serwrite, SerializerRead serread) {
         super(s);
         m_sSentence = sSentence;
@@ -44,35 +49,39 @@ public class MetaSentence extends JDBCSentence {
     
     private static class MetaParameter implements DataWrite {
 
-        private ArrayList m_aParams;
+        private final ArrayList m_aParams;
 
         /** Creates a new instance of MetaParameter */
         public MetaParameter() {
             m_aParams = new ArrayList();
         }
         
+        @Override
         public void setDouble(int paramIndex, Double dValue) throws BasicException {
             throw new BasicException(LocalRes.getIntString("exception.noparamtype"));
         }
+        @Override
         public void setBoolean(int paramIndex, Boolean bValue) throws BasicException {
             throw new BasicException(LocalRes.getIntString("exception.noparamtype"));
         }
+        @Override
         public void setInt(int paramIndex, Integer iValue) throws BasicException {
             throw new BasicException(LocalRes.getIntString("exception.noparamtype"));
         }   
+        @Override
         public void setString(int paramIndex, String sValue) throws BasicException {
             ensurePlace(paramIndex - 1);
             m_aParams.set(paramIndex - 1, sValue);
         }
+        @Override
         public void setTimestamp(int paramIndex, java.util.Date dValue) throws BasicException {
             throw new BasicException(LocalRes.getIntString("exception.noparamtype"));
         }
-//        public void setBinaryStream(int paramIndex, java.io.InputStream in, int length) throws DataException {
-//             throw new DataException("Param type not allowed");
-//       }
+        @Override
         public void setBytes(int paramIndex, byte[] value) throws BasicException {
              throw new BasicException(LocalRes.getIntString("exception.noparamtype"));
-       }
+        }
+        @Override
         public void setObject(int paramIndex, Object value) throws BasicException {
             setString(paramIndex, (value == null) ? null : value.toString());
         }
@@ -89,86 +98,85 @@ public class MetaSentence extends JDBCSentence {
         }
     }
 
-    public DataResultSet openExec(Object params) throws BasicException {
-        
-        closeExec();
-        
+    @Override
+    public DataResultSet openExec(Object params) throws BasicException {    
+        closeExec();        
         try {
             DatabaseMetaData db = m_s.getConnection().getMetaData();
-
             MetaParameter mp = new MetaParameter();               
             if (params != null) {
                 // si m_SerWrite fuera null deberiamos cascar
                 m_SerWrite.writeValues(mp, params);  
             }
-
             // Catalogs Has Schemas Has Objects
-
-            // Lo generico de la base de datos
-            if ("getCatalogs".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getCatalogs(), m_SerRead);
-            } else if ("getSchemas".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getSchemas(), m_SerRead);
-            } else if ("getTableTypes".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getTableTypes(), m_SerRead);
-            } else if ("getTypeInfo".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getTypeInfo(), m_SerRead);
-
-            // Los objetos por catalogo, esquema
-
-            // Los tipos definidos por usuario
-            } else if ("getUDTs".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getUDTs(mp.getString(0), mp.getString(1), null, null), m_SerRead);      
-            } else if ("getSuperTypes".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getSuperTypes(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);      
-
-            // Los atributos
-            } else if ("getAttributes".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getAttributes(mp.getString(0), mp.getString(1), null, null), m_SerRead);
-
-            // Las Tablas y sus objetos relacionados
-            } else if ("getTables".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getTables(mp.getString(0), mp.getString(1), null, null), m_SerRead);
-            } else if ("getSuperTables".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getSuperTables(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);       
-            } else if ("getTablePrivileges".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getTablePrivileges(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
-            } else if ("getBestRowIdentifier".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getBestRowIdentifier(mp.getString(0), mp.getString(1), mp.getString(2), 0, true), m_SerRead);
-            } else if ("getPrimaryKeys".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getPrimaryKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
-            } else if ("getColumnPrivileges".equals(m_sSentence)) {            
-                return new JDBCDataResultSet(db.getColumnPrivileges(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
-            } else if ("getColumns".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getColumns(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
-            } else if ("getVersionColumns".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getVersionColumns(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
-            } else if ("getIndexInfo".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getIndexInfo(mp.getString(0), mp.getString(1), mp.getString(2), false, false), m_SerRead);
-            } else if ("getExportedKeys".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getExportedKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
-            } else if ("getImportedKeys".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getImportedKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
-            } else if ("getCrossReference".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getCrossReference(mp.getString(0), mp.getString(1), mp.getString(2), null, null, null), m_SerRead);
-
-            // Los procedimientos y sus objetos relacionados
-            } else if ("getProcedures".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getProcedures(mp.getString(0), mp.getString(1), null), m_SerRead);
-            } else if ("getProcedureColumns".equals(m_sSentence)) {
-                return new JDBCDataResultSet(db.getProcedureColumns(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
-
-            } else {
+            if (null != m_sSentence) // Lo generico de la base de datos
+            switch (m_sSentence) {
+                case "getCatalogs":
+                    return new JDBCDataResultSet(db.getCatalogs(), m_SerRead);
+                case "getSchemas":
+                    return new JDBCDataResultSet(db.getSchemas(), m_SerRead);
+                case "getTableTypes":
+                    return new JDBCDataResultSet(db.getTableTypes(), m_SerRead);
+                case "getTypeInfo":
+                    return new JDBCDataResultSet(db.getTypeInfo(), m_SerRead);
+                    
+                    // Los objetos por catalogo, esquema
+                    
+                    // Los tipos definidos por usuario
+                case "getUDTs":
+                    return new JDBCDataResultSet(db.getUDTs(mp.getString(0), mp.getString(1), null, null), m_SerRead);
+                case "getSuperTypes":
+                    return new JDBCDataResultSet(db.getSuperTypes(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                    
+                    // Los atributos
+                case "getAttributes":
+                    return new JDBCDataResultSet(db.getAttributes(mp.getString(0), mp.getString(1), null, null), m_SerRead);
+                    
+                    // Las Tablas y sus objetos relacionados
+                case "getTables":
+                    return new JDBCDataResultSet(db.getTables(mp.getString(0), mp.getString(1), null, null), m_SerRead);
+                case "getSuperTables":
+                    return new JDBCDataResultSet(db.getSuperTables(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getTablePrivileges":
+                    return new JDBCDataResultSet(db.getTablePrivileges(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getBestRowIdentifier":
+                    return new JDBCDataResultSet(db.getBestRowIdentifier(mp.getString(0), mp.getString(1), mp.getString(2), 0, true), m_SerRead);
+                case "getPrimaryKeys":
+                    return new JDBCDataResultSet(db.getPrimaryKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getColumnPrivileges":
+                    return new JDBCDataResultSet(db.getColumnPrivileges(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
+                case "getColumns":
+                    return new JDBCDataResultSet(db.getColumns(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
+                case "getVersionColumns":
+                    return new JDBCDataResultSet(db.getVersionColumns(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getIndexInfo":
+                    return new JDBCDataResultSet(db.getIndexInfo(mp.getString(0), mp.getString(1), mp.getString(2), false, false), m_SerRead);
+                case "getExportedKeys":
+                    return new JDBCDataResultSet(db.getExportedKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getImportedKeys":
+                    return new JDBCDataResultSet(db.getImportedKeys(mp.getString(0), mp.getString(1), mp.getString(2)), m_SerRead);
+                case "getCrossReference":
+                    return new JDBCDataResultSet(db.getCrossReference(mp.getString(0), mp.getString(1), mp.getString(2), null, null, null), m_SerRead);
+                    
+                    // Los procedimientos y sus objetos relacionados
+                case "getProcedures":
+                    return new JDBCDataResultSet(db.getProcedures(mp.getString(0), mp.getString(1), null), m_SerRead);
+                case "getProcedureColumns":
+                    return new JDBCDataResultSet(db.getProcedureColumns(mp.getString(0), mp.getString(1), mp.getString(2), null), m_SerRead);
+                default:
+                    return null;
+            } else 
                 return null;
-            }
         } catch (SQLException eSQL) {
             throw new BasicException(eSQL);
         }
     }  
     
+    @Override
     public void closeExec() throws BasicException {
     }
     
+    @Override
     public DataResultSet moreResults() throws BasicException {
         return null;
     }

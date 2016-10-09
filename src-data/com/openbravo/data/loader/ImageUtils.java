@@ -29,7 +29,7 @@ import java.util.Properties;
 
 public class ImageUtils {
     
-    private static char[] HEXCHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] HEXCHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     
     /** Creates a new instance of ImageUtils */
     private ImageUtils() {
@@ -134,17 +134,14 @@ public class ImageUtils {
             return null;
         } else {        
             try {
-                ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(b));
-                Object obj = in.readObject();
-                in.close();
+                Object obj;
+                try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(b))) {
+                    obj = in.readObject();
+                }
                 return obj;
-            } catch (ClassNotFoundException eCNF) {
-                //logger.error("Cannot create lists object", eCNF);    
+            } catch (ClassNotFoundException | IOException eCNF) {
                 return null;
-            } catch (IOException eIO) {
-                //logger.error("Cannot load lists file", eIO);
-                return null;
-            }
+            }            
         }
     }
     
@@ -155,13 +152,12 @@ public class ImageUtils {
         } else {            
             try {
                 ByteArrayOutputStream b = new ByteArrayOutputStream();
-                ObjectOutputStream out = new ObjectOutputStream(b);
-                out.writeObject(o);
-                out.flush();
-                out.close();
+                try (ObjectOutputStream out = new ObjectOutputStream(b)) {
+                    out.writeObject(o);
+                    out.flush();
+                }
                 return b.toByteArray();
             } catch (IOException eIO) {
-                eIO.printStackTrace();
                 return null;
             }
         }
@@ -180,7 +176,7 @@ public class ImageUtils {
        
     public static String bytes2hex(byte[] binput) {
         
-        StringBuffer s = new StringBuffer(binput.length *2);
+        StringBuilder s = new StringBuilder(binput.length *2);
         for (int i = 0; i < binput.length; i++) {
             byte b = binput[i];
             s.append(HEXCHARS[(b & 0xF0) >> 4]);

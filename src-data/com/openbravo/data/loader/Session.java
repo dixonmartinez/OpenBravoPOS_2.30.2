@@ -29,18 +29,24 @@ import java.sql.SQLException;
  * Created on February 6, 2007, 4:06 PM
  *
  */
-public class Session {
+public final class Session {
     
-    private String m_surl;
-    private String m_suser;
-    private String m_spassword;
+    private final String m_surl;
+    private final String m_suser;
+    private final String m_spassword;
     
     private Connection m_c;
     private boolean m_bInTransaction;
 
     public final SessionDB DB;
     
-    /** Creates a new instance of Session */
+    /** 
+     * Creates a new instance of Session
+     * @param url
+     * @param user
+     * @param password
+     * @throws SQLException 
+     */
     public Session(String url, String user, String password) throws SQLException {
         m_surl = url;
         m_suser = user;

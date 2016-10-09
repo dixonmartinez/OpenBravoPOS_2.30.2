@@ -25,13 +25,17 @@ package com.openbravo.data.loader;
  */
 public class KeyGetterFirst implements IKeyGetter {
     
-    private int [] m_aElems;
+    private final int [] m_aElems;
     
-    /** Creates a new instance of KeyGetterBasic */
+    /** 
+     * Creates a new instance of KeyGetterBasic
+     * @param aElems 
+     */
     public KeyGetterFirst(int[] aElems) {
         m_aElems = aElems;
     }
     
+    @Override
     public Object getKey(Object value) {
         if (value == null) {
             return null;

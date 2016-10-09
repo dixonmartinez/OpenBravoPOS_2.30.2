@@ -27,30 +27,17 @@ import com.openbravo.basic.BasicException;
  */
 public class QBFBuilder implements ISQLBuilderStatic {
    
-    private String m_sSentNullFilter;   // la sentencia que se devuelve cuando el filtro es vacio
-    private String m_sSentBeginPart;  // La sentencia que se devuelve es m_sSentBeginPart + ( filtro ) + m_sSentEndPart
-    private String m_sSentEndPart;
+    private final String m_sSentNullFilter;   // la sentencia que se devuelve cuando el filtro es vacio
+    private final String m_sSentBeginPart;  // La sentencia que se devuelve es m_sSentBeginPart + ( filtro ) + m_sSentEndPart
+    private final String m_sSentEndPart;
     
-    private String[] m_asFindFields;    
+    private final String[] m_asFindFields;    
     
-//    /** Creates a new instance of QBFBuilder */
-//    public QBFBuilder(TableDefinition tb, String[] asFindFields) {
-//        StringBuffer sent = new StringBuffer();
-//        sent.append("select ");
-//        for (int i = 0; i < tb.getFields().length; i ++) {
-//            if (i > 0) {
-//                sent.append(", ");
-//            }
-//            sent.append(tb.getFields()[i]);
-//        }
-//        sent.append(" from ");
-//        sent.append(tb.getTableName());
-//        m_sSentNullFilter = sent.toString();
-//        sent.append(" where ");
-//        m_sSentBeginPart = sent.toString();
-//        m_sSentEndPart = "";
-//        m_asFindFields = asFindFields;
-//    }
+    /**
+     * Creates a new instance of QBFBuilder
+     * @param sSentence
+     * @param asFindFields 
+     */
     public QBFBuilder(String sSentence, String[] asFindFields) {
         int iPos = sSentence.indexOf("?(QBF_FILTER)");
         if (iPos < 0) {
@@ -65,6 +52,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
         m_asFindFields = asFindFields;
     }
 
+    @Override
     public String getSQL(SerializerWrite sw, Object params) throws BasicException {
         
         QBFParameter mydw = new QBFParameter(m_asFindFields);
@@ -83,9 +71,9 @@ public class QBFBuilder implements ISQLBuilderStatic {
     
     private static class QBFParameter implements DataWrite {
     
-        private String[] m_asFindFields;
-        private QBFCompareEnum[] m_aiCondFields;
-        private String[] m_aParams;
+        private final String[] m_asFindFields;
+        private final QBFCompareEnum[] m_aiCondFields;
+        private final String[] m_aParams;
         
         public QBFParameter(String[] asFindFields) {
             m_asFindFields = asFindFields;
@@ -97,6 +85,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
             }
         }
         
+        @Override
         public void setDouble(int paramIndex, Double dValue) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -104,6 +93,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 m_aParams[(paramIndex - 1) / 2] = DataWriteUtils.getSQLValue(dValue);
             }
         }        
+        @Override
         public void setBoolean(int paramIndex, Boolean bValue) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -111,6 +101,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 m_aParams[(paramIndex - 1) / 2] = DataWriteUtils.getSQLValue(bValue);
             }
         }        
+        @Override
         public void setInt(int paramIndex, Integer iValue) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -118,6 +109,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 m_aParams[(paramIndex - 1) / 2] = DataWriteUtils.getSQLValue(iValue);
             }
         }       
+        @Override
         public void setString(int paramIndex, String sValue) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -125,6 +117,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 m_aParams[(paramIndex - 1) / 2] = DataWriteUtils.getSQLValue(sValue);
             }
         }        
+        @Override
         public void setTimestamp(int paramIndex, java.util.Date dValue) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -132,13 +125,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 m_aParams[(paramIndex - 1) / 2] = DataWriteUtils.getSQLValue(dValue);
             }
         }
-//        public void setBinaryStream(int paramIndex, java.io.InputStream in, int length) throws DataException{
-//            if ((paramIndex - 1) % 2 == 0) {
-//                throw new DataException("Expected comparator for QBF");
-//            } else {
-//                throw new DataException("Param type not allowed");
-//            }            
-//        }
+        @Override
         public void setBytes(int paramIndex, byte[] value) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 throw new BasicException(LocalRes.getIntString("exception.nocompare"));
@@ -146,6 +133,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
                 throw new BasicException("Param type not allowed");
             }
         }
+        @Override
         public void setObject(int paramIndex, Object value) throws BasicException {
             if ((paramIndex - 1) % 2 == 0) {
                 if (value instanceof QBFCompareEnum) {
@@ -161,7 +149,7 @@ public class QBFBuilder implements ISQLBuilderStatic {
         public String getFilter() {
             // El retorno debe ser siempre una expresion valida puesto que no se donde sera insertada.
             
-            StringBuffer sFilter = new StringBuffer();
+            StringBuilder sFilter = new StringBuilder();
             
             String sItem;                
             for (int i = 0; i < m_asFindFields.length; i ++) {

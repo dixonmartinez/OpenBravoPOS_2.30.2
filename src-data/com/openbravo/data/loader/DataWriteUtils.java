@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
  */
 public class DataWriteUtils {
     
-    private static DateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+    private static final DateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
     
     /** Creates a new instance of DataWriteUtils */
     public DataWriteUtils() {
@@ -73,7 +73,7 @@ public class DataWriteUtils {
         if (bValue == null) {
             return "NULL";
         } else {
-            return bValue.booleanValue() ? "TRUE" : "FALSE";
+            return bValue ? "TRUE" : "FALSE";
         }
     }
     
@@ -94,7 +94,7 @@ public class DataWriteUtils {
     }
     
     public static String getEscaped(String sValue) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sValue.length(); i++) {
             switch (sValue.charAt(i)) {
                 case '\\':

@@ -29,14 +29,19 @@ import com.openbravo.basic.BasicException;
  */
 public class BatchSentenceScript extends BatchSentence {
 
-    private String m_sScript;
+    private final String m_sScript;
     
-    /** Creates a new instance of BatchSentenceScript */
+    /**
+     * Creates a new instance of BatchSentenceScript
+     * @param s
+     * @param script 
+     */
     public BatchSentenceScript(Session s, String script) {
         super(s);
         m_sScript = script;
     }
     
+    @Override
     protected Reader getReader() throws BasicException {
         
         return new java.io.StringReader(m_sScript);

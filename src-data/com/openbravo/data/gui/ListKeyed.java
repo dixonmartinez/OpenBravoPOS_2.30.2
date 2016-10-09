@@ -26,6 +26,7 @@ import java.util.List;
 /**
  *
  * @author adrianromero
+ * @param <K>
  */
 public class ListKeyed<K extends IKeyed> extends ArrayList<K> {
     

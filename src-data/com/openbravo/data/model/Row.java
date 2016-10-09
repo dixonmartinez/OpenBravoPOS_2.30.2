@@ -48,7 +48,7 @@ import javax.swing.ListCellRenderer;
  */
 public class Row {
     
-    private Field[] fields;
+    private final Field[] fields;
     
     public Row(Field... fields) {
         this.fields = fields;
@@ -71,15 +71,11 @@ public class Row {
     }
 
     public SentenceExec getExecSentence(Session s, String sql, final int... indexes) {
-        return new PreparedSentence(s, sql, 
-            new SerializerWrite<Object[]>() {
-                public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
-                    for (int i = 0; i < indexes.length; i++) {
-                        fields[indexes[i]].getData().setValue(dp, i + 1, obj[indexes[i]]);
-                    }
-                }            
+        return new PreparedSentence(s, sql, (SerializerWrite<Object[]>) (DataWrite dp, Object[] obj) -> {
+            for (int i = 0; i < indexes.length; i++) {
+                fields[indexes[i]].getData().setValue(dp, i + 1, obj[indexes[i]]);            
             }
-        );
+        });
     }
     
     public ListProvider getListProvider(Session s, Table t) {
@@ -103,50 +99,38 @@ public class Row {
     }
     
     public SentenceExec getInsertSentence(Session s, final Table t) {
-        return new PreparedSentence(s,  t.getInsertSQL(), 
-            new SerializerWrite<Object[]>() {
-                public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
-                    for (int i = 0; i < t.getColumns().length; i++) {
-                        fields[i].getData().setValue(dp, i + 1, obj[i]);
-                    }           
-                }            
+        return new PreparedSentence(s,  t.getInsertSQL(), (SerializerWrite<Object[]>) (DataWrite dp, Object[] obj) -> {
+            for (int i = 0; i < t.getColumns().length; i++) {
+                fields[i].getData().setValue(dp, i + 1, obj[i]);            
             }
-        );
+        });
     }
     
     public SentenceExec getDeleteSentence(Session s, final Table t) {
-        return new PreparedSentence(s,  t.getDeleteSQL(), 
-            new SerializerWrite<Object[]>() {
-                public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
-                    int index = 1;
-                    for (int i = 0; i < t.getColumns().length; i++) {
-                        if (t.getColumns()[i].isPK()) {
-                            fields[i].getData().setValue(dp, index++, obj[i]);
-                        }
-                    }           
+        return new PreparedSentence(s,  t.getDeleteSQL(), (SerializerWrite<Object[]>) (DataWrite dp, Object[] obj) -> {
+            int index = 1;
+            for (int i = 0; i < t.getColumns().length; i++) {
+                if (t.getColumns()[i].isPK()) {
+                    fields[i].getData().setValue(dp, index++, obj[i]);
                 }            
             }
-        );        
+        });        
     }
     
     public SentenceExec getUpdateSentence(Session s, final Table t) {
-        return new PreparedSentence(s,  t.getUpdateSQL(), 
-            new SerializerWrite<Object[]>() {
-                public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
-                    int index = 1;
-                    for (int i = 0; i < t.getColumns().length; i++) {
-                        if (!t.getColumns()[i].isPK()) {
-                            fields[i].getData().setValue(dp, index++, obj[i]);
-                        }
-                    }   
-                    for (int i = 0; i < t.getColumns().length; i++) {
-                        if (t.getColumns()[i].isPK()) {
-                            fields[i].getData().setValue(dp, index++, obj[i]);
-                        }
-                    }                         
+        return new PreparedSentence(s,  t.getUpdateSQL(), (SerializerWrite<Object[]>) (DataWrite dp, Object[] obj) -> {
+            int index = 1;
+            for (int i = 0; i < t.getColumns().length; i++) {
+                if (!t.getColumns()[i].isPK()) {
+                    fields[i].getData().setValue(dp, index++, obj[i]);
                 }            
             }
-        );        
+            for (int i = 0; i < t.getColumns().length; i++) {
+                if (t.getColumns()[i].isPK()) {
+                    fields[i].getData().setValue(dp, index++, obj[i]);
+                }
+            }
+        });        
     }
 
     public Datas[] getDatas() {
@@ -162,6 +146,7 @@ public class Row {
     }
     
     private class RowSerializerRead implements SerializerRead {
+        @Override
         public Object readValues(DataRead dr) throws BasicException {             
             Object[] m_values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
@@ -172,8 +157,9 @@ public class Row {
     }  
     
     private class RowVectorer implements Vectorer {
+        @Override
         public String[] getHeaders() throws BasicException {
-            List<String> l = new ArrayList<String>();
+            List<String> l = new ArrayList<>();
             for (Field f : fields) {
                 if (f.isSearchable()) {
                     l.add(f.getLabel());
@@ -181,9 +167,10 @@ public class Row {
             }
             return l.toArray(new String[l.size()]);
         }
+        @Override
         public String[] getValues(Object obj) throws BasicException {   
             Object[] values = (Object[]) obj;            
-            List<String> l = new ArrayList<String>();
+            List<String> l = new ArrayList<>();
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].isSearchable()) {
                     l.add(fields[i].getFormat().formatValue(values[i]));
@@ -194,9 +181,10 @@ public class Row {
     }  
     
     private class RowRenderString implements IRenderString {
+        @Override
         public String getRenderString(Object value) {        
             Object[] values = (Object[]) value;            
-            StringBuffer s = new StringBuffer();
+            StringBuilder s = new StringBuilder();
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].isTitle()) {
                     if (s.length() > 0) {
@@ -211,7 +199,7 @@ public class Row {
     
     private class RowComparatorCreator implements ComparatorCreator {
         
-        private List<Integer> comparablefields = new ArrayList<Integer>();
+        private final List<Integer> comparablefields = new ArrayList<>();
         
         public RowComparatorCreator() {
             for (int i = 0; i < fields.length; i++) {
@@ -221,6 +209,7 @@ public class Row {
             }            
         }
         
+        @Override
         public String[] getHeaders() {
             String [] headers = new String [comparablefields.size()];
             for (int i = 0; i < comparablefields.size(); i++) {
@@ -229,30 +218,29 @@ public class Row {
             return headers;
         }   
         
+        @Override
         public Comparator createComparator(final int[] orderby) {
-            return new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    if (o1 == null) {
-                        if (o2 == null) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
-                    } else if (o2 == null) {
-                        return +1;
-                    } else {
-                        Object[] ao1 = (Object[]) o1;
-                        Object[] ao2 = (Object[]) o2;
-                        for (int i = 0; i < orderby.length; i++) {
-                            int result = fields[comparablefields.get(orderby[i])].getData().compare(
-                                    ao1[comparablefields.get(orderby[i])], 
-                                    ao2[comparablefields.get(orderby[i])]);
-                            if (result != 0) {
-                                return result;
-                            }
-                        }
+            return (Comparator) (Object o1, Object o2) -> {
+                if (o1 == null) {
+                    if (o2 == null) {
                         return 0;
+                    } else {
+                        return -1;
                     }
+                } else if (o2 == null) {
+                    return +1;
+                } else {
+                    Object[] ao1 = (Object[]) o1;
+                    Object[] ao2 = (Object[]) o2;
+                    for (int i = 0; i < orderby.length; i++) {
+                        int result = fields[comparablefields.get(orderby[i])].getData().compare(
+                                ao1[comparablefields.get(orderby[i])],
+                                ao2[comparablefields.get(orderby[i])]);
+                        if (result != 0) {
+                            return result;
+                        }
+                    }
+                    return 0;
                 }
             };
         }        

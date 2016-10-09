@@ -26,7 +26,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.LocalRes;
-import com.openbravo.data.user.BrowsableData;
 import com.openbravo.data.user.BrowsableEditableData;
 import com.openbravo.data.user.BrowseListener;
 
@@ -34,15 +33,21 @@ public class JListNavigator extends javax.swing.JPanel implements BrowseListener
     
     protected BrowsableEditableData m_bd;
     
-    /** Creates new form JListBrowse */
+    /**
+     * Creates new form JListBrowse
+     * @param bd 
+     */
     public JListNavigator(BrowsableEditableData bd) {
         this(bd, false);
     }
     
+    /**
+     * Creates new form JListBrowse
+     * @param bd
+     * @param bTouchable 
+     */
     public JListNavigator(BrowsableEditableData bd, boolean bTouchable) {
-        
-        m_bd = bd;
-        
+        m_bd = bd;        
         initComponents();
         
         if (bTouchable) {
@@ -50,8 +55,6 @@ public class JListNavigator extends javax.swing.JPanel implements BrowseListener
             jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         }
-
-
         m_jlist.addListSelectionListener(this);        
         m_jlist.setModel(m_bd.getListModel());
         
@@ -62,8 +65,8 @@ public class JListNavigator extends javax.swing.JPanel implements BrowseListener
         m_jlist.setCellRenderer(cellRenderer);
     }
     
-    public void updateIndex(int iIndex, int iCounter) {
-        
+    @Override
+    public void updateIndex(int iIndex, int iCounter) {        
         if (iIndex >= 0 && iIndex < iCounter) {
             m_jlist.setSelectedIndex(iIndex);
         } else {
@@ -71,6 +74,7 @@ public class JListNavigator extends javax.swing.JPanel implements BrowseListener
         }
     } 
     
+    @Override
     public void valueChanged(ListSelectionEvent evt) {
         
         if (!evt.getValueIsAdjusting()) {

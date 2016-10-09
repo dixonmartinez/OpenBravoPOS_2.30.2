@@ -25,7 +25,10 @@ import java.rmi.RemoteException;
 import javax.swing.JFrame;
 import com.openbravo.pos.instance.AppMessage;
 import com.openbravo.pos.instance.InstanceManager;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
 import javax.imageio.ImageIO;
 
 /**
@@ -40,39 +43,45 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
     private JRootApp m_rootapp;
     private AppProperties m_props;
     
-    /** Creates new form JRootFrame */
-    public JRootFrame() {
-        
+    /** 
+     * Creates new form JRootFrame
+     * @param isFullScreen 
+     */
+    public JRootFrame(boolean isFullScreen) {
+        if(isFullScreen) {
+            super.setUndecorated(true);
+            super.setResizable(false);
+            this.isFullScreen = isFullScreen;
+    	}
         initComponents();    
     }
     
-    public void initFrame(AppProperties props) {
-        
-        m_props = props;
-        
-        m_rootapp = new JRootApp();
-        
+    public void initFrame(AppProperties props) {        
+        m_props = props;        
+        m_rootapp = new JRootApp();        
         if (m_rootapp.initApp(m_props)) {
-
-
             if ("true".equals(props.getProperty("machine.uniqueinstance"))) {
                 // Register the running application
                 try {
                     m_instmanager = new InstanceManager(this);
-                } catch (Exception e) {
+                } catch (RemoteException | AlreadyBoundException e) {
                 }
-            }
-        
+            }        
             // Show the application
             add(m_rootapp, BorderLayout.CENTER);            
- 
-            try {
-                this.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
-            } catch (IOException e) {
-            }   
             setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
-            pack();
-            setLocationRelativeTo(null);        
+            if(isFullScreen) {
+                Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+                setBounds(0, 0, d.width, d.height);        
+            } else {
+            	try {
+                    this.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
+                } catch (IOException e) {
+                }   
+                
+                pack();
+                setLocationRelativeTo(null);        
+            }
             
             setVisible(true);                        
         } else {
@@ -80,14 +89,13 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
         }
     }
     
+    @Override
     public void restoreWindow() throws RemoteException {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                if (getExtendedState() == JFrame.ICONIFIED) {
-                    setExtendedState(JFrame.NORMAL);
-                }
-                requestFocus();
+        java.awt.EventQueue.invokeLater(() -> {
+            if (getExtendedState() == JFrame.ICONIFIED) {
+                setExtendedState(JFrame.NORMAL);
             }
+            requestFocus();
         });
     }
     
@@ -111,18 +119,15 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-
-        m_rootapp.tryToClose();
-        
+        m_rootapp.tryToClose();        
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-
-        System.exit(0);
-        
+        System.exit(0);        
     }//GEN-LAST:event_formWindowClosed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     
+    private boolean isFullScreen = false;
 }

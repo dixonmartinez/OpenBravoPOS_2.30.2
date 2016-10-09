@@ -27,13 +27,17 @@ import com.openbravo.format.Formats;
 
 public class TableRendererBasic extends DefaultTableCellRenderer {
     
-    private Formats[] m_aFormats;
+    private final Formats[] m_aFormats;
     
-    /** Creates a new instance of TableRendererBasic */
+    /**
+     * Creates a new instance of TableRendererBasic
+     * @param aFormats 
+     */
     public TableRendererBasic(Formats[] aFormats) {
         m_aFormats = aFormats;
     }
     
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
 
         JLabel aux = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
