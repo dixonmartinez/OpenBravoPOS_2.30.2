@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inventory" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="6bc836c8-29b8-4319-9c8b-92bd7778b945">
-	<property name="ireport.scriptlethandling" value="0"/>
-	<property name="ireport.encoding" value="UTF-8"/>
-	<property name="ireport.zoom" value="1.5"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inventory" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="inventory_messages" uuid="86bf0c0f-9b2a-457d-9552-d9045e3c9f81">
+	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="net.sf.jasperreports.engine.*"/>
-	<import value="java.util.*"/>
-	<import value="net.sf.jasperreports.engine.data.*"/>
 	<queryString>
 		<![CDATA[SELECT
-STOCKCURRENT.LOCATION AS LOCATIONID,
-LOCATIONS.NAME AS LOCATIONNAME,
-PRODUCTS.REFERENCE,
-PRODUCTS.NAME AS NAME,
-PRODUCTS.CATEGORY,
-CATEGORIES.NAME AS CATEGORYNAME,
-STOCKCURRENT.UNITS,
-PRODUCTS.PRICEBUY,
-PRODUCTS.PRICESELL,
-COALESCE(PRODUCTS.STOCKVOLUME, 0) AS STOCKVOLUME,
-COALESCE(PRODUCTS.STOCKCOST, 0) AS STOCKCOST,
-COALESCE(STOCKCURRENT.STOCKSECURITY, 0) AS STOCKSECURITY,
-COALESCE(STOCKCURRENT.STOCKMAXIMUM, 0) AS STOCKMAXIMUM
-FROM STOCKCURRENT
-JOIN LOCATIONS ON STOCKCURRENT.LOCATION = LOCATIONS.ID
-JOIN PRODUCTS ON STOCKCURRENT.PRODUCT = PRODUCTS.REFERENCE
-JOIN CATEGORIES ON PRODUCTS.CATEGORY = CATEGORIES.ID
+STOCKCURRENT.LOCATION AS "LOCATIONID",
+LOCATIONS.NAME AS "LOCATIONNAME",
+PRODUCTS.REFERENCE AS "REFERENCE",
+PRODUCTS.NAME AS "NAME",
+PRODUCTS.CATEGORY AS "CATEGORY",
+CATEGORIES.NAME AS "CATEGORYNAME",
+STOCKCURRENT.UNITS AS "UNITS",
+PRODUCTS.PRICEBUY AS "PRICEBUY",
+PRODUCTS.PRICESELL AS "PRICESELL",
+COALESCE(PRODUCTS.STOCKVOLUME, 0) AS "STOCKVOLUME",
+COALESCE(PRODUCTS.STOCKCOST, 0) AS "STOCKCOST",
+COALESCE(sl.STOCKSECURITY, 0) AS "STOCKSECURITY",
+COALESCE(sl.STOCKMAXIMUM, 0) AS "STOCKMAXIMUM"
+FROM PRODUCTS
+INNER JOIN CATEGORIES  ON (PRODUCTS.Category = CATEGORIES.ID)
+INNER JOIN STOCKCURRENT ON (PRODUCTS.ID = STOCKCURRENT.PRODUCT)
+INNER JOIN LOCATIONS ON (STOCKCURRENT.LOCATION = LOCATIONS.ID)
+LEFT JOIN (
+	SELECT 
+		ID,
+		Location,
+		Product,
+		StockSecurity,
+		StockMaximum
+	FROM StockLevel
+) sl ON (sl.Location = LOCATIONS.ID AND PRODUCTS.ID = sl.Product)
+
 ORDER BY STOCKCURRENT.LOCATION, CATEGORIES.NAME, PRODUCTS.NAME]]>
 	</queryString>
+	<field name="LOCATIONID" class="java.lang.String"/>
+	<field name="LOCATIONNAME" class="java.lang.String"/>
 	<field name="REFERENCE" class="java.lang.String"/>
 	<field name="NAME" class="java.lang.String"/>
 	<field name="CATEGORY" class="java.lang.String"/>
@@ -39,349 +46,165 @@ ORDER BY STOCKCURRENT.LOCATION, CATEGORIES.NAME, PRODUCTS.NAME]]>
 	<field name="STOCKVOLUME" class="java.lang.Double"/>
 	<field name="STOCKCOST" class="java.lang.Double"/>
 	<field name="STOCKSECURITY" class="java.lang.Double"/>
-	<field name="LOCATIONID" class="java.lang.String"/>
-	<field name="LOCATIONNAME" class="java.lang.String"/>
 	<field name="STOCKMAXIMUM" class="java.lang.Double"/>
-	<variable name="BUYVALUE" class="java.lang.Double" resetType="Group" resetGroup="LOCATIONSGROUP" calculation="Sum">
+	<variable name="BUYVALUE" class="java.lang.Double" resetType="Group" resetGroup="Location" calculation="Sum">
 		<variableExpression><![CDATA[new Double($F{PRICEBUY}.doubleValue() * $F{UNITS}.doubleValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[new Double(0.0)]]></initialValueExpression>
 	</variable>
-	<variable name="SELLVALUE" class="java.lang.Double" resetType="Group" resetGroup="LOCATIONSGROUP" calculation="Sum">
+	<variable name="SELLVALUE" class="java.lang.Double" resetType="Group" resetGroup="Location" calculation="Sum">
 		<variableExpression><![CDATA[new Double($F{PRICESELL}.doubleValue() * $F{UNITS}.doubleValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[new Double(0.0)]]></initialValueExpression>
 	</variable>
-	<variable name="VOLUMEVALUE" class="java.lang.Double" resetType="Group" resetGroup="LOCATIONSGROUP" calculation="Sum">
+	<variable name="VOLUMEVALUE" class="java.lang.Double" resetType="Group" resetGroup="Location" calculation="Sum">
 		<variableExpression><![CDATA[new Double($F{STOCKVOLUME}.doubleValue() * $F{UNITS}.doubleValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[new Double(0.0)]]></initialValueExpression>
 	</variable>
-	<variable name="COSTVALUE" class="java.lang.Double" resetType="Group" resetGroup="LOCATIONSGROUP" calculation="Sum">
+	<variable name="COSTVALUE" class="java.lang.Double" resetType="Group" resetGroup="Location" calculation="Sum">
 		<variableExpression><![CDATA[new Double($F{STOCKCOST}.doubleValue() * $F{UNITS}.doubleValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[new Double(0.0)]]></initialValueExpression>
 	</variable>
-	<group name="LOCATIONSGROUP">
+	<group name="Location">
 		<groupExpression><![CDATA[$F{LOCATIONID}]]></groupExpression>
 		<groupHeader>
-			<band height="32">
-				<rectangle radius="0">
-					<reportElement key="rectangle-3" mode="Opaque" x="0" y="0" width="782" height="30" forecolor="#000000" backcolor="#FFFFFF" uuid="faaa97a9-f44e-48e3-8cec-1a52a6b9ad1d"/>
-					<graphicElement fill="Solid">
-						<pen lineWidth="0.25" lineStyle="Solid"/>
-					</graphicElement>
-				</rectangle>
-				<textField pattern="" isBlankWhenNull="true">
-					<reportElement key="textField-4" mode="Transparent" x="5" y="3" width="310" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="4c83663a-f597-4741-93fc-6082e8e7e4ed"/>
+			<band height="21">
+				<textField>
+					<reportElement x="2" y="0" width="609" height="20" uuid="49f9e889-7c6d-4e96-a073-9ce0a2af7189"/>
 					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="1.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<bottomPen lineWidth="1.0"/>
 					</box>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+					<textElement>
+						<font size="13" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{LOCATIONNAME}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="50">
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-4" mode="Opaque" x="100" y="26" width="110" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="58ce2795-733c-4b89-aa5f-731707cc4643"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+			<band height="22">
+				<textField>
+					<reportElement x="324" y="0" width="113" height="20" uuid="3b8424f9-63d9-4eb5-acfc-f11799f90206"/>
+					<textElement textAlignment="Right">
+						<font size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($V{BUYVALUE})]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-4" mode="Opaque" x="252" y="26" width="118" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="432dd031-a658-41eb-b884-cd1211eb7cc5"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="438" y="0" width="110" height="20" uuid="ee3264f7-b4f9-49f3-9c8a-9969028d5750"/>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($V{SELLVALUE})]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-4" mode="Opaque" x="370" y="26" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="8e9fe16d-bcff-4abd-a841-9e1016bdfd28"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="539" y="0" width="90" height="20" uuid="685f7e7e-46e9-4ed0-8a6c-3bafeda4c93b"/>
+					<textElement textAlignment="Right">
+						<font size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($V{VOLUMEVALUE})]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-4" mode="Opaque" x="450" y="26" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="31f1b878-092e-49f0-98d9-6a69c01c7c07"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="629" y="-1" width="123" height="20" uuid="847e2714-3d32-4313-a290-7351f44883aa"/>
+					<textElement textAlignment="Right">
+						<font size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($V{COSTVALUE})]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="50" y="6" width="160" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="c54f8f80-67d2-4fef-937f-ea5ceb9790f6"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuebuy}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="210" y="6" width="160" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="257a250a-ea36-457a-befd-c84293f9ff99"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuesell}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="370" y="6" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41a2eaf9-fb31-44e9-a8b4-dec86b9222dc"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuevolume}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="450" y="6" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="ffd96e37-cf4f-4c5f-a2ed-1e31adf3d746"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuecost}]]></textFieldExpression>
-				</textField>
-				<line>
-					<reportElement key="line-6" mode="Opaque" x="100" y="3" width="432" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="281042d1-5be3-4984-a16a-48c33ad3bad0"/>
-					<graphicElement fill="Solid">
-						<pen lineWidth="0.25" lineStyle="Solid"/>
-					</graphicElement>
-				</line>
 			</band>
 		</groupFooter>
 	</group>
-	<group name="CATEGORIESGROUP">
+	<group name="Category">
 		<groupExpression><![CDATA[$F{CATEGORY}]]></groupExpression>
 		<groupHeader>
-			<band height="93">
-				<textField pattern="" isBlankWhenNull="true">
-					<reportElement key="textField-4" mode="Transparent" x="3" y="2" width="300" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="4c6b58c9-e6ef-4ba6-b3bf-cdf0fccf8a8a"/>
+			<band height="54">
+				<textField>
+					<reportElement x="18" y="0" width="734" height="20" uuid="740ee97c-ca75-4188-976e-ccd14fdf4096"/>
 					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<bottomPen lineWidth="1.0"/>
 					</box>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+					<textElement>
+						<font size="12" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{CATEGORYNAME}]]></textFieldExpression>
 				</textField>
-				<line>
-					<reportElement key="line-4" mode="Opaque" x="0" y="23" width="782" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="aa903d74-e2fa-480d-b1fc-0ffa6a2eb893"/>
-					<graphicElement fill="Solid">
-						<pen lineWidth="0.25" lineStyle="Solid"/>
-					</graphicElement>
-				</line>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="184" y="28" width="79" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="b8b539a3-beb8-4668-8ac9-3ac8c9a55f2c"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.sec}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="314" y="28" width="59" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="e81d6109-a368-4a4f-aa1f-a7360f4cd2af"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.units}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-10" mode="Opaque" x="69" y="28" width="117" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="43235d60-a77e-4d64-b7ff-32fdb504b9f6"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.name}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-9" mode="Opaque" x="0" y="28" width="70" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="8e2d182e-ebb3-4075-856f-1ee5602321f8"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="1" y="34" width="65" height="20" uuid="eecc88a7-0297-4778-aded-78c448df7b75"/>
+					<textElement>
+						<font size="11" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{label.ref}]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="657" y="28" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="5116d344-ac1d-4d2f-9b1d-d527b720465f"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="65" y="34" width="65" height="20" uuid="8f660ddd-ac80-4dfe-9fdb-a0bc7a0c8bc4"/>
+					<textElement>
+						<font size="11" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuecost}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$R{label.name}]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="578" y="28" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="dd951b5f-788d-4eaf-9bf7-624701b5f3b8"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="130" y="34" width="65" height="20" uuid="ca67e3ae-70a9-432b-ae43-47b3c0b040b4"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuevolume}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$R{label.sec}]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="481" y="28" width="98" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="a35cdf7c-90ca-47d0-8ee7-ccede3fcedc1"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuesell}]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-11" mode="Opaque" x="370" y="28" width="112" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="e02eb4de-7de0-475a-9da7-b2c34004c4d1"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$R{label.valuebuy}]]></textFieldExpression>
-				</textField>
-				<line>
-					<reportElement key="line-1" mode="Opaque" x="0" y="85" width="530" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="0a6e81d4-ec13-4844-a10f-018f47406bc9"/>
-					<graphicElement fill="Solid">
-						<pen lineWidth="0.25" lineStyle="Solid"/>
-					</graphicElement>
-				</line>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement key="textField-12" mode="Opaque" x="252" y="28" width="64" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="c2aeb55c-dab5-4817-aa7a-7b2c30e7bae3"/>
-					<box>
-						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.0" lineColor="#000000"/>
-						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-						<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-						<paragraph lineSpacing="Single"/>
+				<textField>
+					<reportElement x="194" y="34" width="65" height="20" uuid="4b9216a3-dbd3-49af-865d-3519c7d7aae1"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$R{label.max}]]></textFieldExpression>
 				</textField>
+				<textField>
+					<reportElement x="258" y="34" width="65" height="20" uuid="82ad90b8-6498-49fb-97c5-9cba13321892"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{label.units}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="322" y="34" width="116" height="20" uuid="1ec942bc-2a0d-4f7e-a9d6-f3416ec93de8"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{label.valuebuy}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="437" y="34" width="97" height="20" uuid="e10c42c0-2c93-495f-8435-5b907a7a2a04"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{label.valuesell}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="533" y="34" width="96" height="20" uuid="c0dfa5be-7aa6-4675-9cc7-b8eb35b124a3"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{label.valuevolume}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="642" y="34" width="107" height="20" uuid="ec24a52f-0173-40db-a72a-87fa178bbc67"/>
+					<textElement textAlignment="Right">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{label.valuecost}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupHeader>
-		<groupFooter>
-			<band/>
-		</groupFooter>
 	</group>
 	<background>
-		<band/>
+		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="59">
+		<band height="52" splitType="Stretch">
 			<rectangle radius="5">
-				<reportElement key="rectangle-4" mode="Opaque" x="0" y="0" width="530" height="36" forecolor="#000000" backcolor="#409617" uuid="0375d613-d142-4576-8dcd-64c3a89a1b37"/>
+				<reportElement key="rectangle-4" mode="Opaque" x="1" y="1" width="751" height="36" forecolor="#000000" backcolor="#409617" uuid="ca68ec5d-f3cf-4005-8b32-e06b340baf93"/>
 				<graphicElement fill="Solid">
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<image scaleImage="Clip">
-				<reportElement key="image-1" x="390" y="1" width="132" height="34" uuid="ffd336ac-e417-435e-9504-330217a623c4"/>
+				<reportElement key="image-1" x="615" y="2" width="132" height="34" uuid="94556afc-891b-4b9b-90d2-1b58bb4df762"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -391,7 +214,7 @@ ORDER BY STOCKCURRENT.LOCATION, CATEGORIES.NAME, PRODUCTS.NAME]]>
 				<imageExpression><![CDATA[com.openbravo.data.loader.ImageUtils.readImageFromResource("/com/openbravo/images/poweredby.png")]]></imageExpression>
 			</image>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-13" mode="Transparent" x="13" y="7" width="375" height="28" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="fc97e58a-ebc1-4fea-b29f-c7e591ce7aa2"/>
+				<reportElement key="textField-13" mode="Transparent" x="3" y="4" width="269" height="28" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="bb25ad33-6e78-4c72-81e7-28fad40c9c1e"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -406,303 +229,150 @@ ORDER BY STOCKCURRENT.LOCATION, CATEGORIES.NAME, PRODUCTS.NAME]]>
 			</textField>
 		</band>
 	</title>
-	<pageHeader>
-		<band/>
-	</pageHeader>
-	<columnHeader>
-		<band/>
-	</columnHeader>
 	<detail>
-		<band height="46">
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="290" y="0" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="b45bdf89-c6c0-48d5-9c3b-f7d00a84eb02">
-					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()>= $F{STOCKSECURITY}.doubleValue())]]></printWhenExpression>
-				</reportElement>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="1" width="66" height="20" uuid="1933f30e-48e6-4c0d-87a8-b9c822f557ef"/>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKSECURITY})]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="450" y="20" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="5997b28b-06a0-40c7-aad3-331c2a6aae25"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{STOCKCOST}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-1" mode="Opaque" x="0" y="0" width="70" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="4334f489-1f95-4eb6-9c60-ef1a69ef2321"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
+				<textElement>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{REFERENCE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-3" mode="Opaque" x="80" y="0" width="200" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="94b8abe9-6f51-4df8-aef1-3adf09653795"/>
+			<textField>
+				<reportElement x="64" y="1" width="66" height="20" uuid="1939addc-4ec2-4646-9366-ea405ef83c06"/>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
+				<textElement>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="450" y="0" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="07272f06-1a8e-410d-8710-9069383b6401">
-					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()>= $F{STOCKSECURITY}.doubleValue()
-         && $F{UNITS}.doubleValue()<= $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{UNITS})]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="13" y="20" width="117" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="685e6865-7084-4961-8315-5b77d7d9efad"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($F{PRICEBUY})]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="210" y="20" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="6ebe3008-51e0-4dfa-8c81-ef9418536971"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($F{PRICESELL})]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="290" y="0" width="80" height="20" forecolor="#FF0000" backcolor="#FFFFFF" uuid="021a20b6-3572-43ea-8fef-ab0f3cedd848">
+			<textField>
+				<reportElement x="129" y="1" width="66" height="20" forecolor="#FF0000" uuid="c1e279da-72c7-4074-9bea-a023486f1af2">
 					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()< $F{STOCKSECURITY}.doubleValue())]]></printWhenExpression>
 				</reportElement>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKSECURITY})]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="370" y="20" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="71803344-039e-447e-9b73-bbe77dac892b"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue(new Double($F{STOCKVOLUME}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="290" y="20" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="da0c06d6-664a-4051-8cd9-05fc40f99117"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{PRICESELL}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="130" y="20" width="122" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="b31b4765-21e8-4596-afc9-c8414f9a3f1b"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{PRICEBUY}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement key="line-5" mode="Opaque" x="0" y="37" width="530" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="bc25c549-9888-42c4-9245-89cadefdf3c9"/>
-				<graphicElement fill="Solid">
-					<pen lineWidth="0.25" lineStyle="Solid"/>
-				</graphicElement>
-			</line>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="450" y="0" width="80" height="20" forecolor="#FF0033" backcolor="#FFFFFF" uuid="9b8da606-02b4-4b98-9056-fbf76a9017f0">
-					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()< $F{STOCKSECURITY}.doubleValue())]]></printWhenExpression>
+			<textField>
+				<reportElement x="130" y="1" width="65" height="20" uuid="b108dbd3-59a1-433d-be0f-5814d3d1262f">
+					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()>= $F{STOCKSECURITY}.doubleValue())]]></printWhenExpression>
 				</reportElement>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{UNITS})]]></textFieldExpression>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKSECURITY})]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="370" y="0" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="f691fd67-fe5b-4150-82be-19466ebbb826">
+			<textField>
+				<reportElement x="194" y="1" width="65" height="20" forecolor="#330099" uuid="40205508-58d2-40c3-afb5-d4bec924ecaf">
+					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()> $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKMAXIMUM})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="195" y="1" width="64" height="20" uuid="07c7532d-4bbc-4969-941d-2b62f6cb4f04">
 					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()<= $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
 				</reportElement>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKMAXIMUM})]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="370" y="0" width="80" height="20" forecolor="#330099" backcolor="#FFFFFF" uuid="dff9428a-9799-4479-8cd8-a278e62b7fe8">
-					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()> $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
+			<textField>
+				<reportElement x="259" y="1" width="64" height="20" forecolor="#FF0033" uuid="e042adc4-8571-40c1-bfe1-d70ee5c46bd2">
+					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()< $F{STOCKSECURITY}.doubleValue())]]></printWhenExpression>
 				</reportElement>
 				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{STOCKMAXIMUM})]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-4" mode="Opaque" x="450" y="0" width="80" height="20" forecolor="#330099" backcolor="#FFFFFF" uuid="6f488692-98a9-4e43-a510-b4fb8115f7a2">
-					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()> $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{UNITS})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="259" y="1" width="64" height="20" uuid="6bbf13cf-ea63-4257-abea-4c9f29072805">
+					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()> $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{UNITS})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="1" width="64" height="20" forecolor="#000000" uuid="1b65eb6f-22a2-4e8d-9548-2d9606a233f3">
+					<printWhenExpression><![CDATA[new Boolean($F{UNITS}.doubleValue()>= $F{STOCKSECURITY}.doubleValue()          && $F{UNITS}.doubleValue()<= $F{STOCKMAXIMUM}.doubleValue())]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue($F{UNITS})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="323" y="1" width="115" height="20" uuid="c926d26e-cfa1-4ca8-bb8e-cff32f4a6795">
+					<printWhenExpression><![CDATA[new Boolean(false)]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($F{PRICEBUY})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="324" y="1" width="115" height="20" uuid="6d7d05f1-221a-4e6c-9ac6-155d0120ae8a"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{PRICEBUY}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="1" width="96" height="20" uuid="6fa1ac8e-a260-4daa-8b76-1232ac494838">
+					<printWhenExpression><![CDATA[new Boolean(false)]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue($F{PRICESELL})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="1" width="97" height="20" uuid="64e65b47-7d24-4756-bb25-4d97d6fbf3b1"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{PRICESELL}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="533" y="1" width="96" height="20" uuid="16b91d35-0d09-43d1-ad16-0034418f5a27"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.DOUBLE.formatValue(new Double($F{STOCKVOLUME}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="629" y="1" width="120" height="20" uuid="8b301d01-8e76-40ae-91c9-d0835bfcf1c2"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double($F{STOCKCOST}.doubleValue() * $F{UNITS}.doubleValue()))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band/>
-	</columnFooter>
-	<pageFooter>
-		<band height="46">
-			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-6" mode="Opaque" x="422" y="17" width="40" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="e6fbf8c0-4bef-4f4d-858c-ba14f694276b"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-7" mode="Opaque" x="482" y="17" width="40" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="849efba5-5ad8-4526-b97c-61d906e40507"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-5" mode="Opaque" x="462" y="17" width="20" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="e36f8883-99c1-486f-8334-2f991d7a7f15"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Top" rotation="None">
-					<font fontName="Dialog" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<text><![CDATA[/]]></text>
-			</staticText>
-			<line>
-				<reportElement key="line-3" mode="Opaque" x="3" y="3" width="530" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="14660874-cdd8-4f60-aa3f-6b8692d24443"/>
-				<graphicElement fill="Solid">
-					<pen lineWidth="0.25" lineStyle="Solid"/>
-				</graphicElement>
-			</line>
-		</band>
-	</pageFooter>
-	<summary>
-		<band/>
-	</summary>
 </jasperReport>
