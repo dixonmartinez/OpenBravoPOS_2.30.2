@@ -37,7 +37,13 @@ public class JRDataSourceBasic implements JRDataSource {
     
     private ReportFields m_fields = null;
     
-    /** Creates a new instance of JRDataSourceBasic */
+    /** 
+     * Creates a new instance of JRDataSourceBasic
+     * @param sent
+     * @param fields
+     * @param params
+     * @throws BasicException 
+     */
     public JRDataSourceBasic(BaseSentence sent, ReportFields fields, Object params) throws BasicException  {   
         
         this.sent = sent;
@@ -45,6 +51,7 @@ public class JRDataSourceBasic implements JRDataSource {
         m_fields = fields;
     }
     
+    @Override
     public Object getFieldValue(JRField jrField) throws JRException {
         
         try {
@@ -54,6 +61,7 @@ public class JRDataSourceBasic implements JRDataSource {
         }
     }
     
+    @Override
     public boolean next() throws JRException {
         
         if (SRS == null) {

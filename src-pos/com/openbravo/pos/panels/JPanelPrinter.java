@@ -35,7 +35,8 @@ import com.openbravo.pos.printer.DevicePrinter;
  */
 public class JPanelPrinter extends JPanel implements JPanelView {
 
-    /** Creates new form JPrinter */
+    /** Creates new form JPrinter
+     * @param oApp */
     public JPanelPrinter(AppView oApp) {
        
         initComponents();
@@ -59,14 +60,18 @@ public class JPanelPrinter extends JPanel implements JPanelView {
         }
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Printer");
     }        
+    @Override
     public void activate() throws BasicException {
     }
+    @Override
     public boolean deactivate() {
         return true;
     }

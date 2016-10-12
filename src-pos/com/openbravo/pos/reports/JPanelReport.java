@@ -59,10 +59,11 @@ public abstract class JPanelReport extends JPanel implements JPanelView, BeanFac
         initComponents();      
     }
     
+    @Override
     public void init(AppView app) throws BeanFactoryException {   
         
         m_App = app;
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         taxsent = dlSales.getTaxList();
         
         editor = getEditorCreator();
@@ -82,18 +83,19 @@ public abstract class JPanelReport extends JPanel implements JPanelView, BeanFac
                 JasperDesign jd = JRXmlLoader.load(getClass().getResourceAsStream(getReport() + ".jrxml"));            
                 jr = JasperCompileManager.compileReport(jd);    
             } else {
-                // read the compiled report
-                ObjectInputStream oin = new ObjectInputStream(in);
-                jr = (JasperReport) oin.readObject();
-                oin.close();
+                try ( // read the compiled report
+                        ObjectInputStream oin = new ObjectInputStream(in)) {
+                    jr = (JasperReport) oin.readObject();
+                }
             }
-        } catch (Exception e) {
+        } catch (JRException | IOException | ClassNotFoundException e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotloadreport"), e);
             msg.show(this);
             jr = null;
         }  
     }
     
+    @Override
     public Object getBean() {
         return this;
     }
@@ -106,16 +108,19 @@ public abstract class JPanelReport extends JPanel implements JPanelView, BeanFac
         return null;
     }
     
+    @Override
     public JComponent getComponent() {
         return this;
     }
     
+    @Override
     public void activate() throws BasicException {
 
         setVisibleFilter(true);
         taxeslogic = new TaxesLogic(taxsent.list()); 
     }    
     
+    @Override
     public boolean deactivate() {    
         
         reportviewer.loadJasperPrint(null);

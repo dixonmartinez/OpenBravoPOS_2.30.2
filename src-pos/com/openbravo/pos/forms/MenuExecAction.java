@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
  */
 public class MenuExecAction extends AbstractAction {
 
-    private AppView m_App;
+    private final AppView m_App;
     private final String m_sMyView;
     
     /** 

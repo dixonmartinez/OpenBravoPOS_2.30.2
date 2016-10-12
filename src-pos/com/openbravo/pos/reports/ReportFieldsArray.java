@@ -27,16 +27,18 @@ public class ReportFieldsArray implements ReportFields {
     
     private Map m_keys = null;
     
-    /** Creates a new instance of ReportFieldsArray */
+    /** Creates a new instance of ReportFieldsArray
+     * @param afields */
     public ReportFieldsArray(String[] afields) {
                
         // Creo el mapa de claves
         m_keys = new HashMap();
         for (int i = 0; i < afields.length; i++) {
-            m_keys.put(afields[i], new Integer(i));
+            m_keys.put(afields[i], i);
         }
     }
     
+    @Override
     public Object getField(Object record, String field) throws ReportException {
         
         Integer i = (Integer) m_keys.get(field);
@@ -44,10 +46,10 @@ public class ReportFieldsArray implements ReportFields {
             throw new ReportException(AppLocal.getIntString("exception.unavailablefield", new Object[] {field}));
         } else {
             Object[] arecord = (Object[]) record;
-            if (arecord == null || i.intValue() < 0 || i.intValue() >= arecord.length) {
+            if (arecord == null || i < 0 || i >= arecord.length) {
                 throw new ReportException(AppLocal.getIntString("exception.unavailablefields"));
             } else {
-                return arecord[i.intValue()];
+                return arecord[i];
             }
         }        
     }

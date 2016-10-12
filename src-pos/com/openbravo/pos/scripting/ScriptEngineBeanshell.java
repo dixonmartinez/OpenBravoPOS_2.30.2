@@ -37,6 +37,7 @@ class ScriptEngineBeanshell implements ScriptEngine {
         i = new Interpreter();
     }
     
+    @Override
     public void put(String key, Object value) {
         
         try {
@@ -45,6 +46,7 @@ class ScriptEngineBeanshell implements ScriptEngine {
         }
     }
     
+    @Override
     public Object get(String key) {
         
         try {
@@ -54,6 +56,7 @@ class ScriptEngineBeanshell implements ScriptEngine {
         }
     }
     
+    @Override
     public Object eval(String src) throws ScriptException {
 
         try {

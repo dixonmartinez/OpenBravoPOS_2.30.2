@@ -29,40 +29,45 @@ import java.util.List;
 
 public class JParamsComposed extends javax.swing.JPanel implements ReportEditorCreator {
     
-    private List<ReportEditorCreator> editors = new ArrayList<ReportEditorCreator>();
+    private final List<ReportEditorCreator> editors = new ArrayList<>();
     
     /** Creates new form JParamsComposed */
     public JParamsComposed() {
         initComponents();   
     }
 
+    @Override
     public void init(AppView app) {
-        for (ReportEditorCreator qbff : editors) {
+        editors.stream().forEach((qbff) -> {
             qbff.init(app);
-        }
+        });
     }
 
+    @Override
     public void activate() throws BasicException {
         for (ReportEditorCreator qbff : editors) {
             qbff.activate();
         }
     }
 
+    @Override
     public SerializerWrite getSerializerWrite() {
         
         SerializerWriteComposed sw = new SerializerWriteComposed();
         
-        for (ReportEditorCreator qbff : editors) {
+        editors.stream().forEach((qbff) -> {
             sw.add(qbff.getSerializerWrite());
-        }        
+        });        
     
         return sw;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }  
     
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] value = new Object[editors.size()];

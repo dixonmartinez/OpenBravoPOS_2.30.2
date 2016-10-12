@@ -45,12 +45,12 @@ public class PanelReportBean extends JPanelReport {
     
     private String sentence;
     
-    private List<Datas> fielddatas = new ArrayList<Datas>();
-    private List<String> fieldnames = new ArrayList<String>();
+    private final List<Datas> fielddatas = new ArrayList<>();
+    private final List<String> fieldnames = new ArrayList<>();
     
-    private List<String> paramnames = new ArrayList<String>();
+    private final List<String> paramnames = new ArrayList<>();
     
-    private JParamsComposed qbffilter = new JParamsComposed();
+    private final JParamsComposed qbffilter = new JParamsComposed();
     
     @Override
     public void init(AppView app) throws BeanFactoryException {   
@@ -85,6 +85,7 @@ public class PanelReportBean extends JPanelReport {
         title = AppLocal.getIntString(titlekey);
     }
     
+    @Override
     public String getTitle() {
         return title;
     } 
@@ -93,6 +94,7 @@ public class PanelReportBean extends JPanelReport {
         this.report = report;
     }
     
+    @Override
     protected String getReport() {
         return report;
     }  
@@ -101,6 +103,7 @@ public class PanelReportBean extends JPanelReport {
         this.resourcebundle = resourcebundle;
     }
     
+    @Override
     protected String getResourceBundle() {
         return resourcebundle == null 
                 ? report 
@@ -120,6 +123,7 @@ public class PanelReportBean extends JPanelReport {
         paramnames.add(name);        
     }
     
+    @Override
     protected BaseSentence getSentence() {
         return new StaticSentence(m_App.getSession()
             , new QBFBuilder(sentence, paramnames.toArray(new String[paramnames.size()]))
@@ -127,6 +131,7 @@ public class PanelReportBean extends JPanelReport {
             , new SerializerReadBasic(fielddatas.toArray(new Datas[fielddatas.size()])));
     }
     
+    @Override
     protected ReportFields getReportFields() {
         return new ReportFieldsArray(fieldnames.toArray(new String[fieldnames.size()]));
     }       

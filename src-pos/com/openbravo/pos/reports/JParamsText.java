@@ -33,7 +33,7 @@ import java.awt.Component;
  *
  * @author  adrianromero
  */
-public class JParamsText extends javax.swing.JPanel implements ReportEditorCreator {
+public final class JParamsText extends javax.swing.JPanel implements ReportEditorCreator {
     
     private Datas datasvalue;
     private Formats formatsvalue;
@@ -114,21 +114,26 @@ public class JParamsText extends javax.swing.JPanel implements ReportEditorCreat
         }
     }
     
+    @Override
     public void init(AppView app) {
     }
 
+    @Override
     public void activate() throws BasicException {
         txtField.setText(null);
     }
     
+    @Override
     public SerializerWrite getSerializerWrite() {
         return new SerializerWriteBasic(new Datas[] {Datas.OBJECT, datasvalue});
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public Object createValue() throws BasicException {
         
         Object value = formatsvalue.parseValue(txtField.getText());
