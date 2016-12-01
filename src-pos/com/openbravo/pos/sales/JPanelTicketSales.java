@@ -44,10 +44,12 @@ public class JPanelTicketSales extends JPanelTicket {
         m_ticketlines.addListSelectionListener(new CatalogSelectionListener());
     }
     
+    @Override
     public String getTitle() {
         return null;
     }
     
+    @Override
     protected Component getSouthComponent() {
         m_cat = new JCatalog(dlSales,
                 "true".equals(m_jbtnconfig.getProperty("pricevisible")),
@@ -61,10 +63,12 @@ public class JPanelTicketSales extends JPanelTicket {
         return m_cat.getComponent();
     }
 
+    @Override
     protected void resetSouthComponent() {
         m_cat.showCatalogPanel(null);
     }
     
+    @Override
     protected JTicketsBag getJTicketsBag() {
         return JTicketsBag.createTicketsBag(m_App.getProperties().getProperty("machine.ticketsbag"), m_App, this);
     }
@@ -76,12 +80,14 @@ public class JPanelTicketSales extends JPanelTicket {
     }      
     
     private class CatalogListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             buttonTransition((ProductInfoExt) e.getSource());
         }  
     }
     
     private class CatalogSelectionListener implements ListSelectionListener {
+        @Override
         public void valueChanged(ListSelectionEvent e) {      
             
             if (!e.getValueIsAdjusting()) {
