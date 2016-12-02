@@ -95,4 +95,5 @@
     <class name="com.openbravo.pos.config.JPanelConfiguration"/>
     <class name="button.print"/>
     <class name="button.opendrawer"/>
+	<class name="sales.Discount"/>
 </permissions>

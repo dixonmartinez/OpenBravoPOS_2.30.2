@@ -36,4 +36,16 @@
     <!-- <printselected value="true"/> -->    
     <!-- <taxcategoryid value="001"/> -->
     <!-- <pricevisible value="true" /> -->
+    
+    <cat-visible value="true"/>
+    <taxesincluded value="false"/>
+    <attributes-autoset value="true"/>   
+	<refmultcontrol value="true"/>
+    <discount-rate-visible value="true"/>
+    <discount-rate-1 value="5"/>
+    <discount-rate-2 value="10"/>
+    <discount-rate-3 value="15"/>
+    <price-is-zero value="true"/>
+    
+    
 </configuration>

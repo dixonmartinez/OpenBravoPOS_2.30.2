@@ -28,6 +28,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.data.loader.SerializableWrite;
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.util.RoundUtils;
 import java.util.Properties;
 
 /**
@@ -316,4 +317,30 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public String printValue() {
         return Formats.CURRENCY.formatValue(getValue());
     }
+    
+    //  Dixon Martinez
+    
+    /**
+     * Get value to Discount Rate
+     * @return DiscountRate
+     */
+    public double getDiscountRate() {
+        return Double.parseDouble(attributes.getProperty("discountRate","0.0"));
+    }
+    
+    /**
+     * Get Price Tax no discount
+     * @return priceNoDiscount
+     */
+    public double getPriceTaxNoDiscount() {
+        double discountRate = getDiscountRate();
+        double priceNoDiscount = 0.0;
+        
+        if(discountRate != 1.0) {
+            priceNoDiscount = getPriceTax() / (1 - getDiscountRate());
+        }
+        
+        return RoundUtils.round(priceNoDiscount);
+    }
+    
 }
