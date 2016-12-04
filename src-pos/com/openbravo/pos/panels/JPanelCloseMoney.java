@@ -63,10 +63,11 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         initComponents();                   
     }
     
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         
         m_App = app;        
-        m_dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        m_dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(
@@ -86,22 +87,27 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
     }
     
+    @Override
     public Object getBean() {
         return this;
     }
     
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.CloseTPV");
     }    
     
+    @Override
     public void activate() throws BasicException {
         loadData();
     }   
     
+    @Override
     public boolean deactivate() {
         // se me debe permitir cancelar el deactivate   
         return true;
@@ -151,18 +157,18 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jTicketTable.setModel(m_PaymentsToClose.getPaymentsModel());
                 
         TableColumnModel jColumns = m_jTicketTable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
-        jColumns.getColumn(0).setResizable(false);
-        jColumns.getColumn(1).setPreferredWidth(100);
-        jColumns.getColumn(1).setResizable(false);
+        jColumns.getColumn(0).setPreferredWidth(300);
+        jColumns.getColumn(0).setResizable(true);
+        jColumns.getColumn(1).setPreferredWidth(200);
+        jColumns.getColumn(1).setResizable(true);
         
         m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
         
         jColumns = m_jsalestable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
-        jColumns.getColumn(0).setResizable(false);
-        jColumns.getColumn(1).setPreferredWidth(100);
-        jColumns.getColumn(1).setResizable(false);
+         jColumns.getColumn(0).setPreferredWidth(300);
+        jColumns.getColumn(0).setResizable(true);
+        jColumns.getColumn(1).setPreferredWidth(200);
+        jColumns.getColumn(1).setResizable(true);
     }   
     
     private void printPayments(String report) {
@@ -176,10 +182,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("payments", m_PaymentsToClose);
                 m_TTP.printTicket(script.eval(sresource).toString());
-            } catch (ScriptException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
-                msg.show(this);
-            } catch (TicketPrinterException e) {
+            } catch (ScriptException | TicketPrinterException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(this);
             }
@@ -187,12 +190,15 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
     }
 
     private class FormatsPayment extends Formats {
+        @Override
         protected String formatValueInt(Object value) {
             return AppLocal.getIntString("transpayment." + (String) value);
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return value;
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.LEFT;
         }         
@@ -273,7 +279,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(m_jMaxDate, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(319, Short.MAX_VALUE))
+                .addContainerGap(561, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,7 +325,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(m_jScrollTableTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(m_jScrollTableTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
@@ -330,7 +336,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(m_jCash, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(114, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,6 +358,8 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
 
         m_jSalesTotal.setEditable(false);
         m_jSalesTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        m_jScrollSales.setPreferredSize(new java.awt.Dimension(350, 140));
 
         m_jsalestable.setFocusable(false);
         m_jsalestable.setIntercellSpacing(new java.awt.Dimension(0, 1));
@@ -382,7 +390,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(m_jScrollSales, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(m_jScrollSales, javax.swing.GroupLayout.PREFERRED_SIZE, 547, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
@@ -401,7 +409,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(m_jSalesTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -449,8 +457,9 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(m_jPrintCash)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(m_jCloseCash))
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -466,7 +475,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(m_jCloseCash)
                     .addComponent(m_jPrintCash))

@@ -46,6 +46,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     private Properties attributes;
     private String productid;
     private String attsetinstid;
+    private double rateDiscount;
 
     /** Creates new TicketLineInfo */
     public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax, Properties props) {
@@ -139,6 +140,8 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         } catch (IOException e) {
             dp.setBytes(8, null);
         }
+        //	Dixon Martinez
+        dp.setDouble(9, rateDiscount);
     }
 
     public void readValues(DataRead dr) throws BasicException {
@@ -159,6 +162,8 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
             }
         } catch (IOException e) {
         }
+        //	Dixon Martinez
+        rateDiscount = dr.getDouble(17);
     }
 
     public TicketLineInfo copyTicketLine() {
@@ -171,6 +176,8 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         l.price = price;
         l.tax = tax;
         l.attributes = (Properties) attributes.clone();
+        //	Dixon Martinez
+        l.rateDiscount = rateDiscount;
         return l;
     }
 
@@ -321,6 +328,14 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     //  Dixon Martinez
     
     /**
+     * Print Discount Rate
+     * @return 
+     */
+    public String printDiscountRate() {
+    	return Formats.PERCENT.formatValue(getDiscountRate());
+    }
+    
+    /**
      * Get value to Discount Rate
      * @return DiscountRate
      */
@@ -343,4 +358,11 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return RoundUtils.round(priceNoDiscount);
     }
     
+    public double getRateDiscount() {
+    	return this.rateDiscount;
+    }
+    
+    public void setRateDiscount(double rateDiscount) {
+    	this.rateDiscount = rateDiscount;
+    }
 }

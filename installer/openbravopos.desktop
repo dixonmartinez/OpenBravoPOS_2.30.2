@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=2.30.2
+Encoding=UTF-8
+Name=Openbravo POS
+Terminal=false
+Exec=openbravopos
+Icon=openbravopos
+Type=Application
+InitialPreference=6
+Categories=Application;Office;
+StartupNotify=false
+GenericName=Openbravo POS
+Comment=Openbravo POS is a point of sale designed for touch screens
+Name[en_US]=Openbravo POS
+GenericName[en_US]=Openbravo POS

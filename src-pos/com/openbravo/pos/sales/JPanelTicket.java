@@ -470,21 +470,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 }
             }
             
-            //  Evalue Price distinct of zero
-            if(propConfig.getPropertyAsBoolean("price-is-zero")) {
-                if(oLine.getPrice() == 0.0) {
-                    int index = m_ticketlines.getSelectedIndex();
-                    Double setValuePrice = JNumberDialog.showEditNumber(this, AppLocal.getIntString("message.setPrice"));
-                    if(setValuePrice == null) {
-                        removeTicketLine(index);
-                    } else {
-                        oLine.setPrice(setValuePrice);
-                        paintTicketLine(index, oLine);
-                    }
-                }
-            }
-            
-            
             // event receipt
             executeEventAndRefresh("ticket.change");
         }
@@ -502,6 +487,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 update = true;
                 Double cant = m_oTicket.getLine(i).getMultiply()+ oLine.getMultiply();
                 m_oTicket.getLine(i).setMultiply(cant);
+                setPrice(m_oTicket.getLine(i));
                 paintTicketLine(i,m_oTicket.getLine(i));
                 i = m_oTicket.getLinesCount();
             }
@@ -510,7 +496,27 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if(!update){
             // Producto normal, entonces al finalnewline.getMultiply()
             m_oTicket.addLine(oLine);            
-            m_ticketlines.addTicketLine(oLine); // Pintamos la linea en la vista... 
+            m_ticketlines.addTicketLine(oLine); // Pintamos la linea en la vista...
+            setPrice(oLine);
+        }
+        return oLine;
+    }
+    
+    private TicketLineInfo setPrice(TicketLineInfo oLine) {
+    //  Evalue Price distinct of zero
+        if(propConfig.getPropertyAsBoolean("price-is-zero")) {
+            if(oLine.getPrice() == 0.0) {
+                int index = m_ticketlines.getSelectedIndex();
+                Double setValuePrice = JNumberDialog.showEditNumber(this, AppLocal.getIntString("message.setPrice"));
+                if(setValuePrice == null) {
+                    removeTicketLine(index);
+                } else {
+                    oLine.setPrice(setValuePrice);
+                    //oLine = getUpdateLine(m_oTicket, oLine, index);
+                    paintTicketLine(index, oLine);
+                    //visorTicketLine(oLine);
+                }
+            }
         }
         return oLine;
     }
@@ -1924,7 +1930,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void m_jbtnDiscountRateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnDiscountRateActionPerformed
         if (typeDiscRate) {
-            m_jbtnDiscountRate.setText(AppLocal.getIntString("button.ticketdiscount"));
+            m_jbtnDiscountRate.setText(AppLocal.getIntString("button.ticketDiscount"));
             typeDiscRate = false;
         } else {
             m_jbtnDiscountRate.setText(AppLocal.getIntString("button.rowdiscount"));

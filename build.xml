@@ -32,7 +32,7 @@
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
     <property name="javac.debug" value="off"/>
-    <property name="javac.minVMVersion" value="1.6"/>
+    <property name="javac.minVMVersion" value="1.8"/>
     <!-- read in property files -->
     <property file="build.properties" />
     <property name="src.pos" value="${basedir}/src-pos"/>
@@ -311,7 +311,7 @@
             <fileset dir="${dest.classes}/pda"/>
         </copy>
 
-        <copy file="${basedir}/lib/derby.jar" todir="${basedir}/build/zip/WEB-INF/lib"/>
+        <copy file="${basedir}/lib/lib-jdbc/derby.jar" todir="${basedir}/build/zip/WEB-INF/lib"/>
 
         <mkdir dir="${dest.war}" />
         <war destfile="${dest.war}/${name}_${version}_pda.war"

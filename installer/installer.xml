@@ -1,0 +1,175 @@
+<project>
+    <shortName>openbravopos</shortName>
+    <fullName>Openbravo POS</fullName>
+    <version>2.30.2</version>
+    <readmeFile>../README</readmeFile>
+    <licenseFile>../licensing/gpl-3.0.txt</licenseFile>
+    <leftImage>images/left.png</leftImage>
+    <logoImage>images/icon.png</logoImage>
+    <splashImage>images/splash.png</splashImage>
+    <allowLanguageSelection>1</allowLanguageSelection>
+    <description>Openbravo POS is a point of sale designed for touch screens</description>
+    <enableRollback>1</enableRollback>
+    <outputDirectory>../build/installerpos</outputDirectory>
+    <release>3</release>
+    <requireInstallationByRootUser>1</requireInstallationByRootUser>
+    <summary>POS</summary>
+    <vendor>Openbravo</vendor>
+    <componentList>
+        <component>
+            <name>default</name>
+            <description>Default Component</description>
+            <canBeEdited>1</canBeEdited>
+            <selected>1</selected>
+            <show>1</show>
+            <desktopShortcutList>
+                <shortcut>
+                    <comment>Openbravo POS is a point of sale designed for touch screens</comment>
+                    <exec>sh ${installdir}/start.sh</exec>
+                    <icon>${installdir}/openbravo-logo-128.png</icon>
+                    <name>Openbravo POS</name>
+                    <path>${installdir}</path>
+                    <platforms>all</platforms>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/start.bat</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon>${installdir}/openbravo-logo.ico</windowsIcon>
+                    <windowsPath>${installdir}</windowsPath>
+                </shortcut>
+            </desktopShortcutList>
+            <startMenuShortcutList>
+                <startMenuShortcut>
+                    <comment>Openbravo POS is a point of sale designed for touch screens</comment>
+                    <name>Openbravo POS</name>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/start.bat</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon>${installdir}/openbravo-logo.ico</windowsIcon>
+                    <windowsPath>${installdir}</windowsPath>
+                </startMenuShortcut>
+                <startMenuShortcut>
+                    <comment>Configure Openbravo POS</comment>
+                    <name>Openbravo POS configuration</name>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/configure.bat</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon>${installdir}/openbravo-logo.ico</windowsIcon>
+                    <windowsPath>${installdir}</windowsPath>
+                </startMenuShortcut>
+                <startMenuShortcut>
+                    <comment>Uninstall ${product_fullname}</comment>
+                    <name>Uninstall ${product_fullname}</name>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/${uninstallerName}.exe</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon></windowsIcon>
+                    <windowsPath>${installdir}/</windowsPath>
+                </startMenuShortcut>
+            </startMenuShortcutList>
+            <folderList>
+                <folder>
+                    <description>DEB1</description>
+                    <destination>/usr/share/icons</destination>
+                    <name>openbravoposiscon</name>
+                    <platforms>linux</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>images/openbravopos.png</origin>
+                        </distributionFile>
+                    </distributionFileList>
+                </folder>
+                <folder>
+                    <description>DEB2</description>
+                    <destination>/usr/share/applications</destination>
+                    <name>openbravoposdesktop</name>
+                    <platforms>linux</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>openbravopos.desktop</origin>
+                        </distributionFile>
+                    </distributionFileList>
+                </folder>
+                <folder>
+                    <description>DEB3</description>
+                    <destination>/usr/bin/</destination>
+                    <name>openbravoposexec</name>
+                    <platforms>linux</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>openbravopos</origin>
+                        </distributionFile>
+                    </distributionFileList>
+                </folder>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
+                    <name>programfiles</name>
+                    <platforms>all</platforms>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>../reports</origin>
+                        </distributionDirectory>
+                        <distributionDirectory>
+                            <origin>../locales</origin>
+                        </distributionDirectory>
+                        <distributionDirectory>
+                            <origin>../licensing</origin>
+                        </distributionDirectory>
+                        <distributionDirectory>
+                            <origin>../lib</origin>
+                        </distributionDirectory>
+                        <distributionFile>
+                            <origin>../build/jar/openbravopos.jar</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../README</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../openbravo-logo-128.png</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../openbravo-logo.ico</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../start.bat</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../start.sh</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../configure.bat</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../configure.sh</origin>
+                        </distributionFile>
+                    </distributionFileList>
+                </folder>
+            </folderList>
+        </component>
+    </componentList>
+    <parameterList>
+        <directoryParameter>
+            <name>installdir</name>
+            <description>Installer.Parameter.installdir.description</description>
+            <explanation>Installer.Parameter.installdir.explanation</explanation>
+            <value>${platform_install_prefix}/${product_shortname}-${product_version}</value>
+            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <allowEmptyValue>0</allowEmptyValue>
+            <ask>yes</ask>
+            <cliOptionName>prefix</cliOptionName>
+            <mustBeWritable>yes</mustBeWritable>
+            <mustExist>0</mustExist>
+            <width>30</width>
+        </directoryParameter>
+    </parameterList>
+    <platformOptionsList>
+        <platformOptions>
+            <description>Openbravo POS is a point of sale designed for touch screens</description>
+            <platform>debian</platform>
+            <release>1</release>
+            <summary>POS</summary>
+            <vendor>Openbravo</vendor>
+        </platformOptions>
+    </platformOptionsList>
+</project>
+
