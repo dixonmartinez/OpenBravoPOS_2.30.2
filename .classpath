@@ -34,6 +34,6 @@
 	<classpathentry kind="lib" path="lib/JasperReport/lib/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="lib" path="lib/JasperReport/lib/poi-3.7-20101029.jar"/>
 	<classpathentry kind="lib" path="lib/swingx-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="lib/JasperReport/lib/jcommon-1.0.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

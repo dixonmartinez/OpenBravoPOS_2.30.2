@@ -22,15 +22,18 @@ REM    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 set DIRNAME=%~dp0
 
 set CP="%DIRNAME%openbravopos.jar"
+REM JasperReport
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/iText-2.1.7.js2.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/iTextAsian.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/jasperreports-5.5.0.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/jcommon-1.0.15.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/jfreechart-1.0.12.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/poi-3.7-20101029.jar
+set CP=%CP%;"%DIRNAME%lib/JasperReport/lib/servlet-api-2.4.jar
 
-set CP=%CP%;"%DIRNAME%lib/jasperreports-3.1.4.jar"
-set CP=%CP%;"%DIRNAME%lib/jcommon-1.0.15.jar"
-set CP=%CP%;"%DIRNAME%lib/jfreechart-1.0.12.jar"
 set CP=%CP%;"%DIRNAME%lib/jdt-compiler-3.1.1.jar"
 set CP=%CP%;"%DIRNAME%lib/commons-beanutils-1.7.jar"
 set CP=%CP%;"%DIRNAME%lib/commons-digester-1.7.jar"
-set CP=%CP%;"%DIRNAME%lib/iText-2.1.0.jar"
-set CP=%CP%;"%DIRNAME%lib/poi-3.2-FINAL-20081019.jar"
 set CP=%CP%;"%DIRNAME%lib/barcode4j-light.jar"
 set CP=%CP%;"%DIRNAME%lib/commons-codec-1.3.jar"
 set CP=%CP%;"%DIRNAME%lib/velocity-1.5.jar"
@@ -40,7 +43,7 @@ set CP=%CP%;"%DIRNAME%lib/commons-lang-2.1.jar"
 set CP=%CP%;"%DIRNAME%lib/bsh-core-2.0b4.jar"
 set CP=%CP%;"%DIRNAME%lib/RXTXcomm.jar"
 set CP=%CP%;"%DIRNAME%lib/jpos1121.jar"
-set CP=%CP%;"%DIRNAME%lib/swingx-0.9.5.jar"
+set CP=%CP%;"%DIRNAME%lib/swingx-1.6.1.jar"
 set CP=%CP%;"%DIRNAME%lib/substance.jar"
 set CP=%CP%;"%DIRNAME%lib/substance-swingx.jar"
 

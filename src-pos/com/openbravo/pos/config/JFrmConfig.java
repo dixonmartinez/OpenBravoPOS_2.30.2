@@ -24,9 +24,16 @@ import java.awt.event.*;
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.*;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.api.SubstanceSkin;
 
 /**
  *
@@ -34,7 +41,14 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class JFrmConfig extends javax.swing.JFrame {
     
-    private JPanelConfiguration config;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7523678510756554059L;
+
+	private JPanelConfiguration config;
+    
+    private static final Logger logger = Logger.getLogger(JFrmConfig.class.getName());
     
     /** 
      * Creates new form JFrmConfig
@@ -101,11 +115,16 @@ public class JFrmConfig extends javax.swing.JFrame {
                 config.load();    
                 
                 // Set the look and feel.
-                try {                    
-                    UIManager.setLookAndFeel(config.getProperty("swing.defaultlaf"));
+                try {
+                    Object laf = Class.forName(config.getProperty("swing.defaultlaf")).newInstance();                
+                    if (laf instanceof LookAndFeel){
+                        UIManager.setLookAndFeel((LookAndFeel) laf);
+                    } else if (laf instanceof SubstanceSkin) {
+                        SubstanceLookAndFeel.setSkin((SubstanceSkin) laf);
+                    }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                    logger.log(Level.WARNING, "Cannot set look and feel", e);
                 }
-                
                 new JFrmConfig(config).setVisible(true);
             }
         });

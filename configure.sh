@@ -26,5 +26,9 @@ CP=$DIRNAME/openbravopos.jar
 CP=$CP:$DIRNAME/locales/
 CP=$CP:$DIRNAME/lib/substance.jar
 
+CP=$CP:$DIRNAME/lib/swingx-1.6.1.jar
+CP=$CP:$DIRNAME/lib/substance.jar
+CP=$CP:$DIRNAME/lib/substance-swingx.jar
+
 
 java -cp $CP -Djava.util.logging.config.file=$DIRNAME/logging.properties -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel com.openbravo.pos.config.JFrmConfig
