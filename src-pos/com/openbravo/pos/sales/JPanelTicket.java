@@ -43,6 +43,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.beans.JNumberDialog;
+import com.openbravo.beans.JPercentDialog;
 import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.gui.ListKeyed;
 import com.openbravo.data.gui.MessageInf;
@@ -191,9 +192,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         //  This panel of Discount
         m_jDiscountRatePanel.setVisible(propConfig.getPropertyAsBoolean("discount-rate-visible"));
-        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discountrate-1", "5")) / 100;
-        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discountrate-2", "10")) / 100;
-        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discountrate-3", "15")) / 100;
+        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discount-rate-1", "5")) / 100;
+        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discount-rate-2", "10")) / 100;
+        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discount-rate-3", "15")) / 100;
         
         //  This multi control
         isMultiplyControl = propConfig.getPropertyAsBoolean("refmultcontrol");
@@ -1955,7 +1956,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }//GEN-LAST:event_m_jDiscount3ActionPerformed
 
     private void m_jKeypadDiscountRateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jKeypadDiscountRateActionPerformed
-        Double dPercent = JNumberDialog.showEditNumber(this, AppLocal.getIntString("message.setdiscountrate"));
+        Double dPercent = JPercentDialog.showEditNumber(this, AppLocal.getIntString("message.setdiscountrate"));
         if (dPercent != null && dPercent != 0.0) {
             performDiscRate(dPercent);
         } else {

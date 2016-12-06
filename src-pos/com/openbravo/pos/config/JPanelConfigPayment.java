@@ -130,7 +130,7 @@ public class JPanelConfigPayment extends javax.swing.JPanel implements PanelConf
         jchkPaymentTest = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
 
-        jLabel13.setText(AppLocal.getIntString("label.paymentgateway")); // NOI18N
+        jLabel13.setText(AppLocal.getIntString("Label.PaymentGateway")); // NOI18N
 
         jLabel11.setText(AppLocal.getIntString("label.magcardreader")); // NOI18N
 

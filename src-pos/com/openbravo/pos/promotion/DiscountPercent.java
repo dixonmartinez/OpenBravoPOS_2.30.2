@@ -31,22 +31,4 @@ public class DiscountPercent {
         p_TicketLineInfo.setRateDiscount(p_Discount);
         return p_TicketLineInfo;
     }
-    
-    public TicketLineInfo LineDiscountPercent(TicketLineInfo TicketLine, Double dDiscount) {
-
-        double linediscount = TicketLine.getDiscountRate();
-        double lineprice = TicketLine.getPriceTax();
-        double linenodisount = TicketLine.getPriceTaxNoDiscount();
-
-        if (linediscount == 0.0 || linediscount != dDiscount) {
-            if (linediscount != 0.0) {
-                TicketLine.setPriceTax(RoundUtils.getValue(linenodisount - linenodisount * dDiscount));
-            } else {
-                TicketLine.setPriceTax(RoundUtils.getValue(lineprice - lineprice * dDiscount));
-            }
-            TicketLine.setProperty("discountrate", Double.toString(dDiscount));
-        }
-        
-        return TicketLine;
-    }
 }

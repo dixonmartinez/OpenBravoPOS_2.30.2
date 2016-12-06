@@ -84,7 +84,7 @@
         <Component class="javax.swing.JLabel" name="jLabel13">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="pos_messages.properties" key="label.paymentgateway" replaceFormat="AppLocal.getIntString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="pos_messages.properties" key="Label.PaymentGateway" replaceFormat="AppLocal.getIntString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>

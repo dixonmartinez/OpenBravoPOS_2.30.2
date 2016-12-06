@@ -35,7 +35,7 @@ public abstract class JEditorNumber extends JEditorAbstract {
     private String m_sNumber;
     private boolean m_bNegative;
     
-    private Formats m_fmt;
+    private final Formats m_fmt;
     
     /** Creates a new instance of JEditorNumber */
     public JEditorNumber() {
@@ -87,7 +87,11 @@ public abstract class JEditorNumber extends JEditorAbstract {
             return null; 
         } else {
             try {
-                return Double.parseDouble(text);
+                if (getMode() == EditorKeys.MODE_PERCENT) {
+                    return Double.parseDouble(text) / 100;
+                } else {
+                    return Double.parseDouble(text);
+                }
             } catch (NumberFormatException e) {
                 return null;
             }
@@ -128,6 +132,7 @@ public abstract class JEditorNumber extends JEditorAbstract {
         return sNumber;
     }
     
+    @Override
     protected String getEditMode() {
         return "-1.23";
     }  
@@ -136,22 +141,27 @@ public abstract class JEditorNumber extends JEditorAbstract {
         return (m_bNegative ? "-" : "") + m_sNumber;
     }   
     
+    @Override
     protected int getAlignment() {
         return javax.swing.SwingConstants.RIGHT;
     }
     
+    @Override
     protected String getTextEdit() {
         return getText();
     }
     
+    @Override
     protected String getTextFormat() throws BasicException {
         return m_fmt.formatValue(getDoubleValue());
     }
     
+    @Override
     protected void typeCharInternal(char cTrans) {
         transChar(cTrans);
     }
     
+    @Override
     protected void transCharInternal(char cTrans) {
         
         String sOldText = getText();
