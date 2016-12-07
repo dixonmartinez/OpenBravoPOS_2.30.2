@@ -35,7 +35,10 @@ public class AttributesEditor extends javax.swing.JPanel implements EditorRecord
 
     private Object id;
         
-    /** Creates new form AttributesEditor */
+    /** 
+     * Creates new form AttributesEditor
+     * @param dirty 
+     */
     public AttributesEditor(DirtyManager dirty) {
         initComponents();
         
@@ -43,16 +46,19 @@ public class AttributesEditor extends javax.swing.JPanel implements EditorRecord
         
         writeValueEOF();
     }
+    @Override
     public void writeValueEOF() {
         id = null;
         m_jName.setText(null);
         m_jName.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         id = UUID.randomUUID().toString();
         m_jName.setText(null);
         m_jName.setEnabled(true);
     }
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] attr = (Object[]) value;
@@ -60,6 +66,7 @@ public class AttributesEditor extends javax.swing.JPanel implements EditorRecord
         m_jName.setText(Formats.STRING.formatValue(attr[1]));
         m_jName.setEnabled(false);
     }    
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] attr = (Object[]) value;
@@ -68,6 +75,7 @@ public class AttributesEditor extends javax.swing.JPanel implements EditorRecord
         m_jName.setEnabled(true);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] attr = new Object[2];
@@ -78,10 +86,12 @@ public class AttributesEditor extends javax.swing.JPanel implements EditorRecord
         return attr;
     }    
      
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
 

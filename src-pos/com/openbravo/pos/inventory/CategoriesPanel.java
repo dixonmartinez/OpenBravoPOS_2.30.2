@@ -45,36 +45,44 @@ public class CategoriesPanel extends JPanelTable {
     public CategoriesPanel() {        
     }   
     
+    @Override
     protected void init() {   
         DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");           
         tcategories = dlSales.getTableCategories();
         jeditor = new CategoriesEditor(app, dirty);    
     }
     
+    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(tcategories);
     }
     
+    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(tcategories);      
     }
     
+    @Override
     public Vectorer getVectorer() {
         return tcategories.getVectorerBasic(new int[]{1});
     }
     
+    @Override
     public ComparatorCreator getComparatorCreator() {
         return tcategories.getComparatorCreator(new int[]{1});
     }
     
+    @Override
     public ListCellRenderer getListCellRenderer() {
         return new ListCellRendererBasic(tcategories.getRenderStringBasic(new int[]{1}));
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Categories");
     }        

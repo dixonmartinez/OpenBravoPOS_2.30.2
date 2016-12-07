@@ -43,16 +43,16 @@ public class MovementReason extends ComboItemLocal {
     }    
     
     public boolean isInput() {
-        return m_iKey.intValue() > 0;
+        return m_iKey > 0;
     }
 
     public Double samesignum(Double d) {
         
         if (d == null || m_iKey == null) {
             return d;
-        } else if ((m_iKey.intValue() > 0 && d.doubleValue() < 0.0) ||
-            (m_iKey.intValue() < 0 && d.doubleValue() > 0.0)) {
-            return new Double(-d.doubleValue());
+        } else if ((m_iKey > 0 && d < 0.0) ||
+            (m_iKey < 0 && d > 0.0)) {
+            return -d;
         } else {
             return d;
         }            

@@ -43,20 +43,24 @@ import java.util.ArrayList;
  *
  * @author adrianromero
  */
-public class CategoriesEditor extends JPanel implements EditorRecord {
+public final class CategoriesEditor extends JPanel implements EditorRecord {
        
-    private SentenceList m_sentcat;
+    private final SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     
-    private SentenceExec m_sentadd;
-    private SentenceExec m_sentdel;
+    private final SentenceExec m_sentadd;
+    private final SentenceExec m_sentdel;
     
     private Object m_id;
     
-    /** Creates new form JPanelCategories */
+    /** 
+     * Creates new form JPanelCategories
+     * @param app
+     * @param dirty 
+     */
     public CategoriesEditor(AppView app, DirtyManager dirty) {
         
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
              
         initComponents();
              
@@ -74,6 +78,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         writeValueEOF();
     }
     
+    @Override
     public void refresh() {
         
         List a;
@@ -91,6 +96,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         m_jCategory.setModel(m_CategoryModel);
     }
     
+    @Override
     public void writeValueEOF() {
         m_id = null;
         m_jName.setText(null);
@@ -102,6 +108,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         m_jCatalogDelete.setEnabled(false);
         m_jCatalogAdd.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         m_id = UUID.randomUUID().toString();
         m_jName.setText(null);
@@ -113,6 +120,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         m_jCatalogDelete.setEnabled(false);
         m_jCatalogAdd.setEnabled(false);
     }
+    @Override
     public void writeValueDelete(Object value) {
         Object[] cat = (Object[]) value;
         m_id = cat[0];
@@ -125,6 +133,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         m_jCatalogDelete.setEnabled(false);
         m_jCatalogAdd.setEnabled(false);
     }    
+    @Override
     public void writeValueEdit(Object value) {
         Object[] cat = (Object[]) value;
         m_id = cat[0];
@@ -138,6 +147,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         m_jCatalogAdd.setEnabled(true);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] cat = new Object[4];
@@ -149,6 +159,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         return cat;
     }    
     
+    @Override
     public Component getComponent() {
         return this;
     }

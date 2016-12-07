@@ -41,7 +41,7 @@ import com.openbravo.pos.forms.AppLocal;
  */
 public class JInventoryLines extends javax.swing.JPanel {
 
-    private InventoryTableModel m_inventorylines;
+    private final InventoryTableModel m_inventorylines;
     
     /** Creates new form JInventoryLines */
     public JInventoryLines() {
@@ -170,18 +170,22 @@ public class JInventoryLines extends javax.swing.JPanel {
     
     private static class InventoryTableModel extends AbstractTableModel {
         
-        private ArrayList<InventoryLine> m_rows = new ArrayList<InventoryLine>();
+        private final ArrayList<InventoryLine> m_rows = new ArrayList<>();
         
+        @Override
         public int getRowCount() {
             return m_rows.size();
         }
+        @Override
         public int getColumnCount() {
             return 3;
         }
+        @Override
         public String getColumnName(int column) {
             //return AppLocal.getIntString(m_acolumns[column].name);
             return "a";
         }
+        @Override
         public Object getValueAt(int row, int column) {
             
             InventoryLine i = m_rows.get(row);
@@ -197,6 +201,7 @@ public class JInventoryLines extends javax.swing.JPanel {
 
         }
   
+        @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }

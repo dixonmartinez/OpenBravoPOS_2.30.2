@@ -48,32 +48,35 @@ import com.openbravo.pos.ticket.ProductInfoExt;
  */
 public class StockManagement extends JPanel implements JPanelView {
     
-    private AppView m_App;
-    private DataLogicSystem m_dlSystem;
-    private DataLogicSales m_dlSales;
-    private TicketParser m_TTP;
+    private final AppView m_App;
+    private final DataLogicSystem m_dlSystem;
+    private final DataLogicSales m_dlSales;
+    private final TicketParser m_TTP;
 
-    private CatalogSelector m_cat;
-    private ComboBoxValModel m_ReasonModel;
+    private final CatalogSelector m_cat;
+    private final ComboBoxValModel m_ReasonModel;
     
-    private SentenceList m_sentlocations;
+    private final SentenceList m_sentlocations;
     private ComboBoxValModel m_LocationsModel;   
     private ComboBoxValModel m_LocationsModelDes;     
     
-    private JInventoryLines m_invlines;
+    private final JInventoryLines m_invlines;
     
     private int NUMBER_STATE = 0;
     private int MULTIPLY = 0;
-    private static int DEFAULT = 0;
-    private static int ACTIVE = 1;
-    private static int DECIMAL = 2;
+    private static final int DEFAULT = 0;
+    private static final int ACTIVE = 1;
+    private static final int DECIMAL = 2;
     
-    /** Creates new form StockManagement */
+    /** 
+     * Creates new form StockManagement
+     * @param app 
+     */
     public StockManagement(AppView app) {
         
         m_App = app;
-        m_dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
-        m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
+        m_dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
+        m_dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         initComponents();
@@ -112,10 +115,12 @@ public class StockManagement extends JPanel implements JPanelView {
         return AppLocal.getIntString("Menu.StockMovement");
     }         
     
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public void activate() throws BasicException {
         m_cat.loadCatalog();
         
@@ -127,10 +132,8 @@ public class StockManagement extends JPanel implements JPanelView {
         
         stateToInsert();
         
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                jTextField1.requestFocus();
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            jTextField1.requestFocus();
         });        
     }   
     
@@ -145,17 +148,19 @@ public class StockManagement extends JPanel implements JPanelView {
         m_jcodebar.setText(null);
     }
     
+    @Override
     public boolean deactivate() {
 
         if (m_invlines.getCount() > 0) {
             int res = JOptionPane.showConfirmDialog(this, LocalRes.getIntString("message.wannasave"), LocalRes.getIntString("title.editor"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (res == JOptionPane.YES_OPTION) {
-                saveData();
-                return true;
-            } else if (res == JOptionPane.NO_OPTION) {
-                return true;
-            } else {
-                return false;
+            switch (res) {
+                case JOptionPane.YES_OPTION:
+                    saveData();
+                    return true;
+                case JOptionPane.NO_OPTION:
+                    return true;
+                default:
+                    return false;
             }
         } else {
             return true;
@@ -364,6 +369,7 @@ public class StockManagement extends JPanel implements JPanelView {
   
     
     private class CatalogListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             String sQty = m_jcodebar.getText();
             if (sQty != null) {
@@ -673,6 +679,7 @@ private void jTextField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event
 
 private void m_jcodebarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_m_jcodebarMouseClicked
     java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 jTextField1.requestFocus();
             }

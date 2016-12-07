@@ -27,15 +27,20 @@ import com.openbravo.data.loader.IKeyed;
  */
 public class AttributeInfo implements IKeyed {
 
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
 
-    /** Creates new CategoryInfo */
+    /** 
+     * Creates new CategoryInfo
+     * @param id
+     * @param name 
+     */
     public AttributeInfo(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    @Override
     public Object getKey() {
         return id;
     }

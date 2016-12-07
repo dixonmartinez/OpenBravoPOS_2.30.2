@@ -38,23 +38,27 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TaxEditor extends JPanel implements EditorRecord {
+public final class TaxEditor extends JPanel implements EditorRecord {
     
     private Object m_oId;
     
-    private SentenceList taxcatsent;
+    private final SentenceList taxcatsent;
     private ComboBoxValModel taxcatmodel;    
     
-    private SentenceList taxcustcatsent;
+    private final SentenceList taxcustcatsent;
     private ComboBoxValModel taxcustcatmodel;   
     
-    private SentenceList taxparentsent;
+    private final SentenceList taxparentsent;
     private ComboBoxValModel taxparentmodel;    
     
-    /** Creates new form taxEditor */
+    /** 
+     * Creates new form taxEditor
+     * @param app
+     * @param dirty 
+     */
     public TaxEditor(AppView app, DirtyManager dirty) {
         
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         
         initComponents();
         
@@ -93,6 +97,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
        
     }
     
+    @Override
     public void refresh() {
         
         List a;
@@ -110,6 +115,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
         m_jTaxParent.setModel(taxparentmodel);    
     }
     
+    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jName.setText(null);
@@ -131,6 +137,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
         jCascade.setEnabled(false);
         jOrder.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         m_oId = UUID.randomUUID().toString();
         m_jName.setText(null);
@@ -152,6 +159,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
         jCascade.setEnabled(true);    
         jOrder.setEnabled(true);
     }
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] tax = (Object[]) value;
@@ -175,6 +183,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
         jCascade.setEnabled(false);
         jOrder.setEnabled(false);
     }    
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] tax = (Object[]) value;
@@ -199,6 +208,7 @@ public class TaxEditor extends JPanel implements EditorRecord {
         jOrder.setEnabled(true);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] tax = new Object[9];
@@ -210,12 +220,13 @@ public class TaxEditor extends JPanel implements EditorRecord {
         tax[4] = taxcustcatmodel.getSelectedKey();
         tax[5] = taxparentmodel.getSelectedKey();
         tax[6] = Formats.PERCENT.parseValue(m_jRate.getText());
-        tax[7] = Boolean.valueOf(jCascade.isSelected());
+        tax[7] = jCascade.isSelected();
         tax[8] = Formats.INT.parseValue(jOrder.getText());
         
         return tax;
     }    
      
+    @Override
     public Component getComponent() {
         return this;
     }

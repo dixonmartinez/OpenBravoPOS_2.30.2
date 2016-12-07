@@ -31,12 +31,18 @@ import com.openbravo.pos.util.StringUtils;
  */
 public class InventoryRecord {
     
-    private Date m_dDate;
-    private MovementReason m_reason;
-    private LocationInfo m_locationOri;   
-    private List<InventoryLine> m_invlines;
+    private final Date m_dDate;
+    private final MovementReason m_reason;
+    private final LocationInfo m_locationOri;   
+    private final List<InventoryLine> m_invlines;
     
-    /** Creates a new instance of InventoryRecord */
+    /** 
+     * Creates a new instance of InventoryRecord
+     * @param d
+     * @param reason
+     * @param location
+     * @param invlines 
+     */
     public InventoryRecord(Date d, MovementReason reason, LocationInfo location, List<InventoryLine> invlines) {
         m_dDate = d;
         m_reason = reason;
@@ -82,6 +88,6 @@ public class InventoryRecord {
         return StringUtils.encodeXML(m_reason.toString());
     }    
     public String printSubTotal() {
-        return Formats.CURRENCY.formatValue(new Double(getSubTotal()));
+        return Formats.CURRENCY.formatValue(getSubTotal());
     }    
 }

@@ -38,6 +38,7 @@ public class TaxCategoryInfo implements Serializable, IKeyed {
         m_sName = sName;      
     }
     
+    @Override
     public Object getKey() {
         return m_sID;
     }

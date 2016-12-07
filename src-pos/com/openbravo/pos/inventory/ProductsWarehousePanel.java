@@ -54,6 +54,7 @@ public class ProductsWarehousePanel extends JPanelTable2 {
     public ProductsWarehousePanel() {
     }
 
+    @Override
     protected void init() {   
                
         m_paramslocation =  new JParamsLocation();
@@ -85,6 +86,7 @@ public class ProductsWarehousePanel extends JPanelTable2 {
         
         
         SentenceExec updatesent =  new SentenceExecTransaction(app.getSession()) {
+            @Override
             public int execInTransaction(Object params) throws BasicException {
                 Object[] values = (Object[]) params;
                 if (values[0] == null)  {
@@ -113,6 +115,7 @@ public class ProductsWarehousePanel extends JPanelTable2 {
         return m_paramslocation.getComponent();
     }  
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }  
@@ -124,11 +127,13 @@ public class ProductsWarehousePanel extends JPanelTable2 {
         super.activate();
     }     
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.ProductsWarehouse");
     }      
     
     private class ReloadActionListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             try {
                 ProductsWarehousePanel.this.bd.actionLoad();
@@ -138,6 +143,7 @@ public class ProductsWarehousePanel extends JPanelTable2 {
     }
 
     private class WarehouseSerializerRead implements SerializerRead {
+        @Override
         public Object readValues(DataRead dr) throws BasicException {
             return new Object[] {
                 dr.getString(1),

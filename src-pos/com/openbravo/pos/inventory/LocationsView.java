@@ -31,12 +31,15 @@ import com.openbravo.pos.forms.AppLocal;
  *
  * @author adrianromero
  */
-public class LocationsView extends javax.swing.JPanel implements EditorRecord {
+public final class LocationsView extends javax.swing.JPanel implements EditorRecord {
     
     // private DirtyManager m_Dirty = new DirtyManager();    
     private String m_sID;
     
-    /** Creates new form LocationsEditor */
+    /** 
+     * Creates new form LocationsEditor
+     * @param dirty 
+     */
     public LocationsView(DirtyManager dirty) {
         initComponents();
         
@@ -45,6 +48,7 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         
         writeValueEOF();    
     }
+    @Override
     public void writeValueEOF() {
         
         m_sID = null;
@@ -54,6 +58,7 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(false);
         m_jAddress.setEnabled(false);
     }    
+    @Override
     public void writeValueInsert() {
         
         m_sID = UUID.randomUUID().toString(); 
@@ -63,6 +68,7 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(true);
         m_jAddress.setEnabled(true);
     }    
+    @Override
     public void writeValueDelete(Object value) {
         
         Object[] location = (Object[]) value;
@@ -73,6 +79,7 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(false);
         m_jAddress.setEnabled(false);
     }    
+    @Override
     public void writeValueEdit(Object value) {
         
         Object[] location = (Object[]) value;
@@ -83,6 +90,7 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(true);
         m_jAddress.setEnabled(true);
     }    
+    @Override
     public Object createValue() throws BasicException {
         Object[] location = new Object[3];
         location[0] = m_sID;
@@ -91,10 +99,12 @@ public class LocationsView extends javax.swing.JPanel implements EditorRecord {
         return location;
     }    
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
     

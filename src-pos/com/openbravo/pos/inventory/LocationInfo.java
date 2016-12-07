@@ -44,9 +44,11 @@ public class LocationInfo implements SerializableRead, IKeyed {
         m_sAddress = null;
     }
     
+    @Override
     public Object getKey() {
         return m_sID;
     }
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sID = dr.getString(1);
         m_sName = dr.getString(2);
@@ -77,6 +79,7 @@ public class LocationInfo implements SerializableRead, IKeyed {
         m_sAddress = sAddress;
     } 
     
+    @Override
     public String toString(){
         return m_sName;
     }    

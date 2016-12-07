@@ -43,6 +43,7 @@ public class AttributeUsePanel extends JPanelTable2 {
     private AttributeUseEditor editor;
     private AttributeSetFilter filter;
 
+    @Override
     protected void init() {
 
         filter = new AttributeSetFilter();
@@ -88,6 +89,7 @@ public class AttributeUsePanel extends JPanelTable2 {
         return filter.getComponent();
     }
 
+    @Override
     public EditorRecord getEditor() {
         return editor;
     }
@@ -100,6 +102,7 @@ public class AttributeUsePanel extends JPanelTable2 {
         bd.actionLoad();
     }
 
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.AttributeUse");
     }

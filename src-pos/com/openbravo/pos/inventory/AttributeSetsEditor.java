@@ -31,11 +31,14 @@ import java.util.UUID;
  *
  * @author  adrianromero
  */
-public class AttributeSetsEditor extends javax.swing.JPanel implements EditorRecord {
+public final class AttributeSetsEditor extends javax.swing.JPanel implements EditorRecord {
 
     private Object id;
 
-    /** Creates new form AttributesEditor */
+    /** 
+     * Creates new form AttributesEditor
+     * @param dirty 
+     */
     public AttributeSetsEditor(DirtyManager dirty) {
         initComponents();
 
@@ -43,16 +46,19 @@ public class AttributeSetsEditor extends javax.swing.JPanel implements EditorRec
 
         writeValueEOF();
     }
+    @Override
     public void writeValueEOF() {
         id = null;
         m_jName.setText(null);
         m_jName.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         id = UUID.randomUUID().toString();
         m_jName.setText(null);
         m_jName.setEnabled(true);
     }
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] attrset = (Object[]) value;
@@ -60,6 +66,7 @@ public class AttributeSetsEditor extends javax.swing.JPanel implements EditorRec
         m_jName.setText(Formats.STRING.formatValue(attrset[1]));
         m_jName.setEnabled(false);
     }
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] attrset = (Object[]) value;
@@ -68,6 +75,7 @@ public class AttributeSetsEditor extends javax.swing.JPanel implements EditorRec
         m_jName.setEnabled(true);
     }
 
+    @Override
     public Object createValue() throws BasicException {
 
         Object[] attrset = new Object[2];
@@ -78,10 +86,12 @@ public class AttributeSetsEditor extends javax.swing.JPanel implements EditorRec
         return attrset;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
 
+    @Override
     public void refresh() {
     }
 

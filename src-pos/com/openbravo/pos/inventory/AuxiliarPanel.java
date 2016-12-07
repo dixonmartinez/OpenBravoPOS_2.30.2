@@ -46,6 +46,7 @@ public class AuxiliarPanel extends JPanelTable2 {
     private AuxiliarEditor editor;
     private AuxiliarFilter filter;
 
+    @Override
     protected void init() {  
         
         filter = new AuxiliarFilter();
@@ -89,10 +90,12 @@ public class AuxiliarPanel extends JPanelTable2 {
         return filter.getComponent();
     }
     
+    @Override
     public EditorRecord getEditor() {
         return editor;
     }  
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Auxiliar");
     } 

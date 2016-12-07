@@ -46,8 +46,9 @@ public class TaxPanel extends JPanelTable {
     public TaxPanel() {
     }
     
+    @Override
     protected void init() {
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");        
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());        
         ttaxes = dlSales.getTableTaxes();
         jeditor = new TaxEditor(app, dirty);
     }
@@ -59,10 +60,12 @@ public class TaxPanel extends JPanelTable {
         super.activate();
     }
     
+    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(ttaxes);
     }
     
+    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(ttaxes);      
     }
@@ -82,10 +85,12 @@ public class TaxPanel extends JPanelTable {
         return new ListCellRendererBasic(ttaxes.getRenderStringBasic(new int[]{1}));
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }
         
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Taxes");
     }     

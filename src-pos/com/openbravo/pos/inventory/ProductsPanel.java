@@ -48,8 +48,9 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
     public ProductsPanel() {
     }
     
+    @Override
     protected void init() {   
-        m_dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        m_dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         
         // el panel del filtro
         jproductfilter = new ProductFilter();
@@ -68,6 +69,7 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
         jeditor = new ProductsEditor(m_dlSales, dirty);       
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }
@@ -83,11 +85,7 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
         JButton btnScanPal = new JButton();
         btnScanPal.setText("ScanPal");
         btnScanPal.setVisible(app.getDeviceScanner() != null);
-        btnScanPal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnScanPalActionPerformed(evt);
-            }
-        });      
+        btnScanPal.addActionListener(this::btnScanPalActionPerformed);      
         
         return btnScanPal;
     }
@@ -97,6 +95,7 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
         JDlgUploadProducts.showMessage(this, app.getDeviceScanner(), bd);
     }  
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Products");
     } 
@@ -110,6 +109,7 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
         super.activate();
     } 
     
+    @Override
     public void updateValue(Object value) {
     }    
 }

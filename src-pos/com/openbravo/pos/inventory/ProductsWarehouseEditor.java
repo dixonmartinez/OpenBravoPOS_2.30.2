@@ -39,7 +39,10 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
     public Object prodname;
     public Object location;
     
-    /** Creates new form ProductsWarehouseEditor */
+    /** 
+     * Creates new form ProductsWarehouseEditor
+     * @param dirty 
+     */
     public ProductsWarehouseEditor(DirtyManager dirty) {
         initComponents();
         
@@ -47,6 +50,7 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         m_jMaximum.getDocument().addDocumentListener(dirty);
     }
     
+    @Override
     public void writeValueEOF() {
         m_jTitle.setText(AppLocal.getIntString("label.recordeof"));
         id = null;
@@ -60,6 +64,7 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         m_jMinimum.setEnabled(false);
         m_jMaximum.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         m_jTitle.setText(AppLocal.getIntString("label.recordnew"));
         id = null;
@@ -73,6 +78,8 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         m_jMinimum.setEnabled(true);
         m_jMaximum.setEnabled(true);
     }
+    
+    @Override
     public void writeValueEdit(Object value) {
         Object[] myprod = (Object[]) value;
         id = myprod[0];
@@ -87,6 +94,8 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         m_jMinimum.setEnabled(true);
         m_jMaximum.setEnabled(true);
      }
+    
+    @Override
     public void writeValueDelete(Object value) {
         Object[] myprod = (Object[]) value;
         id = myprod[0];
@@ -101,6 +110,7 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         m_jMinimum.setEnabled(false);
         m_jMaximum.setEnabled(false);
     }
+    @Override
     public Object createValue() throws BasicException {
         return new Object[] {
             id,
@@ -114,10 +124,12 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         };
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
     

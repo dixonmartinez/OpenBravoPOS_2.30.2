@@ -49,9 +49,9 @@ import java.awt.Dimension;
  *
  * @author adrianromero
  */
-public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord {
+public final class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord {
     
-    private CatalogSelector m_cat;
+    private final CatalogSelector m_cat;
 
     private String m_sID;
 
@@ -63,19 +63,23 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
     private String attsetinstid;
     private String attsetinstdesc;
     
-    private ComboBoxValModel m_ReasonModel;
+    private final ComboBoxValModel m_ReasonModel;
     
-    private SentenceList m_sentlocations;
+    private final SentenceList m_sentlocations;
     private ComboBoxValModel m_LocationsModel;    
 
-    private AppView m_App;
-    private DataLogicSales m_dlSales;
+    private final AppView m_App;
+    private final DataLogicSales m_dlSales;
     
-    /** Creates new form StockDiaryEditor */
+    /** 
+     * Creates new form StockDiaryEditor
+     * @param app
+     * @param dirty 
+     */
     public StockDiaryEditor(AppView app, DirtyManager dirty) {
         
         m_App = app;
-        m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
+        m_dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
         
         initComponents();      
         
@@ -116,9 +120,11 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         m_jLocation.setModel(m_LocationsModel); // para que lo refresque   
     }
     
+    @Override
     public void refresh() {
     }
     
+    @Override
     public void writeValueEOF() {
         m_sID = null;
         m_jdate.setText(null);
@@ -154,6 +160,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         m_cat.setComponentEnabled(false);
     }
     
+    @Override
     public void writeValueInsert() {
         m_sID = UUID.randomUUID().toString();
         m_jdate.setText(Formats.TIMESTAMP.formatValue(DateUtils.getTodayMinutes()));
@@ -190,6 +197,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         m_cat.setComponentEnabled(true);
     }
 
+    @Override
     public void writeValueDelete(Object value) {
         Object[] diary = (Object[]) value;
         m_sID = (String) diary[0];
@@ -226,6 +234,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         m_cat.setComponentEnabled(false);
     }
     
+    @Override
     public void writeValueEdit(Object value) {
         Object[] diary = (Object[]) value;
         m_sID = (String) diary[0];
@@ -262,6 +271,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         m_cat.setComponentEnabled(false);
     }
     
+    @Override
     public Object createValue() throws BasicException {
         return new Object[] {
             m_sID,
@@ -280,6 +290,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         };
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
@@ -294,8 +305,8 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
     private Double signum(Double d, Integer i) {
         if (d == null || i == null) {
             return d;
-        } else if (i.intValue() < 0) {
-            return new Double(-d.doubleValue());
+        } else if (i < 0) {
+            return -d;
         } else {
             return d;
         } 
@@ -305,9 +316,9 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
         
         if (d == null || i == null) {
             return d;
-        } else if ((i.intValue() > 0 && d.doubleValue() < 0.0) ||
-            (i.intValue() < 0 && d.doubleValue() > 0.0)) {
-            return new Double(-d.doubleValue());
+        } else if ((i > 0 && d < 0.0) ||
+            (i < 0 && d > 0.0)) {
+            return -d;
         } else {
             return d;
         }            
@@ -384,6 +395,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
     }
     
     private class CatalogListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             assignProduct((ProductInfoExt) e.getSource());
         }  

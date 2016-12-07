@@ -29,11 +29,14 @@ import com.openbravo.data.user.EditorRecord;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.pos.forms.AppLocal;
 
-public class TaxCategoriesEditor extends JPanel implements EditorRecord {
+public final class TaxCategoriesEditor extends JPanel implements EditorRecord {
     
     private Object m_oId;
     
-    /** Creates new form taxEditor */
+    /** 
+     * Creates new form taxEditor
+     * @param dirty 
+     */
     public TaxCategoriesEditor(DirtyManager dirty) {
         initComponents();
 
@@ -41,16 +44,19 @@ public class TaxCategoriesEditor extends JPanel implements EditorRecord {
         
         writeValueEOF();
     }
+    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jName.setText(null);
         m_jName.setEnabled(false);
     }
+    @Override
     public void writeValueInsert() {
         m_oId = UUID.randomUUID().toString();
         m_jName.setText(null);
         m_jName.setEnabled(true);
     }
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] taxcustcat = (Object[]) value;
@@ -58,6 +64,7 @@ public class TaxCategoriesEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(taxcustcat[1]));
         m_jName.setEnabled(false);
     }    
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] taxcustcat = (Object[]) value;
@@ -66,6 +73,7 @@ public class TaxCategoriesEditor extends JPanel implements EditorRecord {
         m_jName.setEnabled(true);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] taxcustcat = new Object[2];
@@ -76,10 +84,12 @@ public class TaxCategoriesEditor extends JPanel implements EditorRecord {
         return taxcustcat;
     }    
      
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }
     

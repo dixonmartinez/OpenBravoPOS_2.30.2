@@ -47,17 +47,22 @@ public class AttributeSetFilter extends javax.swing.JPanel implements ReportEdit
     public AttributeSetFilter() {
         initComponents();
     }
+    @Override
     public void init(AppView app) {
 
         attusesent = new StaticSentence(app.getSession()
             , "SELECT ID, NAME FROM ATTRIBUTESET ORDER BY NAME"
             , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new AttributeSetInfo(dr.getString(1), dr.getString(2));
-            }});
+            , new SerializerRead() { 
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
+                    return new AttributeSetInfo(dr.getString(1), dr.getString(2));
+                }
+            });
         attusemodel = new ComboBoxValModel();
     }
 
+    @Override
     public void activate() throws BasicException {
         List a = attusesent.list();
         attusemodel = new ComboBoxValModel(a);
@@ -65,10 +70,12 @@ public class AttributeSetFilter extends javax.swing.JPanel implements ReportEdit
         jAttrSet.setModel(attusemodel); 
     }
 
+    @Override
     public SerializerWrite getSerializerWrite() {
         return SerializerWriteString.INSTANCE;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
@@ -81,6 +88,7 @@ public class AttributeSetFilter extends javax.swing.JPanel implements ReportEdit
         jAttrSet.removeActionListener(l);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         AttributeSetInfo attset = (AttributeSetInfo) attusemodel.getSelectedItem();
 

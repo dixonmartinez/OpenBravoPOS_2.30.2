@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
 
-    private DataLogicSales m_dlSales;
+    private final DataLogicSales m_dlSales;
     
     private Object id;
     private Object product;
@@ -48,7 +48,11 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
     
     private Object insertproduct;
 
-    /** Creates new form AuxiliarEditor */
+    /** 
+     * Creates new form AuxiliarEditor
+     * @param app
+     * @param dirty 
+     */
     public AuxiliarEditor(AppView app, DirtyManager dirty) {
 
         m_dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
@@ -67,9 +71,11 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         }
     }
 
+    @Override
     public void refresh() {
     }
 
+    @Override
     public void writeValueEOF() {
         
         id = null;
@@ -88,6 +94,7 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         m_jSearch.setEnabled(false);
     }
 
+    @Override
     public void writeValueInsert() {
         
         id = UUID.randomUUID().toString();
@@ -106,6 +113,7 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         m_jSearch.setEnabled(true);
     }
 
+    @Override
     public void writeValueEdit(Object value) {
         Object[] obj = (Object[]) value;
         
@@ -125,6 +133,7 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         m_jSearch.setEnabled(true);
     }
 
+    @Override
     public void writeValueDelete(Object value) {
         Object[] obj = (Object[]) value;
         
@@ -145,6 +154,7 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         m_jSearch.setEnabled(false);       
     }
 
+    @Override
     public Object createValue() throws BasicException {
         return new Object[] {
             id, 
@@ -156,6 +166,7 @@ public class AuxiliarEditor extends javax.swing.JPanel implements EditorRecord {
         };
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

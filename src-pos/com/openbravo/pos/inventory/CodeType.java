@@ -37,12 +37,14 @@ public class CodeType implements IKeyed {
         m_sKey = key;
         m_sValue = value;
     }
+    @Override
     public Object getKey() {
         return m_sKey;
     }
     public String getValue() {
         return m_sValue;
     }
+    @Override
     public String toString() {
         return m_sValue;
     }   

@@ -42,6 +42,7 @@ public class AttributeSetsPanel extends JPanelTable2 {
     public AttributeSetsPanel() {
     }
 
+    @Override
     protected void init() {
 
         row = new Row(
@@ -60,10 +61,12 @@ public class AttributeSetsPanel extends JPanelTable2 {
         editor = new AttributeSetsEditor(dirty);
     }
 
+    @Override
     public EditorRecord getEditor() {
         return editor;
     }
 
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.AttributeSets");
     }

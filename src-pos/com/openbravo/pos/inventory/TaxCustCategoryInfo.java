@@ -32,12 +32,17 @@ public class TaxCustCategoryInfo implements IKeyed {
     private String m_sID;
     private String m_sName;
     
-    /** Creates new CategoryInfo */
+    /**
+     * Creates new CategoryInfo 
+     * @param id
+     * @param name 
+     */
     public TaxCustCategoryInfo(String id, String name) {
         m_sID = id;
         m_sName = name;
     }
     
+    @Override
     public Object getKey() {
         return m_sID;
     }

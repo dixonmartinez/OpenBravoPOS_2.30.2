@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 public class AttributeUseEditor extends javax.swing.JPanel implements EditorRecord {
 
-    private SentenceList attributesent;
+    private final SentenceList attributesent;
     private ComboBoxValModel attributemodel;
 
     private Object id;
@@ -47,15 +47,22 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
 
     private Object insertid;
 
-    /** Creates new form AttributeSetEditor */
+    /** 
+     * Creates new form AttributeSetEditor
+     * @param app
+     * @param dirty 
+     */
     public AttributeUseEditor(AppView app, DirtyManager dirty) {
 
         attributesent = new StaticSentence(app.getSession()
             , "SELECT ID, NAME FROM ATTRIBUTE ORDER BY NAME"
             , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
+            , new SerializerRead() {
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
                 return new AttributeInfo(dr.getString(1), dr.getString(2));
-            }}
+                }
+            }
         );
         attributemodel = new ComboBoxValModel();
 
@@ -76,9 +83,11 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
         jAttribute.setModel(attributemodel);
     }
 
+    @Override
     public void refresh() {
     }
 
+    @Override
     public void writeValueEOF() {
 
         id = null;
@@ -90,6 +99,7 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
         jLineno.setEnabled(false);
     }
 
+    @Override
     public void writeValueInsert() {
 
         id = UUID.randomUUID().toString();
@@ -101,6 +111,7 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
         jLineno.setEnabled(true);
     }
 
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] obj = (Object[]) value;
@@ -114,6 +125,7 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
         jLineno.setEnabled(true);
     }
 
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] obj = (Object[]) value;
@@ -127,10 +139,12 @@ public class AttributeUseEditor extends javax.swing.JPanel implements EditorReco
         jLineno.setEnabled(false);
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
 
+    @Override
     public Object createValue() throws BasicException {
         Object[] value = new Object[5];
 

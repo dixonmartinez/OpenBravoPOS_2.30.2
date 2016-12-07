@@ -48,17 +48,22 @@ public class AttributeFilter extends javax.swing.JPanel implements ReportEditorC
         initComponents();
     }
 
+    @Override
     public void init(AppView app) {
 
         attsent = new StaticSentence(app.getSession()
             , "SELECT ID, NAME FROM ATTRIBUTE ORDER BY NAME"
             , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new AttributeInfo(dr.getString(1), dr.getString(2));
-            }});
+            , new SerializerRead() { 
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
+                    return new AttributeInfo(dr.getString(1), dr.getString(2));
+                }
+            });
         attmodel = new ComboBoxValModel();
     }
 
+    @Override
     public void activate() throws BasicException {
         List a = attsent.list();
         attmodel = new ComboBoxValModel(a);
@@ -66,10 +71,12 @@ public class AttributeFilter extends javax.swing.JPanel implements ReportEditorC
         jAttr.setModel(attmodel);
     }
 
+    @Override
     public SerializerWrite getSerializerWrite() {
         return SerializerWriteString.INSTANCE;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
@@ -82,6 +89,7 @@ public class AttributeFilter extends javax.swing.JPanel implements ReportEditorC
         jAttr.removeActionListener(l);
     }
 
+    @Override
     public Object createValue() throws BasicException {
         AttributeInfo att = (AttributeInfo) attmodel.getSelectedItem();
 

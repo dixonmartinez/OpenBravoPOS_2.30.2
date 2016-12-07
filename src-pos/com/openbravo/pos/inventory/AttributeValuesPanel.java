@@ -43,6 +43,7 @@ public class AttributeValuesPanel extends JPanelTable2 {
     private AttributeValuesEditor editor;
     private AttributeFilter filter;
 
+    @Override
     protected void init() {
 
         filter = new AttributeFilter();
@@ -82,6 +83,7 @@ public class AttributeValuesPanel extends JPanelTable2 {
         return filter.getComponent();
     }
 
+    @Override
     public EditorRecord getEditor() {
         return editor;
     }
@@ -94,6 +96,7 @@ public class AttributeValuesPanel extends JPanelTable2 {
         bd.actionLoad();
     }
 
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.AttributeValues");
     }

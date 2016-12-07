@@ -38,7 +38,10 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
 
     private Object insertid;
 
-    /** Creates new form AttributesValuesEditor */
+    /** 
+     * Creates new form AttributesValuesEditor
+     * @param dirty 
+     */
     public AttributeValuesEditor(DirtyManager dirty) {
         
         initComponents();
@@ -51,9 +54,11 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
         this.insertid = insertid;
     }
 
+    @Override
     public void refresh() {
     }
 
+    @Override
     public void writeValueEOF() {
 
         id = null;
@@ -63,6 +68,7 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
         jValue.setEnabled(false);
     }
 
+    @Override
     public void writeValueInsert() {
 
         id = UUID.randomUUID().toString();
@@ -72,6 +78,7 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
         jValue.setEnabled(true);
     }
 
+    @Override
     public void writeValueEdit(Object value) {
 
         Object[] obj = (Object[]) value;
@@ -83,6 +90,7 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
         jValue.setEnabled(true);
     }
 
+    @Override
     public void writeValueDelete(Object value) {
 
         Object[] obj = (Object[]) value;
@@ -94,10 +102,12 @@ public class AttributeValuesEditor extends javax.swing.JPanel implements EditorR
         jValue.setEnabled(false);
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
 
+    @Override
     public Object createValue() throws BasicException {
         return new Object[] {
             id,
