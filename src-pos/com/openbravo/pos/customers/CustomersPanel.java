@@ -45,8 +45,9 @@ public class CustomersPanel extends JPanelTable {
     public CustomersPanel() {    
     }
     
+    @Override
     protected void init() {        
-        DataLogicCustomers dlCustomers  = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomers");
+        DataLogicCustomers dlCustomers  = (DataLogicCustomers) app.getBean(DataLogicCustomers.class.getName());
         tcustomers = dlCustomers.getTableCustomers();        
         jeditor = new CustomersView(app, dirty);    
     }
@@ -58,14 +59,20 @@ public class CustomersPanel extends JPanelTable {
         super.activate();
     }
     
+    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(tcustomers);
     }
     
+    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(tcustomers, new int[] {0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22});      
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public Vectorer getVectorer() {
         return tcustomers.getVectorerBasic(new int[]{1, 2, 3, 4});
@@ -81,10 +88,12 @@ public class CustomersPanel extends JPanelTable {
         return new ListCellRendererBasic(tcustomers.getRenderStringBasic(new int[]{3}));
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }       
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.CustomersManagement");
     }    

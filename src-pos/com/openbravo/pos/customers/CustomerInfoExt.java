@@ -49,7 +49,10 @@ public class CustomerInfoExt extends CustomerInfo {
     protected String region;
     protected String country;
     
-    /** Creates a new instance of UserInfoBasic */
+    /** 
+     * Creates a new instance of UserInfoBasic
+     * @param id 
+     */
     public CustomerInfoExt(String id) {
         super(id);
     } 

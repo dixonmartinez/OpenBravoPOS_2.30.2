@@ -23,7 +23,7 @@ import com.openbravo.basic.BasicException;
 
 public class SerializerReadClass implements SerializerRead {
 
-    private Class m_clazz;
+    private final Class m_clazz;
     
     /** Creates a new instance of DefaultSerializerRead
      * @param clazz */

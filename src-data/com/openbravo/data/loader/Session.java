@@ -155,18 +155,23 @@ public final class Session {
 
         String sdbmanager = getConnection().getMetaData().getDatabaseProductName();
 
-        if ("HSQL Database Engine".equals(sdbmanager)) {
-            return new SessionDBHSQLDB();
-        } else if ("MySQL".equals(sdbmanager)) {
-            return new SessionDBMySQL();
-        } else if ("PostgreSQL".equals(sdbmanager)) {
-            return new SessionDBPostgreSQL();
-        } else if ("Oracle".equals(sdbmanager)) {
-            return new SessionDBOracle();
-        } else if ("Apache Derby".equals(sdbmanager)) {
-            return new SessionDBDerby();
-        } else {
+        if (null == sdbmanager) {
             return new SessionDBGeneric(sdbmanager);
+        } else {
+            switch (sdbmanager) {
+                case "HSQL Database Engine":
+                    return new SessionDBHSQLDB();
+                case "MySQL":
+                    return new SessionDBMySQL();
+                case "PostgreSQL":
+                    return new SessionDBPostgreSQL();
+                case "Oracle":
+                    return new SessionDBOracle();
+                case "Apache Derby":
+                    return new SessionDBDerby();
+                default:
+                    return new SessionDBGeneric(sdbmanager);
+            }
         }
     }
 }

@@ -304,7 +304,7 @@ public class JPanelConfigDatabase extends javax.swing.JPanel implements PanelCon
     private javax.swing.JTextField jtxtDbUser;
     // End of variables declaration//GEN-END:variables
 
-    private String [] dbType  = {
+    private final String [] dbType  = {
         DB_NAME_POSTGRESQL,
         DB_NAME_MYSQL,
         DB_NAME_DERBY

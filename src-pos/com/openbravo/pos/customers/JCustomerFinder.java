@@ -128,10 +128,10 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
                 jListCustomers.setSelectedIndex(0);
             }
         } catch (BasicException e) {
-            e.printStackTrace();
         }        
     }
     
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] afilter = new Object[6];
@@ -178,16 +178,18 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     
     private static class MyListData extends javax.swing.AbstractListModel {
         
-        private java.util.List m_data;
+        private final java.util.List m_data;
         
         public MyListData(java.util.List data) {
             m_data = data;
         }
         
+        @Override
         public Object getElementAt(int index) {
             return m_data.get(index);
         }
         
+        @Override
         public int getSize() {
             return m_data.size();
         } 

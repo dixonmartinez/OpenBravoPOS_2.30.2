@@ -42,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class AppUser {
 
-    private static final Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppUser");
+    private static final Logger logger = Logger.getLogger(AppUser.class.getName());
 
     private static SAXParser m_sp = null;
     private static HashMap<String, String> m_oldclasses; // This is for backwards compatibility purposes
@@ -60,7 +60,15 @@ public class AppUser {
         initOldClasses();
     }
     
-    /** Creates a new instance of AppUser */
+    /** 
+     * Creates a new instance of AppUser
+     * @param id
+     * @param name
+     * @param password
+     * @param card
+     * @param role
+     * @param icon 
+     */
     public AppUser(String id, String name, String password, String card, String role, Icon icon) {
         m_sId = id;
         m_sName = name;
@@ -109,7 +117,7 @@ public class AppUser {
     public void fillPermissions(DataLogicSystem dlSystem) {
         
         // inicializamos los permisos
-        m_apermissions = new HashSet<String>();
+        m_apermissions = new HashSet<>();
         // Y lo que todos tienen permisos
         m_apermissions.add("com.openbravo.pos.forms.JPanelMenu");
         m_apermissions.add("Menu.Exit");        
@@ -152,7 +160,7 @@ public class AppUser {
     }
     
     private static void initOldClasses() {
-        m_oldclasses = new HashMap<String, String>();
+        m_oldclasses = new HashMap<>();
         
         // update permissions from 0.0.24 to 2.20    
         m_oldclasses.put("net.adrianromero.tpv.panelsales.JPanelTicketSales", "com.openbravo.pos.sales.JPanelTicketSales");

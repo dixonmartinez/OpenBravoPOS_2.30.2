@@ -64,24 +64,30 @@ public class DirtyManager implements DocumentListener, ChangeListener, ActionLis
         return m_bDirty;
     }
     
+    @Override
     public void changedUpdate(DocumentEvent e) {
         setDirty(true);
     }
+    @Override
     public void insertUpdate(DocumentEvent e) {
         setDirty(true);
     }    
+    @Override
     public void removeUpdate(DocumentEvent e) {
         setDirty(true);
     }    
     
+    @Override
     public void stateChanged(ChangeEvent e) {
         setDirty(true);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         setDirty(true);
     }
     
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         //if ("image".equals(evt.getPropertyName())) {
             setDirty(true);

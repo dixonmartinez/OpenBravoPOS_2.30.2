@@ -25,29 +25,35 @@ package com.openbravo.data.loader;
  */
 public class SessionDBGeneric implements SessionDB {
 
-    private String name;
+    private final String name;
 
     public SessionDBGeneric(String name) {
         this.name = name;
     }
 
+    @Override
     public String TRUE() {
         return "TRUE";
     }
+    @Override
     public String FALSE() {
         return "FALSE";
     }
+    @Override
     public String INTEGER_NULL() {
         return "CAST(NULL AS INTEGER)";
     }
+    @Override
     public String CHAR_NULL() {
         return "CAST(NULL AS CHAR)";
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public SentenceFind getSequenceSentence(Session s, String sequence) {
         return new StaticSentence(s, "SELECT NEXTVAL('" + sequence + "')", null, SerializerReadInteger.INSTANCE);
     }

@@ -23,15 +23,20 @@ import com.openbravo.basic.BasicException;
 
 public class SerializerWriteBasicExt implements SerializerWrite<Object[]> {
     
-    private Datas[] m_classes;
-    private int[] m_index;
+    private final Datas[] m_classes;
+    private final int[] m_index;
     
-    /** Creates a new instance of SerializerWriteBasic */
+    /** 
+     * Creates a new instance of SerializerWriteBasic
+     * @param classes
+     * @param index 
+     */
     public SerializerWriteBasicExt(Datas[] classes, int[] index) {
         m_classes = classes;
         m_index = index;
     }
     
+    @Override
     public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
 
         for (int i = 0; i < m_index.length; i++) {

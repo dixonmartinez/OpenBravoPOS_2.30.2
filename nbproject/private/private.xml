@@ -2,11 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/opt/Development/openbravo/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/ticket/TaxInfo.java</file>
-            <file>file:/opt/Development/openbravo/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sql/JFrmSQL.java</file>
-            <file>file:/opt/Development/openbravo/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sql/JPanelSQLResult.java</file>
-            <file>file:/opt/Development/openbravo/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sql/JPanelSQL.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

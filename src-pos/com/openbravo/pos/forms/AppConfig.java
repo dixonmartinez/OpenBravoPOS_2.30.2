@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class AppConfig implements AppProperties {
 
-    private static final Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
+    private static final Logger logger = Logger.getLogger(AppConfig.class.getName());
      
     private Properties m_propsconfig;
     private File configfile;

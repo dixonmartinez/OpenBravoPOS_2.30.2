@@ -48,7 +48,7 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
  */
 public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
 
-    private static final Logger logger = Logger.getLogger("com.openbravo.pos.forms.JPrincipalApp");
+    private static final Logger logger = Logger.getLogger(JPrincipalApp.class.getName());
     
     private JRootApp m_appview;
     private AppUser m_appuser;

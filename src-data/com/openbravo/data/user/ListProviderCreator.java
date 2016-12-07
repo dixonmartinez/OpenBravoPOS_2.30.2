@@ -30,7 +30,11 @@ public class ListProviderCreator implements ListProvider {
     private EditorCreator prov;
     private Object params;
     
-    /** Creates a new instance of ListProviderEditor */
+    /** 
+     * Creates a new instance of ListProviderEditor
+     * @param sent
+     * @param prov 
+     */
     public ListProviderCreator(SentenceList sent, EditorCreator prov) {
         this.sent = sent;
         this.prov = prov;
@@ -75,11 +79,13 @@ public class ListProviderCreator implements ListProvider {
 //        sent.setSerializerWrite(sw);
 //    }
 
+    @Override
     public List loadData() throws BasicException {       
         params = (prov == null) ? null : prov.createValue();
         return refreshData();
     }
     
+    @Override
     public List refreshData() throws BasicException {
         return sent.list(params);
     }    

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class StaticSentence extends JDBCSentence {
 
-    private static final Logger logger = Logger.getLogger("com.openbravo.data.loader.StaticSentence");
+    private static final Logger logger = Logger.getLogger(StaticSentence.class.getName());
     
     private ISQLBuilderStatic m_sentence;
     protected SerializerWrite m_SerWrite = null;

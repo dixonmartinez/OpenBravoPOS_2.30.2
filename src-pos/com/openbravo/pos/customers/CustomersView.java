@@ -38,19 +38,23 @@ import javax.swing.JOptionPane;
  *
  * @author  adrianromero
  */
-public class CustomersView extends javax.swing.JPanel implements EditorRecord {
+public final class CustomersView extends javax.swing.JPanel implements EditorRecord {
 
     private Object m_oId;
     
-    private SentenceList m_sentcat;
+    private final SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     
-    private DirtyManager m_Dirty;
+    private final DirtyManager m_Dirty;
         
-    /** Creates new form CustomersView */
+    /** 
+     * Creates new form CustomersView
+     * @param app
+     * @param dirty 
+     */
     public CustomersView(AppView app, DirtyManager dirty) {
         
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         
         initComponents();
         
@@ -91,9 +95,11 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jCategory.setModel(m_CategoryModel);         
     }
     
+    @Override
     public void refresh() {
     }
     
+    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jTaxID.setText(null);
@@ -150,6 +156,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         jButton3.setEnabled(false);
     } 
     
+    @Override
     public void writeValueInsert() {
         m_oId = null;
         m_jTaxID.setText(null);
@@ -206,6 +213,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         jButton3.setEnabled(true);
     }
 
+    @Override
     public void writeValueDelete(Object value) {
         Object[] customer = (Object[]) value;
         m_oId = customer[0];
@@ -213,7 +221,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jSearchkey.setText((String) customer[2]);
         m_jName.setText((String) customer[3]);
         m_jNotes.setText((String) customer[4]);
-        m_jVisible.setSelected(((Boolean) customer[5]).booleanValue());
+        m_jVisible.setSelected(((Boolean) customer[5]));
         jcard.setText((String) customer[6]);
         txtMaxdebt.setText(Formats.CURRENCY.formatValue(customer[7]));
         txtCurdate.setText(Formats.DATE.formatValue(customer[8]));        
@@ -265,6 +273,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         jButton3.setEnabled(false);
     }
 
+    @Override
     public void writeValueEdit(Object value) {
         Object[] customer = (Object[]) value;
         m_oId = customer[0];
@@ -272,7 +281,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jSearchkey.setText((String) customer[2]);
         m_jName.setText((String) customer[3]);
         m_jNotes.setText((String) customer[4]);
-        m_jVisible.setSelected(((Boolean) customer[5]).booleanValue());
+        m_jVisible.setSelected(((Boolean) customer[5]));
         jcard.setText((String) customer[6]);
         txtMaxdebt.setText(Formats.CURRENCY.formatValue(customer[7]));
         txtCurdate.setText(Formats.DATE.formatValue(customer[8]));        
@@ -324,6 +333,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         jButton3.setEnabled(true);
     }
     
+    @Override
     public Object createValue() throws BasicException {
         Object[] customer = new Object[23];
         customer[0] = m_oId == null ? UUID.randomUUID().toString() : m_oId;
@@ -331,9 +341,9 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         customer[2] = m_jSearchkey.getText();
         customer[3] = m_jName.getText();
         customer[4] = m_jNotes.getText();
-        customer[5] = Boolean.valueOf(m_jVisible.isSelected());
+        customer[5] = m_jVisible.isSelected();
         customer[6] = Formats.STRING.parseValue(jcard.getText()); // Format to manage NULL values
-        customer[7] = Formats.CURRENCY.parseValue(txtMaxdebt.getText(), new Double(0.0));
+        customer[7] = Formats.CURRENCY.parseValue(txtMaxdebt.getText(), 0.0);
         customer[8] = Formats.TIMESTAMP.parseValue(txtCurdate.getText()); // not saved
         customer[9] = Formats.CURRENCY.parseValue(txtCurdebt.getText()); // not saved
         
@@ -356,6 +366,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         return customer;
     }   
     
+    @Override
     public Component getComponent() {
         return this;
     }    

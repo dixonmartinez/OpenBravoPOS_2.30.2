@@ -34,7 +34,10 @@ public class CustomerInfo implements Serializable {
     protected String taxid;
     protected String name;
     
-    /** Creates a new instance of UserInfoBasic */
+    /** 
+     * Creates a new instance of UserInfoBasic
+     * @param id 
+     */
     public CustomerInfo(String id) {
         this.id = id;
         this.searchkey = null;

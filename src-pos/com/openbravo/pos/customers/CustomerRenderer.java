@@ -24,7 +24,7 @@ import java.awt.*;
 
 public class CustomerRenderer extends DefaultListCellRenderer {
                 
-    private Icon icocustomer;
+    private final Icon icocustomer;
 
     /** Creates a new instance of ProductRenderer */
     public CustomerRenderer() {

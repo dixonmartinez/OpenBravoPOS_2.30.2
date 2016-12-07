@@ -36,12 +36,15 @@ import com.openbravo.pos.util.Base64Encoder;
  *
  * @author adrianromero
  */
-public class ResourcesView extends JPanel implements EditorRecord {
+public final class ResourcesView extends JPanel implements EditorRecord {
     
     private Object m_oId;
-    private ComboBoxValModel m_ResourceModel;
+    private final ComboBoxValModel m_ResourceModel;
             
-    /** Creates new form ResourcesEditor */
+    /** 
+     * Creates new form ResourcesEditor
+     * @param dirty 
+     */
     public ResourcesView(DirtyManager dirty) {
         initComponents();
         
@@ -59,6 +62,7 @@ public class ResourcesView extends JPanel implements EditorRecord {
         writeValueEOF();        
     }
 
+    @Override
     public void writeValueEOF() {
         m_oId = null;
         m_jName.setText(null);
@@ -71,6 +75,7 @@ public class ResourcesView extends JPanel implements EditorRecord {
         m_jImage.setEnabled(false);
     }    
     
+    @Override
     public void writeValueInsert() {
         m_oId = null;
         m_jName.setText(null);
@@ -83,6 +88,7 @@ public class ResourcesView extends JPanel implements EditorRecord {
         m_jImage.setEnabled(true);
     }
     
+    @Override
     public void writeValueDelete(Object value) {
         Object[] resource = (Object[]) value;
         m_oId = resource[0];
@@ -113,6 +119,7 @@ public class ResourcesView extends JPanel implements EditorRecord {
         m_jImage.setEnabled(false);       
     }  
     
+    @Override
     public void writeValueEdit(Object value) {
         Object[] resource = (Object[]) value;
         m_oId = resource[0];
@@ -143,6 +150,7 @@ public class ResourcesView extends JPanel implements EditorRecord {
         m_jImage.setEnabled(true);
     }
     
+    @Override
     public Object createValue() throws BasicException {
         Object[] resource = new Object[4];
 

@@ -50,17 +50,20 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     private boolean taxesincluded;
     
     // Set of Products panels
-    private Map<String, ProductInfoExt> m_productsset = new HashMap<String, ProductInfoExt>();
+    private Map<String, ProductInfoExt> m_productsset = new HashMap<>();
     
     // Set of Categoriespanels
-     private Set<String> m_categoriesset = new HashSet<String>();
+     private Set<String> m_categoriesset = new HashSet<>();
         
     private ThumbNailBuilder tnbbutton;
     private ThumbNailBuilder tnbcat;
     
     private CategoryInfo showingcategory = null;
         
-    /** Creates new form JCatalog */
+    /** 
+     * Creates new form JCatalog
+     * @param dlSales 
+     */
     public JCatalog(DataLogicSales dlSales) {
         this(dlSales, false, false, 64, 54);
     }
@@ -80,10 +83,12 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         tnbbutton = new ThumbNailBuilder(width, height, "com/openbravo/images/package.png");
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void showCatalogPanel(String id) {
            
         if (id == null) {
@@ -93,6 +98,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         }
     }
     
+    @Override
     public void loadCatalog() throws BasicException {
         
         // delete all categories panel
@@ -125,6 +131,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         showRootCategoriesPanel();
     }
     
+    @Override
     public void setComponentEnabled(boolean value) {
         
         m_jListCategories.setEnabled(value);
@@ -144,13 +151,17 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         this.setEnabled(value);
     }
     
+    @Override
     public void addActionListener(ActionListener l) {
         listeners.add(ActionListener.class, l);
     }
+    
+    @Override
     public void removeActionListener(ActionListener l) {
         listeners.remove(ActionListener.class, l);
     }
 
+    @Override
     public void valueChanged(ListSelectionEvent evt) {
         
         if (!evt.getValueIsAdjusting()) {
@@ -166,11 +177,11 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     protected void fireSelectedProduct(ProductInfoExt prod) {
         EventListener[] l = listeners.getListeners(ActionListener.class);
         ActionEvent e = null;
-        for (int i = 0; i < l.length; i++) {
+        for (EventListener l1 : l) {
             if (e == null) {
                 e = new ActionEvent(prod, ActionEvent.ACTION_PERFORMED, prod.getID());
             }
-            ((ActionListener) l[i]).actionPerformed(e);	       
+            ((ActionListener) l1).actionPerformed(e);	       
         }
     }   
     
@@ -187,16 +198,15 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                
                 // Add subcategories
                 java.util.List<CategoryInfo> categories = m_dlSales.getSubcategories(catid);
-                for (CategoryInfo cat : categories) {
-
+                categories.forEach((cat) -> {
                     jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(cat.getImage(), cat.getName())), new SelectedCategory(cat));
-                }
+                });
                 
                 // Add products
                 java.util.List<ProductInfoExt> products = m_dlSales.getProductCatalog(catid);
-                for (ProductInfoExt prod : products) {
+                products.forEach((prod) -> {
                     jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
-                }
+                });
             }
             
             // Show categories panel
@@ -272,7 +282,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                     // Create  products panel
                     java.util.List<ProductInfoExt> products = m_dlSales.getProductComments(id);
 
-                    if (products.size() == 0) {
+                    if (products.isEmpty()) {
                         // no hay productos por tanto lo anado a la de vacios y muestro el panel principal.
                         m_productsset.put(id, null);
                         if (showingcategory == null) {
@@ -291,9 +301,9 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                         m_jProducts.add(jcurrTab, "PRODUCT." + id);                        
 
                         // Add products
-                        for (ProductInfoExt prod : products) {
+                        products.forEach((prod) -> {
                             jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
-                        }                       
+                        });                       
 
                         selectIndicatorPanel(new ImageIcon(tnbbutton.getThumbNail(product.getImage())), product.getName());
 
@@ -301,7 +311,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                         cl.show(m_jProducts, "PRODUCT." + id); 
                     }
                 } catch (BasicException eb) {
-                    eb.printStackTrace();
                     m_productsset.put(id, null);
                     if (showingcategory == null) {
                         showRootCategoriesPanel();                         
@@ -320,33 +329,37 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     }
     
     private class SelectedAction implements ActionListener {
-        private ProductInfoExt prod;
+        private final ProductInfoExt prod;
         public SelectedAction(ProductInfoExt prod) {
             this.prod = prod;
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             fireSelectedProduct(prod);
         }
     }
     
     private class SelectedCategory implements ActionListener {
-        private CategoryInfo category;
+        private final CategoryInfo category;
         public SelectedCategory(CategoryInfo category) {
             this.category = category;
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             showSubcategoryPanel(category);
         }
     }
     
     private class CategoriesListModel extends AbstractListModel {
-        private java.util.List m_aCategories;
+        private final java.util.List m_aCategories;
         public CategoriesListModel(java.util.List aCategories) {
             m_aCategories = aCategories;
         }
+        @Override
         public int getSize() { 
             return m_aCategories.size(); 
         }
+        @Override
         public Object getElementAt(int i) {
             return m_aCategories.get(i);
         }    

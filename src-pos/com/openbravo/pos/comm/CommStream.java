@@ -28,7 +28,7 @@ import java.io.*;
  */
 public class CommStream {    
     
-    private String m_sPort;
+    private final String m_sPort;
 
     private CommPortIdentifier m_PortIdPrinter;
     private CommPort m_CommPortPrinter;  
@@ -36,7 +36,10 @@ public class CommStream {
     private OutputStream m_out;
     private InputStream m_in;
     
-    /** Creates a new instance of CommPort */
+    /** 
+     * Creates a new instance of CommPort
+     * @param port 
+     */
     public CommStream(String port) {
         m_sPort = port;
         
@@ -61,15 +64,11 @@ public class CommStream {
                     ((ParallelPort)m_CommPortPrinter).setMode(1);
                 }
             }
-        } catch (Exception e) {
+        } catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException | IOException e) {
             m_PortIdPrinter = null;
             m_CommPortPrinter = null;  
             m_out = null;
             m_in = null;
-//        } catch (NoSuchPortException e) {
-//        } catch (PortInUseException e) {
-//        } catch (UnsupportedCommOperationException e) {
-//        } catch (IOException e) {
         } 
     }
     

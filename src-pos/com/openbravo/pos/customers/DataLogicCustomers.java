@@ -48,8 +48,9 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     protected Session s;
     private TableDefinition tcustomers;
-    private static Datas[] customerdatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.BOOLEAN, Datas.STRING};
+    private static final Datas[] customerdatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.BOOLEAN, Datas.STRING};
     
+    @Override
     public void init(Session s){
         
         this.s = s;
@@ -82,6 +83,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
             , new QBFBuilder("SELECT ID, TAXID, SEARCHKEY, NAME FROM CUSTOMERS WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) ORDER BY NAME", new String[] {"TAXID", "SEARCHKEY", "NAME"})
             , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
             , new SerializerRead() {
+                    @Override
                     public Object readValues(DataRead dr) throws BasicException {
                         CustomerInfo c = new CustomerInfo(dr.getString(1));
                         c.setTaxid(dr.getString(2));
@@ -97,7 +99,9 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return new PreparedSentence(s
                 , "UPDATE CUSTOMERS SET NOTES = ? WHERE ID = ?"
                 , SerializerWriteParams.INSTANCE      
-                ).exec(new DataParams() { public void writeValues() throws BasicException {
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
                         setString(1, customer.getNotes());
                         setString(2, customer.getId());
                 }});        
@@ -114,6 +118,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     public final SentenceExec getReservationsUpdate() {
         return new SentenceExecTransaction(s) {
+            @Override
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -133,6 +138,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     public final SentenceExec getReservationsDelete() {
         return new SentenceExecTransaction(s) {
+            @Override
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -147,6 +153,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     public final SentenceExec getReservationsInsert() {
         return new SentenceExecTransaction(s) {
+            @Override
             public int execInTransaction(Object params) throws BasicException {  
     
                 int i = new PreparedSentence(s

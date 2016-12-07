@@ -37,12 +37,14 @@ public class ComboItemLocal implements IKeyed {
         m_iKey = iKey;
         m_sKeyValue = sKeyValue;
     }
+    @Override
     public Object getKey() {
         return m_iKey;
     }
     public Object getValue() {
         return m_sKeyValue;
     }
+    @Override
     public String toString() {
         return AppLocal.getIntString(m_sKeyValue);
     }
