@@ -28,9 +28,15 @@ import java.awt.Component;
  */
 public class JProductAttEditItem extends javax.swing.JPanel implements JProductAttEditI {
 
-    private String attid;
+    private final String attid;
 
-    /** Creates new form JProductAttEditItem */
+    /** 
+     * Creates new form JProductAttEditItem
+     * @param attid
+     * @param label
+     * @param value
+     * @param keys 
+     */
     public JProductAttEditItem(String attid, String label, String value, JEditorKeys keys) {
 
         this.attid = attid;
@@ -43,18 +49,22 @@ public class JProductAttEditItem extends javax.swing.JPanel implements JProductA
         jValue.setText(value);
     }
 
+    @Override
     public void assignSelection() {
         jValue.activate();
     }
 
+    @Override
     public String getAttribute() {
         return attid;
     }
 
+    @Override
     public String getValue() {
         return jValue.getText();
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

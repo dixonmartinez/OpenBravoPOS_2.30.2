@@ -51,5 +51,9 @@ public interface AppView {
     public void waitCursorEnd();
     
     public AppUserView getAppUserView();
+    
+    //  Dixon Martinez
+    public String getPrefCustCard();
+    public String getPrefUserCard();
 }
 

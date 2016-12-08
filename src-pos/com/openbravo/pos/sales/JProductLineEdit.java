@@ -112,6 +112,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }
     
     private class RecalculateUnits implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             Double value = m_jUnits.getDoubleValue();
             if (value == null || value == 0.0) {
@@ -126,6 +127,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }
     
     private class RecalculatePrice implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
 
             Double value = m_jPrice.getDoubleValue();
@@ -142,6 +144,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }    
     
     private class RecalculatePriceTax implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
 
             Double value = m_jPriceTax.getDoubleValue();
@@ -159,6 +162,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }   
     
     private class RecalculateName implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             m_oLine.setProperty("product.name", m_jName.getText());
         }
@@ -332,8 +336,8 @@ public class JProductLineEdit extends javax.swing.JDialog {
 
         getContentPane().add(jPanel3, java.awt.BorderLayout.EAST);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-580)/2, (screenSize.height-362)/2, 580, 362);
+        setSize(new java.awt.Dimension(580, 362));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonCancelActionPerformed

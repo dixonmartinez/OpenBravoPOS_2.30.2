@@ -31,7 +31,7 @@ public class JRefundLines extends javax.swing.JPanel {
     
     private final JTicketLines ticketlines;
     private List m_aLines;
-    private List m_aLinesAll; 
+    private final List m_aLinesAll; 
 
     private final JPanelTicketEdits m_jTicketEdit;
     
@@ -208,8 +208,9 @@ public class JRefundLines extends javax.swing.JPanel {
                 ticketlines.addTicketLine((TicketLineInfo) m_aLines.get(i));
             }
         }
-        while(m_jTicketEdit.getActiveTicket().getLinesCount()>0)
-        m_jTicketEdit.removeTicketLine(0);
+        while(m_jTicketEdit.getActiveTicket().getLinesCount()>0) {
+            m_jTicketEdit.removeTicketLine(0);
+        }
     }//GEN-LAST:event_m_jbtnResetActionPerformed
     
     

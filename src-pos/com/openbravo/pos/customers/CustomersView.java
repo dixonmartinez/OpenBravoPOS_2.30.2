@@ -84,6 +84,8 @@ public final class CustomersView extends javax.swing.JPanel implements EditorRec
         txtRegion.getDocument().addDocumentListener(dirty);
         txtCountry.getDocument().addDocumentListener(dirty);
         
+        //  Dixon Martinez
+        this.m_App = app;
         writeValueEOF(); 
     }
     
@@ -751,7 +753,7 @@ public final class CustomersView extends javax.swing.JPanel implements EditorRec
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.cardnew"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {            
-            jcard.setText("c" + StringUtils.getCardNumber());
+            jcard.setText(m_App.getPrefCustCard() + StringUtils.getCardNumber());
             m_Dirty.setDirty(true);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -817,4 +819,5 @@ public final class CustomersView extends javax.swing.JPanel implements EditorRec
     private javax.swing.JTextField txtRegion;
     // End of variables declaration//GEN-END:variables
     
+    private AppView m_App;
 }

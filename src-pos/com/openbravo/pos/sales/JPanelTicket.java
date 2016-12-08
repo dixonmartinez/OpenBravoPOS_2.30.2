@@ -1529,14 +1529,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel5.add(jPanel2);
 
         m_jDiscountRatePanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 3, 0, 2));
+        m_jDiscountRatePanel.setMinimumSize(new java.awt.Dimension(68, 301));
         m_jDiscountRatePanel.setPreferredSize(new java.awt.Dimension(68, 301));
         m_jDiscountRatePanel.setLayout(new java.awt.GridLayout(0, 1, 5, 5));
 
         m_jbtnDiscountRate.setFocusPainted(false);
         m_jbtnDiscountRate.setFocusable(false);
-        m_jbtnDiscountRate.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jbtnDiscountRate.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jbtnDiscountRate.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jbtnDiscountRate.setRequestFocusEnabled(false);
         m_jbtnDiscountRate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1547,9 +1545,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jDisableDiscountRate.setFocusPainted(false);
         m_jDisableDiscountRate.setFocusable(false);
-        m_jDisableDiscountRate.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jDisableDiscountRate.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jDisableDiscountRate.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jDisableDiscountRate.setRequestFocusEnabled(false);
         m_jDisableDiscountRate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1560,9 +1555,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jDiscount1.setFocusPainted(false);
         m_jDiscount1.setFocusable(false);
-        m_jDiscount1.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount1.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount1.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jDiscount1.setRequestFocusEnabled(false);
         m_jDiscount1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1573,9 +1565,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jDiscount2.setFocusPainted(false);
         m_jDiscount2.setFocusable(false);
-        m_jDiscount2.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount2.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount2.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jDiscount2.setRequestFocusEnabled(false);
         m_jDiscount2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1586,9 +1575,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jDiscount3.setFocusPainted(false);
         m_jDiscount3.setFocusable(false);
-        m_jDiscount3.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount3.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jDiscount3.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jDiscount3.setRequestFocusEnabled(false);
         m_jDiscount3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1600,9 +1586,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeypadDiscountRate.setText("...");
         m_jKeypadDiscountRate.setFocusPainted(false);
         m_jKeypadDiscountRate.setFocusable(false);
-        m_jKeypadDiscountRate.setMaximumSize(new java.awt.Dimension(74, 44));
-        m_jKeypadDiscountRate.setMinimumSize(new java.awt.Dimension(74, 44));
-        m_jKeypadDiscountRate.setPreferredSize(new java.awt.Dimension(74, 44));
         m_jKeypadDiscountRate.setRequestFocusEnabled(false);
         m_jKeypadDiscountRate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

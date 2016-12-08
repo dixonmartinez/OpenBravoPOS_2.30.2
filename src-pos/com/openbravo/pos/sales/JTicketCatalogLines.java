@@ -46,10 +46,8 @@ public class JTicketCatalogLines extends javax.swing.JPanel {
      */
     public JTicketCatalogLines(AppView app, JPanelTicketEdits jTicketEdit, boolean pricevisible, boolean taxesincluded, int width, int height) {
         
-        DataLogicSystem dlSystem = null;
-        DataLogicSales dlSales = null;
-        dlSystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
-        dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
+        DataLogicSystem dlSystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
+        DataLogicSales dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         
         initComponents();
         

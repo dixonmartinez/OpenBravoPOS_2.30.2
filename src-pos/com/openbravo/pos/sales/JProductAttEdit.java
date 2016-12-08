@@ -88,9 +88,11 @@ public class JProductAttEdit extends javax.swing.JDialog {
         attsetSent = new PreparedSentence(s,
                 "SELECT ID, NAME FROM ATTRIBUTESET WHERE ID = ?",
                 SerializerWriteString.INSTANCE,
-                new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                    return new AttributeSetInfo(dr.getString(1), dr.getString(2));
-                }});
+                new SerializerRead() { 
+                    @Override
+                    public Object readValues(DataRead dr) throws BasicException {
+                        return new AttributeSetInfo(dr.getString(1), dr.getString(2));
+                    }});
         attsetinstExistsSent = new PreparedSentence(s,
                 "SELECT ID FROM ATTRIBUTESETINSTANCE WHERE ATTRIBUTESET_ID = ? AND DESCRIPTION = ?",
                 new SerializerWriteBasic(Datas.STRING, Datas.STRING),
@@ -101,17 +103,21 @@ public class JProductAttEdit extends javax.swing.JDialog {
                 "WHERE AU.ATTRIBUTESET_ID = ? " +
                 "ORDER BY AU.LINENO",
             SerializerWriteString.INSTANCE,
-            new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new AttributeInstInfo(dr.getString(1), dr.getString(2), dr.getString(3), dr.getString(4));
-            }});
+            new SerializerRead() { 
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
+                    return new AttributeInstInfo(dr.getString(1), dr.getString(2), dr.getString(3), dr.getString(4));
+                }});
         attinstSent2 = new PreparedSentence(s, "SELECT A.ID, A.NAME, AI.ID, AI.VALUE " +
             "FROM ATTRIBUTEUSE AU JOIN ATTRIBUTE A ON AU.ATTRIBUTE_ID = A.ID LEFT OUTER JOIN ATTRIBUTEINSTANCE AI ON AI.ATTRIBUTE_ID = A.ID " +
             "WHERE AU.ATTRIBUTESET_ID = ? AND AI.ATTRIBUTESETINSTANCE_ID = ?" +
             "ORDER BY AU.LINENO",
             new SerializerWriteBasic(Datas.STRING, Datas.STRING),
-            new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new AttributeInstInfo(dr.getString(1), dr.getString(2), dr.getString(3), dr.getString(4));
-            }});
+            new SerializerRead() { 
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
+                    return new AttributeInstInfo(dr.getString(1), dr.getString(2), dr.getString(3), dr.getString(4));
+                }});
         attvaluesSent = new PreparedSentence(s, "SELECT VALUE FROM ATTRIBUTEVALUE WHERE ATTRIBUTE_ID = ?",
                 SerializerWriteString.INSTANCE,
                 SerializerReadString.INSTANCE);
@@ -160,7 +166,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
                     ? attinstSent.list(attsetid)
                     : attinstSent2.list(attsetid, attsetinstid);
 
-            itemslist = new ArrayList<JProductAttEditI>();
+            itemslist = new ArrayList<>();
 
             for (AttributeInstInfo aii : attinstinfo) {
 
@@ -199,8 +205,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
     private static class AttributeInstInfo {
         
-        private String attid;
-        private String attname;
+        private final String attid;
+        private final String attname;
         private String id;
         private String value;
 

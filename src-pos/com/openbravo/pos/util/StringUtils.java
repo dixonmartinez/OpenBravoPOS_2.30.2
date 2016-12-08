@@ -48,21 +48,28 @@ public class StringUtils {
         if (sValue == null) {
             return null;
         } else {
-            StringBuffer buffer = new StringBuffer();      
+            StringBuilder buffer = new StringBuilder();      
             for (int i = 0; i < sValue.length(); i++) {
                 char charToCompare = sValue.charAt(i);
-                if (charToCompare == '&') {
-                    buffer.append("&amp;");
-                } else if (charToCompare == '<') {
-                    buffer.append("&lt;");
-                } else if (charToCompare == '>') {
-                    buffer.append("&gt;");
-                } else if (charToCompare == '\"') {
-                    buffer.append("&quot;");
-                } else if (charToCompare == '\'') {
-                    buffer.append("&apos;");
-                } else {
-                    buffer.append(charToCompare);
+                switch (charToCompare) {
+                    case '&':
+                        buffer.append("&amp;");
+                        break;
+                    case '<':
+                        buffer.append("&lt;");
+                        break;
+                    case '>':
+                        buffer.append("&gt;");
+                        break;
+                    case '\"':
+                        buffer.append("&quot;");
+                        break;
+                    case '\'':
+                        buffer.append("&apos;");
+                        break;
+                    default:
+                        buffer.append(charToCompare);
+                        break;
                 }
             }
             return buffer.toString();
@@ -71,7 +78,7 @@ public class StringUtils {
     
     public static String byte2hex(byte[] binput) {
         
-        StringBuffer sb = new StringBuffer(binput.length * 2);
+        StringBuilder sb = new StringBuilder(binput.length * 2);
         for (int i = 0; i < binput.length; i++) {
             int high = ((binput[i] & 0xF0) >> 4);
             int low = (binput[i] & 0x0F);

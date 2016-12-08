@@ -191,6 +191,21 @@ public class JRootApp extends JPanel implements AppView {
             m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
         }
         
+        //  Dixon Martinez
+        m_PrefCustCard = m_propsdb.getProperty("customercard");
+        if(m_PrefCustCard == null) {
+            m_PrefCustCard = "c";
+            m_propsdb.setProperty("customercard", m_PrefCustCard);
+            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
+        }
+        
+        m_PrefUserCard = m_propsdb.getProperty("usercard");
+        if(m_PrefUserCard == null) {
+            m_PrefUserCard = "u";
+            m_propsdb.setProperty("usercard", m_PrefUserCard);
+            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
+        }
+        //  End Dixon Martinez
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
         
@@ -444,6 +459,17 @@ public class JRootApp extends JPanel implements AppView {
             ee.printStackTrace();
         }
     }
+
+    @Override
+    public String getPrefCustCard() {
+        return m_PrefCustCard;
+    }
+
+    @Override
+    public String getPrefUserCard() {
+        return m_PrefUserCard;
+    }
+    
     // La accion del selector
     private class AppUserAction extends AbstractAction {
         
@@ -746,4 +772,7 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JPanel panelTask;
     private javax.swing.JLabel poweredby;
     // End of variables declaration//GEN-END:variables
+
+    private String m_PrefCustCard;
+    private String m_PrefUserCard;
 }
