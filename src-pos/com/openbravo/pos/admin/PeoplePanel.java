@@ -49,7 +49,8 @@ public class PeoplePanel extends JPanelTable {
     protected void init() {      
         DataLogicAdmin dlAdmin = (DataLogicAdmin) app.getBean(DataLogicAdmin.class.getName());        
         tpeople = dlAdmin.getTablePeople();           
-        jeditor = new PeopleView(dlAdmin, dirty);    
+        //  Dixon Martinez
+        jeditor = new PeopleView(app, dlAdmin, dirty);    
     }
     
     @Override

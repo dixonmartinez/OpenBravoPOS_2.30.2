@@ -69,51 +69,73 @@ public class JFrmSQL extends javax.swing.JFrame implements AppView {
         
         return true;
     }
+
+    @Override
+    public String getPrefCustCard() {
+        return m_props.getProperty("customercard");
+    }
+
+    @Override
+    public String getPrefUserCard() {
+        return m_props.getProperty("usercard");
+    }
     
     private class MyFrameListener extends WindowAdapter{
         
+        @Override
         public void windowClosing(WindowEvent evt) {
             sql.deactivate();
             session.close();
             dispose();
         }
+        @Override
         public void windowClosed(WindowEvent evt) {
             System.exit(0);
         }
     }
     
+    @Override
     public DeviceScale getDeviceScale() {
         return null;
     }
     
+    @Override
     public DeviceScanner getDeviceScanner() {
         return null;
     }
     
+    @Override
     public DeviceTicket getDeviceTicket() {
         return null;
     }
 
+    @Override
     public String getActiveCashIndex() {
         return null;
     }
+    @Override
     public Date getActiveCashDateStart() {
         return null;
     }
+    @Override
     public int getActiveCashSequence() {
         return 0;
     }
+    @Override
     public Date getActiveCashDateEnd(){
         return null;
     }
+    @Override
     public String getInventoryLocation() {
         return null;
     }
 
+    @Override
     public void setActiveCash(String value, int iSeq, Date dStart, Date dEnd) {
     }
 
 
+    @Override
     public Session getSession() {
         return session;
     }
@@ -122,10 +144,12 @@ public class JFrmSQL extends javax.swing.JFrame implements AppView {
 //        return m_appcnt.getDataSource();
 //    }
     
+    @Override
     public AppProperties getProperties() {
         return m_props;
     }
 
+    @Override
     public Object getBean(String beanfactory) throws BeanFactoryException {
         return null;
     }
@@ -133,13 +157,16 @@ public class JFrmSQL extends javax.swing.JFrame implements AppView {
     public JFrame getFrame() {
         return this;
     }    
+    @Override
     public void waitCursorBegin() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     }
+    @Override
     public void waitCursorEnd() {
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
+    @Override
     public AppUserView getAppUserView() {
         return null;
     }
@@ -163,6 +190,7 @@ public class JFrmSQL extends javax.swing.JFrame implements AppView {
      */
     public static void main(final String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                
 //                try {

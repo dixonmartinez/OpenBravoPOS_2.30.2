@@ -30,6 +30,7 @@ import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.*;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.util.StringUtils;
 
 /**
@@ -48,12 +49,14 @@ public final class PeopleView extends JPanel implements EditorRecord {
     
     /** 
      * Creates new form PeopleEditor
+     * @param m_AppView
      * @param dlAdmin
      * @param dirty 
      */
-    public PeopleView(DataLogicAdmin dlAdmin, DirtyManager dirty) {
+    public PeopleView(AppView m_AppView, DataLogicAdmin dlAdmin, DirtyManager dirty) {
         initComponents();
-                
+        this.m_AppView = m_AppView;
+        
         // El modelo de roles
         m_sentrole = dlAdmin.getRolesList();
         m_RoleModel = new ComboBoxValModel();
@@ -314,7 +317,8 @@ public final class PeopleView extends JPanel implements EditorRecord {
         
         
         if (JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.cardnew"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {  
-            jcard.setText("c" + StringUtils.getCardNumber());
+            //  Dixon Martinez
+            jcard.setText(m_AppView.getPrefUserCard() + StringUtils.getCardNumber());
             m_Dirty.setDirty(true);
         }
         
@@ -346,4 +350,6 @@ public final class PeopleView extends JPanel implements EditorRecord {
     private javax.swing.JCheckBox m_jVisible;
     // End of variables declaration//GEN-END:variables
     
+    //  Dixon Martinez
+    private final AppView m_AppView;
 }
