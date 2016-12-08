@@ -6,6 +6,8 @@
 package com.openbravo.pos.config;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppProperties;
@@ -16,6 +18,7 @@ import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.JPanelView;
 import java.util.Properties;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -34,6 +37,7 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         jTxtPrefCustCard.getDocument().addDocumentListener(m_Dirty);
         jTxtPrefUserCard.getDocument().addDocumentListener(m_Dirty);
         
+        jCmbWarehouse.addActionListener(m_Dirty);
     }
 
     /**
@@ -55,6 +59,8 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         jLabel2 = new javax.swing.JLabel();
         jTxtPrefUserCard = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jCmbWarehouse = new javax.swing.JComboBox<>();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
         jButSave.setText(bundle.getString("Button.Save")); // NOI18N
@@ -113,15 +119,30 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
                     .addComponent(jTxtPrefUserCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Label.Select"))); // NOI18N
+
+        jLabel3.setText(bundle.getString("label.warehouse")); // NOI18N
+
+        jCmbWarehouse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
+                .addComponent(jCmbWarehouse, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jCmbWarehouse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 85, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -162,7 +183,7 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -182,6 +203,11 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
     public void activate() throws BasicException {
         jTxtPrefCustCard.setText(m_Prop.getProperty("customercard"));
         jTxtPrefUserCard.setText(m_Prop.getProperty("usercard"));
+        
+        m_SentListWarehouse = m_DLSales.getLocationsList();
+        m_ComBoxModWarehouse = new ComboBoxValModel(m_SentListWarehouse.list());
+        jCmbWarehouse.setModel(m_ComBoxModWarehouse);
+        m_ComBoxModWarehouse.setSelectedItem(m_Prop.getProperty("location"));
         
         m_Dirty.setDirty(false);
     }
@@ -242,8 +268,10 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButSave;
+    private javax.swing.JComboBox<String> jCmbWarehouse;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -258,4 +286,6 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
     private DataLogicSales m_DLSales;
     private AppProperties m_AppProp;
     private Properties m_Prop;
+    private SentenceList m_SentListWarehouse;
+    private ComboBoxModel m_ComBoxModWarehouse;
 }
