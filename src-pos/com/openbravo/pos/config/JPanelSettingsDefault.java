@@ -123,8 +123,6 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
 
         jLabel3.setText(bundle.getString("label.warehouse")); // NOI18N
 
-        jCmbWarehouse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -207,7 +205,7 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         m_SentListWarehouse = m_DLSales.getLocationsList();
         m_ComBoxModWarehouse = new ComboBoxValModel(m_SentListWarehouse.list());
         jCmbWarehouse.setModel(m_ComBoxModWarehouse);
-        m_ComBoxModWarehouse.setSelectedItem(m_Prop.getProperty("location"));
+        m_ComBoxModWarehouse.setSelectedKey(m_Prop.getProperty("location"));
         
         m_Dirty.setDirty(false);
     }
@@ -242,7 +240,6 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         m_DLSystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
         m_DLSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
         m_AppProp = app.getProperties();
-        System.out.println(m_AppProp.getHost() + "/properties");
         m_Prop = m_DLSystem.getResourceAsProperties(m_AppProp.getHost() + "/properties");
     }
 
@@ -254,7 +251,7 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
     private void saveProperties() {
         m_Prop.setProperty("customercard", jTxtPrefCustCard.getText());
         m_Prop.setProperty("usercard", jTxtPrefUserCard.getText());
-        
+        m_Prop.setProperty("location", m_ComBoxModWarehouse.getSelectedKey().toString());                
         m_DLSystem.setResourceAsProperties(m_AppProp.getHost() + "/properties", m_Prop);
         
         JOptionPane.showMessageDialog(
@@ -287,5 +284,5 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
     private AppProperties m_AppProp;
     private Properties m_Prop;
     private SentenceList m_SentListWarehouse;
-    private ComboBoxModel m_ComBoxModWarehouse;
+    private ComboBoxValModel m_ComBoxModWarehouse;
 }
