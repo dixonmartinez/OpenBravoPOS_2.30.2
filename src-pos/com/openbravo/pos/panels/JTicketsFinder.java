@@ -186,16 +186,20 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
             afilter[1] = jtxtTicketID.getValueInteger();
         }
         
-        // Sale and refund checkbox        
-        if (jComboBoxTicket.getSelectedIndex() == 2) {
-            afilter[2] = QBFCompareEnum.COMP_DISTINCT;
-            afilter[3] = 2;
-        } else if (jComboBoxTicket.getSelectedIndex() == 0) {
-            afilter[2] = QBFCompareEnum.COMP_EQUALS;
-            afilter[3] = 0;
-        } else if (jComboBoxTicket.getSelectedIndex() == 1) {
-            afilter[2] = QBFCompareEnum.COMP_EQUALS;
-            afilter[3] = 1;
+        // Sale and refund checkbox
+        switch (jComboBoxTicket.getSelectedIndex()) {
+            case 2:
+                afilter[2] = QBFCompareEnum.COMP_DISTINCT;
+                afilter[3] = 2;
+                break;
+            case 0:
+                afilter[2] = QBFCompareEnum.COMP_EQUALS;
+                afilter[3] = 0;
+                break;
+            case 1:
+                afilter[2] = QBFCompareEnum.COMP_EQUALS;
+                afilter[3] = 1;
+                break;
         }
         
         // Receipt money
@@ -247,7 +251,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
     
     private static class MyListData extends javax.swing.AbstractListModel {
         
-        private java.util.List m_data;
+        private final java.util.List m_data;
         
         public MyListData(java.util.List data) {
             m_data = data;

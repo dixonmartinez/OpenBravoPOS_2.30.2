@@ -34,17 +34,21 @@ import java.util.Date;
  *
  * @author adrianromero
  */
-public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
+public final class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     
-    private ComboBoxValModel m_ReasonModel;
+    private final ComboBoxValModel m_ReasonModel;
     
     private String m_sId;
     private String m_sPaymentId;
     private Date datenew;
    
-    private AppView m_App;
+    private final AppView m_App;
     
-    /** Creates new form JPanelPayments */
+    /** 
+     * Creates new form JPanelPayments
+     * @param oApp
+     * @param dirty 
+     */
     public PaymentsEditor(AppView oApp, DirtyManager dirty) {
         
         m_App = oApp;
@@ -65,6 +69,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         writeValueEOF();
     }
     
+    @Override
     public void writeValueEOF() {
         m_sId = null;
         m_sPaymentId = null;
@@ -74,6 +79,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         jTotal.setEnabled(false);
     }  
     
+    @Override
     public void writeValueInsert() {
         m_sId = null;
         m_sPaymentId = null;
@@ -84,6 +90,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         jTotal.activate();
     }
     
+    @Override
     public void writeValueDelete(Object value) {
         Object[] payment = (Object[]) value;
         m_sId = (String) payment[0];
@@ -94,6 +101,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         jTotal.setEnabled(false);
     }
     
+    @Override
     public void writeValueEdit(Object value) {
         Object[] payment = (Object[]) value;
         m_sId = (String) payment[0];
@@ -105,6 +113,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         jTotal.activate();
     }
     
+    @Override
     public Object createValue() throws BasicException {
         Object[] payment = new Object[6];
         payment[0] = m_sId == null ? UUID.randomUUID().toString() : m_sId;
@@ -118,10 +127,12 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         return payment;
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public void refresh() {
     }  
     
@@ -139,13 +150,14 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     }
     
     private static abstract class PaymentReason implements IKeyed {
-        private String m_sKey;
-        private String m_sText;
+        private final String m_sKey;
+        private final String m_sText;
         
         public PaymentReason(String key, String text) {
             m_sKey = key;
             m_sText = text;
         }
+        @Override
         public Object getKey() {
             return m_sKey;
         }
@@ -161,14 +173,16 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         public PaymentReasonPositive(String key, String text) {
             super(key, text);
         }
+        @Override
         public Double positivize(Double d) {
             return d;
         }
+        @Override
         public Double addSignum(Double d) {
             if (d == null) {
                 return null;
-            } else if (d.doubleValue() < 0.0) {
-                return new Double(-d.doubleValue());
+            } else if (d< 0.0) {
+                return -d;
             } else {
                 return d;
             }
@@ -178,14 +192,16 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         public PaymentReasonNegative(String key, String text) {
             super(key, text);
         }
+        @Override
         public Double positivize(Double d) {
-            return d == null ? null : new Double(-d.doubleValue());
+            return d == null ? null : -d;
         }
+        @Override
         public Double addSignum(Double d) {
             if (d == null) {
                 return null;
-            } else if (d.doubleValue() > 0.0) {
-                return new Double(-d.doubleValue());
+            } else if (d > 0.0) {
+                return -d;
             } else {
                 return d;
             }

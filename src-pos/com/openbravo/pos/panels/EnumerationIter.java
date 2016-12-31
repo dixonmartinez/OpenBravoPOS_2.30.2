@@ -29,14 +29,16 @@ import java.util.Iterator;
  */
 public class EnumerationIter implements Enumeration {
     
-    private Iterator i;
+    private final Iterator i;
 
     public EnumerationIter(Iterator i) {
         this.i = i;
     }
+    @Override
     public boolean hasMoreElements() {
         return i.hasNext();
     }
+    @Override
     public Object nextElement() {
         return i.next();
     } 

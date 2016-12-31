@@ -141,96 +141,119 @@ public abstract class Formats {
     public abstract int getAlignment();
 
     private static final class FormatsNULL extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return null;
         }       
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return null;
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.LEFT;
         }
     }
     private static final class FormatsINT extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_integerformat.format(((Number) value).longValue());
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
-            return new Integer(m_integerformat.parse(value).intValue());
+            return m_integerformat.parse(value).intValue();
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.RIGHT;
         }
     }
     private static final class FormatsSTRING extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return (String) value;
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return value;
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.LEFT;
         }
     }    
     private static final class FormatsDOUBLE extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
-            return new Double(m_doubleformat.parse(value).doubleValue());
+            return m_doubleformat.parse(value).doubleValue();
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.RIGHT;
         }
     }    
     private static final class FormatsPERCENT extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_percentformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             try {
-                return new Double(m_percentformat.parse(value).doubleValue());
+                return m_percentformat.parse(value).doubleValue();
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
-                return new Double(m_doubleformat.parse(value).doubleValue() / 100);
+                return m_doubleformat.parse(value).doubleValue() / 100;
             }
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.RIGHT;
         }
     }  
     private static final class FormatsCURRENCY extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             try {
-                return new Double(m_currencyformat.parse(value).doubleValue());
+                return m_currencyformat.parse(value).doubleValue();
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
-                return new Double(m_doubleformat.parse(value).doubleValue());
+                return m_doubleformat.parse(value).doubleValue();
             }
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.RIGHT;
         }
     }  
     private static final class FormatsBOOLEAN extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return ((Boolean) value).toString();
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return Boolean.valueOf(value);
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.CENTER;
         }
     }    
     private static final class FormatsTIMESTAMP extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_datetimeformat.format((Date) value);
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             try {
                 return m_datetimeformat.parse(value);
@@ -239,33 +262,41 @@ public abstract class Formats {
                 return m_dateformat.parse(value);
             }
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.CENTER;
         }
     }
     private static final class FormatsDATE extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_dateformat.format((Date) value);
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return m_dateformat.parse(value);
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.CENTER;
         }
     }  
     private static final class FormatsTIME extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             return m_timeformat.format((Date) value);
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             return m_timeformat.parse(value);
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.CENTER;
         }
     }    
     private static final class FormatsBYTEA extends Formats {       
+        @Override
         protected String formatValueInt(Object value) {
             try {
                 return new String((byte[]) value, "UTF-8");
@@ -273,6 +304,7 @@ public abstract class Formats {
                 return "";
             }
         }   
+        @Override
         protected Object parseValueInt(String value) throws ParseException {
             try {
                return value.getBytes("UTF-8");
@@ -280,6 +312,7 @@ public abstract class Formats {
                return new byte[0];
             }
         }
+        @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.LEADING;
         }
