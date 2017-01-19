@@ -26,7 +26,6 @@ import com.openbravo.data.loader.*;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
-import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.util.StringUtils;
 
 /**
@@ -216,7 +215,7 @@ public class PaymentsModel {
                     + "    AND RECEIPTS.MONEY = ? "
                     + "GROUP BY TICKETS.ID, TICKETS.TICKETID, PRODUCTS.NAME "
                     + "HAVING SUM(TICKETLINES.RATEDISCOUNT) > 0 "
-                    + "ORDER BY TICKETS.ID DESC "
+                    + "ORDER BY  TICKETS.TICKETID"
                 , SerializerWriteString.INSTANCE
             , new SerializerReadClass(PaymentsModel.TicketsSalesLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
             .list(app.getActiveCashIndex());
@@ -260,7 +259,7 @@ public class PaymentsModel {
     }
  
     public List<ProductSalesLine> getProductSalesLines() {
-        return m_ProductSales;
+        return m_ProductSales;        
     }
     
     public List<TicketsSalesLine> getTicketsSalesLine() {

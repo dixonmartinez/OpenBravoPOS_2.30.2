@@ -176,65 +176,58 @@
             <text length="24" align="right">${payments.printDateEnd()}</text>
         </line> 
     </ticket>
+    
+    
     <ticket>
-        <image>Printer.Ticket.Logo</image>
-        <line></line>
-        <line size="1">
-            <text align ="center" length="42" bold="true">Partial cash report</text>            
-        </line>
-        <line></line>
-	<line>
-            <text bold="true">Ticket With Discount report</text>
-        </line>
-        <line>
-            <text align ="left" length="11">Tick.</text>
-            <text align ="left" length="11">Prod.</text>
-            <text align ="right" length="5">% Disc.</text>
-        </line>
-        <line>
-            <text>------------------------------------------</text>
-        </line>
-        #foreach ($line in $payments.getTicketsSalesLine())
-        <line>
-            <text align ="left" length="12">${line.printTicketID()}</text>
-            <text align ="left" length="12">${line.printProductName()}</text>
-            <text align ="right" length="4">${line.printProductRateDiscount()}</text>
-        </line>
-        #end
-        <line>
-            <text>------------------------------------------</text>
-        </line>
-        <line>
-            <text align ="left" length="32">Ticket rows:</text>
-            <text align ="right" length="10">${payments.printProductSalesRows()}</text>
-        </line>
-        <line></line>
-        <line size="1">
-            <text align ="left" length="22" bold="true">Total</text>
-            <text align ="right" length="10" bold="true">${payments.printProductSalesTotalUnits()}</text>
-	    <text align ="right" length="1" bold="true"></text>
-            <text align ="right" length="10" bold="true">${payments.printProductSalesTotal()}</text>
-        </line>
-	<line></line>
-        <line>
-            <text length="18">Machine:</text>
-            <text>${payments.printHost()}</text>
-        </line>
-        <line>
-            <text length="18">Cashier:</text>
-            <text>${payments.printUser()}</text>
-        </line>    
-        <line>
-            <text length="18">Sequence:</text>
-            <text length="24" align="right">${payments.printSequence()}</text>
-        </line> 
-        <line>
-            <text length="18">Start date:</text>
-            <text length="24" align="right">${payments.printDateStart()}</text>
-        </line>  
-        <line>
-            <text length="18">End date:</text>
-            <text length="24" align="right">${payments.printDateEnd()}</text>
-        </line> 
+        
+        #if (!$payments.getTicketsSalesLine().isEmpty())
+            <image>Printer.Ticket.Logo</image>
+            <line></line>
+            <line size="1">
+                <text align ="center" length="42" bold="true">Partial cash report</text>            
+            </line>
+            <line></line>
+            <line>
+                <text bold="true">Ticket With Discount report</text>
+            </line>
+            <line>
+                <text align ="left" length="11">Tick.</text>
+                <text align ="left" length="11">Prod.</text>
+                <text align ="right" length="5">% Disc.</text>
+            </line>
+            <line>
+                <text>------------------------------------------</text>
+            </line>
+            #foreach ($line in $payments.getTicketsSalesLine())
+            <line>
+                <text align ="left" length="12">${line.printTicketID()}</text>
+                <text align ="left" length="12">${line.printProductName()}</text>
+                <text align ="right" length="4">${line.printProductRateDiscount()}</text>
+            </line>
+            #end
+            <line>
+                <text>------------------------------------------</text>
+            </line>
+            <line>
+                <text length="18">Machine:</text>
+                <text>${payments.printHost()}</text>
+            </line>
+            <line>
+                <text length="18">Cashier:</text>
+                <text>${payments.printUser()}</text>
+            </line>    
+            <line>
+                <text length="18">Sequence:</text>
+                <text length="24" align="right">${payments.printSequence()}</text>
+            </line> 
+            <line>
+                <text length="18">Start date:</text>
+                <text length="24" align="right">${payments.printDateStart()}</text>
+            </line>  
+            <line>
+                <text length="18">End date:</text>
+                <text length="24" align="right">${payments.printDateEnd()}</text>
+            </line> 
+        #end 
     </ticket>
 </output>
