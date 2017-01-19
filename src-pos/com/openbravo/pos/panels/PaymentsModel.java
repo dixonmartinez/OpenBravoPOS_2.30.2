@@ -26,6 +26,7 @@ import com.openbravo.data.loader.*;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.util.StringUtils;
 
 /**
@@ -46,6 +47,8 @@ public class PaymentsModel {
     private Double m_ProductSalesTotalUnits;
     private Double m_ProductSalesTotal;
     private java.util.List<ProductSalesLine> m_ProductSales;
+    private String m_User;
+    private List<TicketsSalesLine> m_TicketsSalesLine;
     //  End Dixon Martinez
     private java.util.List<PaymentsLine> m_lpayments;
     
@@ -91,7 +94,7 @@ public class PaymentsModel {
         p.m_iSeq = app.getActiveCashSequence();
         p.m_dDateStart = app.getActiveCashDateStart();
         p.m_dDateEnd = null;
-        
+        p.m_User = app.getAppUserView().getUser().getName();
         
         // Pagos
         Object[] valtickets = (Object []) new StaticSentence(app.getSession()
@@ -187,7 +190,6 @@ public class PaymentsModel {
             p.m_ProductSalesTotal= (Double) valproductsales[2];
         }
         
-        
         List products = new StaticSentence(app.getSession()
             , "SELECT PRODUCTS.NAME, SUM(TICKETLINES.UNITS), TICKETLINES.PRICE, TAXES.RATE, SUM(TICKETLINES.RATEDISCOUNT) RATEDISCOUNT " +
               "FROM TICKETLINES, TICKETS, RECEIPTS, PRODUCTS, TAXES " +
@@ -202,6 +204,28 @@ public class PaymentsModel {
         } else {
             p.m_ProductSales = products;
         }
+        
+        List tickets = new StaticSentence(app.getSession()
+            , "SELECT TICKETS.TICKETID, PRODUCTS.NAME, SUM(TICKETLINES.RATEDISCOUNT) RATEDISCOUNT "
+                    + "FROM TICKETLINES, TICKETS, RECEIPTS, PRODUCTS, TAXES "
+                    + "WHERE "
+                    + "    TICKETLINES.PRODUCT = PRODUCTS.ID "
+                    + "    AND TICKETLINES.TICKET = TICKETS.ID "
+                    + "    AND TICKETS.ID = RECEIPTS.ID "
+                    + "    AND TICKETLINES.TAXID = TAXES.ID "
+                    + "    AND RECEIPTS.MONEY = ? "
+                    + "GROUP BY TICKETS.ID, TICKETS.TICKETID, PRODUCTS.NAME "
+                    + "HAVING SUM(TICKETLINES.RATEDISCOUNT) > 0 "
+                    + "ORDER BY TICKETS.ID DESC "
+                , SerializerWriteString.INSTANCE
+            , new SerializerReadClass(PaymentsModel.TicketsSalesLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
+            .list(app.getActiveCashIndex());
+ 
+        if (tickets == null) {
+            p.m_TicketsSalesLine = new ArrayList();
+        } else {
+            p.m_TicketsSalesLine = tickets;
+        }
         //  End Dixon Martinez
         return p;
     }
@@ -209,6 +233,10 @@ public class PaymentsModel {
     //  Dixon Martinez
     public double getProductSalesRows() {
         return m_ProductSalesRows;
+    }
+    
+    public String printUser() {
+        return Formats.STRING.formatValue(m_User);
     }
  
     public String printProductSalesRows() {
@@ -233,6 +261,10 @@ public class PaymentsModel {
  
     public List<ProductSalesLine> getProductSalesLines() {
         return m_ProductSales;
+    }
+    
+    public List<TicketsSalesLine> getTicketsSalesLine() {
+        return m_TicketsSalesLine;
     }
     //  Dixon Martinez
 
@@ -462,6 +494,38 @@ public class PaymentsModel {
         
         public String printProductSubValueWithDiscount() {
             return Formats.CURRENCY.formatValue((m_ProductPriceTax*m_ProductUnits) - (m_ProductRateDiscount ));
+        }
+        
+        public String printProductRateDiscount() {
+            return Formats.PERCENT.formatValue(m_ProductRateDiscount);
+        }
+
+        public Double getProductRateDiscount() {
+            return m_ProductRateDiscount;
+        }
+
+    }
+    
+    public static class TicketsSalesLine implements SerializableRead {
+
+        private String m_TicketID;
+        private String m_ProductName;
+        private Double m_ProductRateDiscount;
+
+        @Override
+        public void readValues(DataRead dr) throws BasicException {
+            m_TicketID = dr.getString(1);
+            m_ProductName = dr.getString(2);
+            m_ProductRateDiscount = dr.getDouble(3);
+            
+        }
+        
+        public String printTicketID() {
+            return StringUtils.encodeXML(m_TicketID);
+        }
+
+        public String printProductName() {
+            return StringUtils.encodeXML(m_ProductName);
         }
         
         public String printProductRateDiscount() {
