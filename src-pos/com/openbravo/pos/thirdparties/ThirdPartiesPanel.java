@@ -40,36 +40,44 @@ public class ThirdPartiesPanel extends JPanelTable {
     public ThirdPartiesPanel() {
     }
     
+    @Override
     protected void init() {
         DataLogicThirdParties dlThirdParties = (DataLogicThirdParties) app.getBean("com.openbravo.pos.thirdparties.DataLogicThirdParties");        
         tthirdparties = dlThirdParties.getTableThirdParties();        
         jeditor = new ThirdPartiesView(app, dirty);     
     }
     
+    @Override
     public ListProvider getListProvider() {
         return new ListProviderCreator(tthirdparties);
     }
     
+    @Override
     public SaveProvider getSaveProvider() {
         return new SaveProvider(tthirdparties);      
     }
     
+    @Override
     public Vectorer getVectorer() {
         return tthirdparties.getVectorerBasic(new int[]{1, 2, 3, 4});
     }
     
+    @Override
     public ComparatorCreator getComparatorCreator() {
         return tthirdparties.getComparatorCreator(new int[] {1, 2, 3, 4});
     }
     
+    @Override
     public ListCellRenderer getListCellRenderer() {
         return new ListCellRendererBasic(tthirdparties.getRenderStringBasic(new int[]{1, 2}));
     }
     
+    @Override
     public EditorRecord getEditor() {
         return jeditor;
     }       
     
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.ThirdPartiesManagement");
     }     

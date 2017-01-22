@@ -149,10 +149,12 @@ public class JPanelConfigLocale extends javax.swing.JPanel implements PanelConfi
             config.setProperty("user.language", "");
             config.setProperty("user.country", "");
             config.setProperty("user.variant", "");
+            config.setProperty("system.locale", "");
         } else {
             config.setProperty("user.language", l.getLanguage());
             config.setProperty("user.country", l.getCountry());
             config.setProperty("user.variant", l.getVariant());
+            config.setProperty("system.locale", l.getDisplayName());
         }
          
         config.setProperty("format.integer", readWithDefault(jcboInteger.getSelectedItem()));

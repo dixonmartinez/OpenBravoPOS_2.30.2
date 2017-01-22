@@ -11,6 +11,6 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.openbravo.pos.forms.StartPOS"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="OpenBravoPOS_2.30.2.properties"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="/home/dixon/openbravopos.properties"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="OpenBravoPOS_2.30.2"/>
 </launchConfiguration>

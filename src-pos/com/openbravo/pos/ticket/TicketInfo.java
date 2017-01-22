@@ -44,7 +44,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     public static final int RECEIPT_REFUND = 1;
     public static final int RECEIPT_PAYMENT = 2;
 
-    private static DateFormat m_dateformat = new SimpleDateFormat("hh:mm");
+    private static final DateFormat DATEFORMAT = new SimpleDateFormat("hh:mm");
 
     private String m_sId;
     private int tickettype;
@@ -57,7 +57,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<TicketLineInfo> m_aLines;
     private List<PaymentInfo> payments;
     private List<TicketTaxInfo> taxes;
-    private String m_sResponse;
+    private final String m_sResponse;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -69,13 +69,14 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_User = null;
         m_Customer = null;
         m_sActiveCash = null;
-        m_aLines = new ArrayList<TicketLineInfo>(); // vacio de lineas
+        m_aLines = new ArrayList<>(); // vacio de lineas
 
-        payments = new ArrayList<PaymentInfo>();
+        payments = new ArrayList<>();
         taxes = null;
         m_sResponse = null;
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
         out.writeObject(m_sId);
@@ -87,6 +88,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(m_aLines);
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
         m_sId = (String) in.readObject();
@@ -99,14 +101,15 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_User = null;
         m_sActiveCash = null;
 
-        payments = new ArrayList<PaymentInfo>();
+        payments = new ArrayList<>();
         taxes = null;
     }
 
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sId = dr.getString(1);
-        tickettype = dr.getInt(2).intValue();
-        m_iTicketId = dr.getInt(3).intValue();
+        tickettype = dr.getInt(2);
+        m_iTicketId = dr.getInt(3);
         m_dDate = dr.getTimestamp(4);
         m_sActiveCash = dr.getString(5);
         try {
@@ -118,9 +121,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
         }
         m_User = new UserInfo(dr.getString(7), dr.getString(8));
         m_Customer = new CustomerInfoExt(dr.getString(9));
-        m_aLines = new ArrayList<TicketLineInfo>();
+        m_aLines = new ArrayList<>();
 
-        payments = new ArrayList<PaymentInfo>();
+        payments = new ArrayList<>();
         taxes = null;
     }
 
@@ -135,13 +138,13 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.m_User = m_User;
         t.m_Customer = m_Customer;
 
-        t.m_aLines = new ArrayList<TicketLineInfo>();
+        t.m_aLines = new ArrayList<>();
         for (TicketLineInfo l : m_aLines) {
             t.m_aLines.add(l.copyTicketLine());
         }
         t.refreshLines();
 
-        t.payments = new LinkedList<PaymentInfo>();
+        t.payments = new LinkedList<>();
         for (PaymentInfo p : payments) {
             t.payments.add(p.copyPayment());
         }
@@ -174,7 +177,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public String getName(Object info) {
 
-        StringBuffer name = new StringBuffer();
+        StringBuilder name = new StringBuilder();
 
         if (getCustomerId() != null) {
             name.append(m_Customer.toString());
@@ -183,7 +186,11 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
         if (info == null) {
             if (m_iTicketId == 0) {
-                name.append("(" + m_dateformat.format(m_dDate) + " " + Long.toString(m_dDate.getTime() % 1000) + ")");
+                name.append("(")
+                        .append(DATEFORMAT.format(m_dDate))
+                        .append(" ")
+                        .append(Long.toString(m_dDate.getTime() % 1000))
+                        .append(")");
             } else {
                 name.append(Integer.toString(m_iTicketId));
             }
@@ -442,22 +449,22 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public String printArticlesCount() {
-        return Formats.DOUBLE.formatValue(new Double(getArticlesCount()));
+        return Formats.DOUBLE.formatValue(getArticlesCount());
     }
 
     public String printSubTotal() {
-        return Formats.CURRENCY.formatValue(new Double(getSubTotal()));
+        return Formats.CURRENCY.formatValue(getSubTotal());
     }
 
     public String printTax() {
-        return Formats.CURRENCY.formatValue(new Double(getTax()));
+        return Formats.CURRENCY.formatValue(getTax());
     }
 
     public String printTotal() {
-        return Formats.CURRENCY.formatValue(new Double(getTotal()));
+        return Formats.CURRENCY.formatValue(getTotal());
     }
 
     public String printTotalPaid() {
-        return Formats.CURRENCY.formatValue(new Double(getTotalPaid()));
+        return Formats.CURRENCY.formatValue(getTotalPaid());
     }
 }

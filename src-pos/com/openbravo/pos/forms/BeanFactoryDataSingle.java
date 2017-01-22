@@ -32,7 +32,7 @@ public abstract class BeanFactoryDataSingle implements BeanFactoryApp {
     }
     
     public abstract void init(Session s);
-
+    
     @Override
     public void init(AppView app) throws BeanFactoryException {        
         init(app.getSession());                     

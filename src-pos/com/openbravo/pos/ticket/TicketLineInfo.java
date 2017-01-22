@@ -48,7 +48,14 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     private String attsetinstid;
     private double rateDiscount;
 
-    /** Creates new TicketLineInfo */
+    /** 
+     * Creates new TicketLineInfo
+     * @param productid
+     * @param dMultiply
+     * @param dPrice
+     * @param tax
+     * @param props 
+     */
     public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax, Properties props) {
         init(productid, null, dMultiply, dPrice, tax, props);
     }
@@ -123,14 +130,15 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         m_iLine = line;
     }
 
+    @Override
     public void writeValues(DataWrite dp) throws BasicException {
         dp.setString(1, m_sTicket);
-        dp.setInt(2, new Integer(m_iLine));
+        dp.setInt(2, m_iLine);
         dp.setString(3, productid);
         dp.setString(4, attsetinstid);
 
-        dp.setDouble(5, new Double(multiply));
-        dp.setDouble(6, new Double(price));
+        dp.setDouble(5, multiply);
+        dp.setDouble(6, price);
 
         dp.setString(7, tax.getId());
         try {
@@ -144,9 +152,10 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         dp.setDouble(9, rateDiscount);
     }
 
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sTicket = dr.getString(1);
-        m_iLine = dr.getInt(2).intValue();
+        m_iLine = dr.getInt(2);
         productid = dr.getString(3);
         attsetinstid = dr.getString(4);
 

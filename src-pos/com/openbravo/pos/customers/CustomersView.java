@@ -36,7 +36,10 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author  adrianromero
+ *  @author  adrianromero
+ *  @author <a href="dixon.22martinez@gmail.com" >Dixon Martinez</a>
+ *  @see 
+ *      <a href="https://github.com/dixon22ma/OpenBravoPOS_2.30.2/issues/13"> FR [13] Add support for multi-currency transactions</a>      
  */
 public final class CustomersView extends javax.swing.JPanel implements EditorRecord {
 

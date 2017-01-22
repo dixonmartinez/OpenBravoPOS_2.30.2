@@ -19,19 +19,24 @@
 
 package com.openbravo.pos.util;
 
-import java.text.*;
-
 public final class CurrencyChange {
 
     public final static double EUROS_CHANGE = 166.386;
 
-    private CurrencyChange() {
+    private double m_DivRate;
+    private double m_MultRate;
+    
+    public CurrencyChange(double m_DivRate, double m_MultRate) {
+    	System.out.println("Div Rate " + m_DivRate);
+    	System.out.println("Mult Rate " + m_MultRate);
+    	this.m_DivRate = m_DivRate;
+    	this.m_MultRate = m_MultRate;
     }
   
-    public static double changeEurosToPts(double dEuros) {        
-        return Math.rint(dEuros * EUROS_CHANGE);
+    public double changeBaseToOther(double dEuros) {  
+        return dEuros * m_MultRate;
     }
-    public static double changePtsToEuros(double dPts) {        
-        return Math.rint(100.0 * dPts / EUROS_CHANGE) / 100.0;
+    public double changeOtherToBase(double dPts) {        
+        return Math.rint(100.0 * dPts / m_DivRate) / 100.0;
     }   
 }

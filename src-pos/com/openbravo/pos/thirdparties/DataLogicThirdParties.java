@@ -33,6 +33,7 @@ public class DataLogicThirdParties extends BeanFactoryDataSingle {
     public DataLogicThirdParties() {
     }
     
+    @Override
     public void init(Session s){
 
         m_tthirdparties = new TableDefinition(s,

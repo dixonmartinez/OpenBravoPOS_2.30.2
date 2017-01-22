@@ -69,10 +69,6 @@ public class CustomersPanel extends JPanelTable {
         return new SaveProvider(tcustomers, new int[] {0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22});      
     }
     
-    /**
-     *
-     * @return
-     */
     @Override
     public Vectorer getVectorer() {
         return tcustomers.getVectorerBasic(new int[]{1, 2, 3, 4});

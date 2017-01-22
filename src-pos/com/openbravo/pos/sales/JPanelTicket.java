@@ -67,6 +67,8 @@ import com.openbravo.pos.payment.JPaymentSelectRefund;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
 import com.openbravo.pos.promotion.DiscountPercent;
+import com.openbravo.pos.sales.currency.ConversionRateInfo;
+import com.openbravo.pos.sales.currency.DataLogicConversionRate;
 import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
@@ -75,8 +77,10 @@ import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
+import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.JRPrinterAWT300;
 import com.openbravo.pos.util.ReportUtils;
+import java.util.List;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -142,7 +146,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     
     private JPaymentSelect paymentdialogreceipt;
     private JPaymentSelect paymentdialogrefund;
-
+    private CurrencyChange curChange = null;
+    
     /** Creates new form JTicketView */
     public JPanelTicket() {
         
@@ -156,6 +161,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
         dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
         dlCustomers = (DataLogicCustomers) m_App.getBean(DataLogicCustomers.class.getName());
+        dlConvRate = (DataLogicConversionRate) app.getBean(DataLogicConversionRate.class.getName());
                     
         // borramos el boton de bascula si no hay bascula conectada
         if (!m_App.getDeviceScale().existsScale()) {
@@ -222,7 +228,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public JComponent getComponent() {
         return this;
     }
-
+    
+    private DataLogicConversionRate dlConvRate;
+    private ComboBoxValModel currenBoxValMod;
+    
     @Override
     public void activate() throws BasicException {
 
@@ -284,6 +293,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jDiscount3.setText(Formats.PERCENT.formatValue(m_DiscRate3));
         m_jDisableDiscountRate.setText(Formats.PERCENT.formatValue(0.0));
         m_ticketsbag.activate();        
+        
+        List a = dlConvRate.getConversionRate();
+        currenBoxValMod = new ComboBoxValModel(a);
+        jCmbCurrency.setModel(currenBoxValMod);        
     }
     
     @Override
@@ -384,15 +397,23 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
        
     private void printPartialTotals(){
-               
+        
         if (m_oTicket.getLinesCount() == 0) {
             m_jSubtotalEuros.setText(null);
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
         } else {
-            m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
-            m_jTaxesEuros.setText(m_oTicket.printTax());
-            m_jTotalEuros.setText(m_oTicket.printTotal());
+            if(curChange != null) {
+        	//appli = true;
+                m_jSubtotalEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getSubTotal())));
+                m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getTax())));
+                m_jTotalEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getTotal())));
+            } else {
+                m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
+                m_jTaxesEuros.setText(m_oTicket.printTax());
+                m_jTotalEuros.setText(m_oTicket.printTotal());
+            }
+            
         }
     }
     
@@ -1356,6 +1377,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelCentral = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jPanTotals = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jCmbCurrency = new javax.swing.JComboBox<>();
         m_jTotalEuros = new javax.swing.JLabel();
         m_jLblTotalEuros1 = new javax.swing.JLabel();
         m_jSubtotalEuros = new javax.swing.JLabel();
@@ -1603,6 +1627,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
+        jLabel1.setText(bundle.getString("Label.Currency.ConversionRate")); // NOI18N
+        jPanel7.add(jLabel1);
+
+        jCmbCurrency.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCmbCurrencyActionPerformed(evt);
+            }
+        });
+        jPanel7.add(jCmbCurrency);
+
+        m_jPanTotals.add(jPanel7, new java.awt.GridBagConstraints());
 
         m_jTotalEuros.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -1947,16 +1984,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }//GEN-LAST:event_m_jKeypadDiscountRateActionPerformed
 
+    private void jCmbCurrencyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCmbCurrencyActionPerformed
+        ConversionRateInfo convRate = (ConversionRateInfo) jCmbCurrency.getSelectedItem();
+        curChange = new CurrencyChange(convRate.getDivideRate(), convRate.getMultipyRate());
+        printPartialTotals();
+    }//GEN-LAST:event_jCmbCurrencyActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCustomer;
     private javax.swing.JButton btnSplit;
     private javax.swing.JPanel catcontainer;
+    private javax.swing.JComboBox<String> jCmbCurrency;
     private javax.swing.JButton jEditAttributes;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
