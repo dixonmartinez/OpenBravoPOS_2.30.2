@@ -23,12 +23,10 @@ public final class CurrencyChange {
 
     public final static double EUROS_CHANGE = 166.386;
 
-    private double m_DivRate;
-    private double m_MultRate;
+    private final double m_DivRate;
+    private final double m_MultRate;
     
     public CurrencyChange(double m_DivRate, double m_MultRate) {
-    	System.out.println("Div Rate " + m_DivRate);
-    	System.out.println("Mult Rate " + m_MultRate);
     	this.m_DivRate = m_DivRate;
     	this.m_MultRate = m_MultRate;
     }

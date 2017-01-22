@@ -28,6 +28,8 @@ import com.openbravo.format.Formats;
 import com.openbravo.data.loader.SerializableWrite;
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.sales.currency.ConversionRateInfo;
+import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.RoundUtils;
 import java.util.Properties;
 
@@ -100,8 +102,9 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
             if (product.getCategoryID() != null) {
                 attributes.setProperty("product.categoryid", product.getCategoryID());
             }
-        }
+        };
         init(pid, null, dMultiply, dPrice, tax, attributes);
+        
     }
 
     public TicketLineInfo(ProductInfoExt oProduct, double dPrice, TaxInfo tax, Properties attributes) {
@@ -113,7 +116,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     }
 
     private void init(String productid, String attsetinstid, double dMultiply, double dPrice, TaxInfo tax, Properties attributes) {
-
+        
         this.productid = productid;
         this.attsetinstid = attsetinstid;
         multiply = dMultiply;

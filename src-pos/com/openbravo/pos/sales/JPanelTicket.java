@@ -403,16 +403,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
         } else {
-            if(curChange != null) {
+            /*if(curChange != null) {
         	//appli = true;
                 m_jSubtotalEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getSubTotal())));
                 m_jTaxesEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getTax())));
                 m_jTotalEuros.setText(Formats.CURRENCY.formatValue(curChange.changeBaseToOther(m_oTicket.getTotal())));
-            } else {
+            } else {*/
                 m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
                 m_jTaxesEuros.setText(m_oTicket.printTax());
                 m_jTotalEuros.setText(m_oTicket.printTotal());
-            }
+            //}
             
         }
     }
@@ -437,7 +437,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void addTicketLine(ProductInfoExt oProduct, double dMul, double dPrice) {   
         
         TaxInfo tax = taxeslogic.getTaxInfo(oProduct.getTaxCategoryID(),  m_oTicket.getDate(), m_oTicket.getCustomer());
-        
+                
         addTicketLine(new TicketLineInfo(oProduct, dMul, dPrice, tax, (java.util.Properties) (oProduct.getProperties().clone())));
     }
     
@@ -501,6 +501,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         return getUpdateLine(m_oTicket, oLine, -1);
     }
     
+    private void refreshTicket(TicketInfo m_TicketInfo, ConversionRateInfo cri) {
+        
+        int i = 0;
+        while ( i < m_TicketInfo.getLinesCount()) {
+            Double qty = m_TicketInfo.getLine(i).getMultiply();
+            m_TicketInfo.getLine(i).setMultiply(qty);
+            m_TicketInfo.getLine(i).setPrice(cri.changeBaseToOther(m_TicketInfo.getLine(i).getPrice()));
+            paintTicketLine(i, m_TicketInfo.getLine(i));
+            i++;
+        }
+    }
+        
     private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine, int index) {
         int i=0;               
         boolean update = false;
@@ -1377,15 +1389,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelCentral = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jPanTotals = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jCmbCurrency = new javax.swing.JComboBox<>();
         m_jTotalEuros = new javax.swing.JLabel();
         m_jLblTotalEuros1 = new javax.swing.JLabel();
         m_jSubtotalEuros = new javax.swing.JLabel();
         m_jTaxesEuros = new javax.swing.JLabel();
         m_jLblTotalEuros2 = new javax.swing.JLabel();
         m_jLblTotalEuros3 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jCmbCurrency = new javax.swing.JComboBox<>();
         m_jContEntries = new javax.swing.JPanel();
         m_jPanEntries = new javax.swing.JPanel();
         m_jNumberKeys = new com.openbravo.beans.JNumberKeys();
@@ -1628,19 +1640,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
-        jLabel1.setText(bundle.getString("Label.Currency.ConversionRate")); // NOI18N
-        jPanel7.add(jLabel1);
-
-        jCmbCurrency.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCmbCurrencyActionPerformed(evt);
-            }
-        });
-        jPanel7.add(jCmbCurrency);
-
-        m_jPanTotals.add(jPanel7, new java.awt.GridBagConstraints());
-
         m_jTotalEuros.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         m_jTotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
@@ -1709,6 +1708,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanTotals.add(m_jLblTotalEuros3, gridBagConstraints);
 
         jPanel4.add(m_jPanTotals, java.awt.BorderLayout.LINE_END);
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
+        jLabel1.setText(bundle.getString("Label.Currency.ConversionRate")); // NOI18N
+        jPanel7.add(jLabel1);
+
+        jCmbCurrency.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCmbCurrencyActionPerformed(evt);
+            }
+        });
+        jPanel7.add(jCmbCurrency);
+
+        jPanel4.add(jPanel7, java.awt.BorderLayout.CENTER);
 
         m_jPanelCentral.add(jPanel4, java.awt.BorderLayout.SOUTH);
 
@@ -1986,8 +1998,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void jCmbCurrencyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCmbCurrencyActionPerformed
         ConversionRateInfo convRate = (ConversionRateInfo) jCmbCurrency.getSelectedItem();
-        curChange = new CurrencyChange(convRate.getDivideRate(), convRate.getMultipyRate());
-        printPartialTotals();
+        refreshTicket(m_oTicket, convRate);
     }//GEN-LAST:event_jCmbCurrencyActionPerformed
 
 
