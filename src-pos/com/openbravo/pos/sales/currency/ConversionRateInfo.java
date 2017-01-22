@@ -174,7 +174,7 @@ public class ConversionRateInfo implements Serializable, IKeyed {
         return dEuros * m_MultipyRate;
     }
     public double changeOtherToBase(double dPts) {        
-        return Math.rint(100.0 * dPts / m_DivideRate) / 100.0;
+        return (100.0 * dPts / m_MultipyRate) / 100.0;
     }  
 	
 

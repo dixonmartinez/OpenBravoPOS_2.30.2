@@ -73,6 +73,7 @@ import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.ticket.ProductInfoEdit;
 import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
@@ -507,8 +508,22 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         while ( i < m_TicketInfo.getLinesCount()) {
             Double qty = m_TicketInfo.getLine(i).getMultiply();
             m_TicketInfo.getLine(i).setMultiply(qty);
-            m_TicketInfo.getLine(i).setPrice(cri.changeBaseToOther(m_TicketInfo.getLine(i).getPrice()));
-            paintTicketLine(i, m_TicketInfo.getLine(i));
+            ProductInfoExt prod;
+			try {
+				prod = dlSales.getProductInfo(m_TicketInfo.getLine(i).getProductID());
+				System.out.println(cri.getCurrency());
+				if(cri.getCurrency().equals("MXN")) {
+					m_TicketInfo.getLine(i).setPrice(cri.changeBaseToOther(prod.getPriceSell()));
+				}else {
+					m_TicketInfo.getLine(i).setPrice(cri.changeOtherToBase(cri.changeBaseToOther(prod.getPriceSell())));
+				}
+				
+//				System.out.println(changeEurosToPts(30));
+//				System.out.println(changePtsToEuros(changeEurosToPts(30)));
+				
+	            paintTicketLine(i, m_TicketInfo.getLine(i));
+			} catch (BasicException e) {
+			}
             i++;
         }
     }
@@ -698,10 +713,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // precondicion: prod != null
         addTicketLine(prod, dPor, prod.getPriceSell());       
     }
-       
+    
     protected void buttonTransition(ProductInfoExt prod) {
     // precondicion: prod != null
-        
          if (m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO) {
             incProduct(prod);
         } else if (m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERZERO) {
