@@ -46,7 +46,6 @@ public abstract class Formats {
     private static DateFormat m_timeformat = DateFormat.getTimeInstance();
     private static DateFormat m_datetimeformat = DateFormat.getDateTimeInstance();
    
-    
     /** Creates a new instance of Formats */
     protected Formats() {
     }
@@ -101,6 +100,14 @@ public abstract class Formats {
             m_currencyformat = NumberFormat.getCurrencyInstance();
         } else {
             m_currencyformat = new DecimalFormat(pattern);
+        }
+    }   
+    
+    public static void setCurrencyPattern(String pattern, DecimalFormatSymbols dfs ) {
+        if (pattern == null || pattern.equals("")) {
+            m_currencyformat = NumberFormat.getCurrencyInstance();
+        } else {
+            m_currencyformat = new DecimalFormat(pattern, dfs);
         }
     }    
 

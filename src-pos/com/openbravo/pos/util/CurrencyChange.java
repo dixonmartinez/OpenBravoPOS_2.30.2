@@ -21,16 +21,16 @@ package com.openbravo.pos.util;
 
 public final class CurrencyChange {
 
-    public final static double EUROS_CHANGE = 0.046;
+    public static double DOLAR_CHANGE = 0.046;
 
     private CurrencyChange() {
     }
   
     public static double changeEurosToPts(double dEuros) {        
-        return /*Math.rint(*/dEuros * EUROS_CHANGE/*)*/;
+        return /*Math.rint(*/dEuros * DOLAR_CHANGE/*)*/;
     }
     public static double changePtsToEuros(double dPts) {        
-        return /*Math.rint*/(100.0 * dPts / EUROS_CHANGE) / 100.0;
+        return /*Math.rint*/(100.0 * dPts / DOLAR_CHANGE) / 100.0;
     }   
     
     public static void main(String[] args) {

@@ -40,12 +40,15 @@ import com.openbravo.data.gui.JMessageDialog;
 import com.openbravo.data.loader.BatchSentence;
 import com.openbravo.data.loader.BatchSentenceResource;
 import com.openbravo.data.loader.Session;
+import com.openbravo.format.Formats;
 import com.openbravo.pos.scale.DeviceScale;
 import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 /**
@@ -204,6 +207,10 @@ public class JRootApp extends JPanel implements AppView {
             m_PrefUserCard = "u";
             m_propsdb.setProperty("usercard", m_PrefUserCard);
             m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
+        }
+        try {
+            m_DollarValue = (Double) Formats.DOUBLE.parseValue(m_propsdb.getProperty("dollar.amount"));
+        } catch (BasicException ex) {
         }
         //  End Dixon Martinez
         // Inicializo la impresora...
@@ -468,6 +475,11 @@ public class JRootApp extends JPanel implements AppView {
     @Override
     public String getPrefUserCard() {
         return m_PrefUserCard;
+    }
+
+    @Override
+    public Double getDollarValue() {
+        return m_DollarValue;
     }
     
     // La accion del selector
@@ -775,4 +787,5 @@ public class JRootApp extends JPanel implements AppView {
 
     private String m_PrefCustCard;
     private String m_PrefUserCard;
+    private Double m_DollarValue;
 }
