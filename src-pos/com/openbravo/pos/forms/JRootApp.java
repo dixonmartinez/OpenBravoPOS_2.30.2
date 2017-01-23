@@ -476,11 +476,6 @@ public class JRootApp extends JPanel implements AppView {
     public String getPrefUserCard() {
         return m_PrefUserCard;
     }
-
-    @Override
-    public Double getDollarValue() {
-        return m_DollarValue;
-    }
     
     // La accion del selector
     private class AppUserAction extends AbstractAction {

@@ -30,20 +30,12 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import com.openbravo.basic.BasicException;
-import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.format.Formats;
-import com.openbravo.pos.config.JPanelConfigLocale;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppProperties;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSystem;
-import com.openbravo.pos.sales.currency.ConversionRateInfo;
-import com.openbravo.pos.sales.currency.CurrencyInfo;
-import com.openbravo.pos.sales.currency.DataLogicConversionRate;
-import com.openbravo.pos.util.CurrencyChange;
-import java.util.Locale;
 
 /**
  *

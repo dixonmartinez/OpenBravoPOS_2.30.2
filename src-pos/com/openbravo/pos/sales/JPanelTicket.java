@@ -26,10 +26,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,13 +69,10 @@ import com.openbravo.pos.payment.JPaymentSelectRefund;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
 import com.openbravo.pos.promotion.DiscountPercent;
-import com.openbravo.pos.sales.currency.ConversionRateInfo;
-import com.openbravo.pos.sales.currency.DataLogicConversionRate;
 import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
-import com.openbravo.pos.ticket.ProductInfoEdit;
 import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
@@ -80,10 +80,6 @@ import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.JRPrinterAWT300;
 import com.openbravo.pos.util.ReportUtils;
-import java.text.DecimalFormatSymbols;
-import java.text.Normalizer.Form;
-import java.util.List;
-import java.util.Locale;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -494,8 +490,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
 
     private void refreshTicket(TicketInfo m_TicketInfo) {
-        CurrencyChange.DOLAR_CHANGE = m_App.getDollarValue();
-        System.out.println(m_App.getDollarValue());
+        m_Prop = dlSystem.getResourceAsProperties(m_App.getProperties().getHost() + "/properties");
+		CurrencyChange.DOLAR_CHANGE = Double.valueOf(m_Prop.getProperty("dollar.amount"));
         int i = 0;
         while (i < m_TicketInfo.getLinesCount()) {
             Double qty = m_TicketInfo.getLine(i).getMultiply();
@@ -509,8 +505,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     String strange = "'$' #,##0.00";
                     Formats.setCurrencyPattern(strange, dfs);
                 } else if (jRBPeso.isSelected()) {
-                    Formats.setCurrencyPattern(null);
                     m_TicketInfo.getLine(i).setPrice(CurrencyChange.changePtsToEuros(CurrencyChange.changeEurosToPts(prod.getPriceSell())));
+                    Formats.setCurrencyPattern(null);
                 }
                 paintTicketLine(i, m_TicketInfo.getLine(i));
             } catch (BasicException e) {
@@ -1100,7 +1096,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_oTicket.resetPayments();
             
         }
-
+        Formats.setCurrencyPattern(null);
         // cancelled the ticket.total script
         // or canceled the payment dialog
         // or canceled the ticket.close script
@@ -2078,6 +2074,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private boolean typeDiscRate;
     private PropertiesConfig propConfig;
+    private Properties m_Prop; 
     private double m_DiscRate1;
     private double m_DiscRate2;
     private double m_DiscRate3;

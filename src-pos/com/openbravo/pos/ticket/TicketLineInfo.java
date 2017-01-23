@@ -19,19 +19,21 @@
 
 package com.openbravo.pos.ticket;
 
-import java.io.*;
-import com.openbravo.pos.util.StringUtils;
-import com.openbravo.data.loader.DataRead;
-import com.openbravo.data.loader.SerializableRead;
-import com.openbravo.data.loader.DataWrite;
-import com.openbravo.format.Formats;
-import com.openbravo.data.loader.SerializableWrite;
-import com.openbravo.basic.BasicException;
-import com.openbravo.pos.forms.AppLocal;
-import com.openbravo.pos.sales.currency.ConversionRateInfo;
-import com.openbravo.pos.util.CurrencyChange;
-import com.openbravo.pos.util.RoundUtils;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Properties;
+
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.DataWrite;
+import com.openbravo.data.loader.SerializableRead;
+import com.openbravo.data.loader.SerializableWrite;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.util.RoundUtils;
+import com.openbravo.pos.util.StringUtils;
 
 /**
  *

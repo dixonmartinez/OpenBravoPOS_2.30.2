@@ -55,6 +55,5 @@ public interface AppView {
     //  Dixon Martinez
     public String getPrefCustCard();
     public String getPrefUserCard();
-    public Double getDollarValue();
 }
 
