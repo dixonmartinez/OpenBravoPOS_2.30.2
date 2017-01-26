@@ -116,6 +116,9 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
     
     private void loadData() throws BasicException {
         
+        JPanelCloseMoney closeMoney = (JPanelCloseMoney) m_App.getBean(JPanelCloseMoney.class.getName());
+        
+        
         // Reset
         m_jSequence.setText(null);
         m_jMinDate.setText(null);
@@ -504,10 +507,8 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
     }// </editor-fold>//GEN-END:initComponents
 
 private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
-
     // print report
-    printPayments("Printer.PartialCash");
-    
+    printPayments("Printer.PartialCash");   
 }//GEN-LAST:event_m_jPrintCashActionPerformed
     
     private void closeCash() {

@@ -5,43 +5,34 @@
  */
 package com.openbravo.pos.panels;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
 import com.openbravo.basic.BasicException;
-import com.openbravo.data.gui.ComboBoxValModel;
-import com.openbravo.data.loader.SentenceList;
 import com.openbravo.format.Formats;
-import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppProperties;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
-import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.JPanelView;
-import com.openbravo.pos.inventory.TaxCategoryInfo;
-import com.openbravo.pos.payment.JPaymentCashPos;
-import com.openbravo.pos.payment.JPaymentCheque;
-import com.openbravo.pos.payment.JPaymentDebt;
-import com.openbravo.pos.payment.JPaymentFree;
 import com.openbravo.pos.payment.JPaymentInterface;
-import com.openbravo.pos.payment.JPaymentMagcard;
 import com.openbravo.pos.payment.JPaymentNotifier;
-import com.openbravo.pos.payment.JPaymentPaper;
-import com.openbravo.pos.payment.JPaymentRefund;
 import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.pos.payment.PaymentInfoCash;
 import com.openbravo.pos.payment.PaymentInfoList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
+import java.math.BigDecimal;
 
 /**
  *
  * @author dixon
  */
-public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanelView, BeanFactoryApp, JPaymentNotifier, JPaymentUtil {
+public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanelView, BeanFactoryApp, JCloseCashUtil {
 
     /**
      * Creates new form JPanelCloseMoneyDetail
@@ -62,17 +53,11 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
         jPanel4 = new javax.swing.JPanel();
         m_jLblTotalEuros1 = new javax.swing.JLabel();
         m_jTotalEuros = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        m_jLblRemainingEuros = new javax.swing.JLabel();
-        m_jRemaininglEuros = new javax.swing.JLabel();
-        m_jButtonAdd = new javax.swing.JButton();
-        m_jButtonRemove = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         m_jButtonOK = new javax.swing.JButton();
         m_jButtonCancel = new javax.swing.JButton();
-        jCBPeople = new javax.swing.JComboBox<>();
         m_jTabPayment = new javax.swing.JTabbedPane();
 
         m_jLblTotalEuros1.setText(AppLocal.getIntString("label.totalcash")); // NOI18N
@@ -85,37 +70,6 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
         m_jTotalEuros.setPreferredSize(new java.awt.Dimension(125, 25));
         m_jTotalEuros.setRequestFocusEnabled(false);
         jPanel4.add(m_jTotalEuros);
-
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
-
-        m_jLblRemainingEuros.setText(AppLocal.getIntString("label.remainingcash")); // NOI18N
-        jPanel6.add(m_jLblRemainingEuros);
-
-        m_jRemaininglEuros.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        m_jRemaininglEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jRemaininglEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jRemaininglEuros.setOpaque(true);
-        m_jRemaininglEuros.setPreferredSize(new java.awt.Dimension(125, 25));
-        m_jRemaininglEuros.setRequestFocusEnabled(false);
-        jPanel6.add(m_jRemaininglEuros);
-
-        m_jButtonAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png"))); // NOI18N
-        m_jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jButtonAddActionPerformed(evt);
-            }
-        });
-        jPanel6.add(m_jButtonAdd);
-
-        m_jButtonRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png"))); // NOI18N
-        m_jButtonRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jButtonRemoveActionPerformed(evt);
-            }
-        });
-        jPanel6.add(m_jButtonRemove);
-
-        jPanel4.add(jPanel6);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
@@ -148,10 +102,10 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
         jPanel2.add(m_jButtonCancel);
 
         jPanel5.add(jPanel2, java.awt.BorderLayout.LINE_END);
-        jPanel5.add(jCBPeople, java.awt.BorderLayout.LINE_START);
 
         m_jTabPayment.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         m_jTabPayment.setTabPlacement(javax.swing.JTabbedPane.LEFT);
+        m_jTabPayment.setAutoscrolls(true);
         m_jTabPayment.setFocusable(false);
         m_jTabPayment.setRequestFocusEnabled(false);
         m_jTabPayment.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -164,30 +118,31 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(m_jTabPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 916, Short.MAX_VALUE)
+            .addComponent(m_jTabPayment)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(m_jTabPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 436, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(m_jTabPayment, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(6, 6, 6))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jButtonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonOKActionPerformed
-    	 int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannaclosecash"), AppLocal.getIntString("message.title"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if(jCBPeople.getSelectedIndex() > 0)
-                m_People = (TaxCategoryInfo)jCBPeople.getSelectedItem();
-
-          if (res == JOptionPane.YES_OPTION){
-             app.getAppUserView().showTask(JPanelCloseMoney.class.getName());
-          }
+    	int res = JOptionPane.showConfirmDialog(this, 
+                AppLocal.getIntString("message.wannaclosecash"), 
+                AppLocal.getIntString("message.title"), 
+                JOptionPane.YES_NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE);
+        if (res == JOptionPane.YES_OPTION){
+            app.getAppUserView().showTask(JPanelCloseMoney.class.getName());
+        }
     }//GEN-LAST:event_m_jButtonOKActionPerformed
 
     private void m_jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonCancelActionPerformed
@@ -199,64 +154,38 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
     private void m_jTabPaymentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_m_jTabPaymentStateChanged
 
         if (m_jTabPayment.getSelectedComponent() != null) {
-            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(null, getTotal(), m_sTransactionID);
+            ((JCloseCashInterface) m_jTabPayment.getSelectedComponent()).activate(0.0, m_sTransactionID);
         }
 
     }//GEN-LAST:event_m_jTabPaymentStateChanged
 
-    private void m_jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonAddActionPerformed
-
-        returnPayment();
-
-    }//GEN-LAST:event_m_jButtonAddActionPerformed
-
-    private void m_jButtonRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonRemoveActionPerformed
-
-        m_aPaymentInfo.removeLast();
-        printState();
-
-    }//GEN-LAST:event_m_jButtonRemoveActionPerformed
-
     protected void returnPayment() {
-         PaymentInfo returnPayment = ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).executePayment();
-        if (returnPayment != null) {
-            m_aPaymentInfo.add(returnPayment);
+        m_dTotal = ((JCloseCashInterface) m_jTabPayment.getSelectedComponent()).calculateAmount();
+        if (m_dTotal != null) {
             printState();
         }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> jCBPeople;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    public javax.swing.JPanel jPanel6;
-    private javax.swing.JButton m_jButtonAdd;
     private javax.swing.JButton m_jButtonCancel;
     private javax.swing.JButton m_jButtonOK;
-    private javax.swing.JButton m_jButtonRemove;
-    private javax.swing.JLabel m_jLblRemainingEuros;
     private javax.swing.JLabel m_jLblTotalEuros1;
-    public javax.swing.JLabel m_jRemaininglEuros;
     private javax.swing.JTabbedPane m_jTabPayment;
     public javax.swing.JLabel m_jTotalEuros;
     // End of variables declaration//GEN-END:variables
 
-    private PaymentInfoList m_aPaymentInfo;
-
     private AppView app;
-    private double m_dTotal;
+    private BigDecimal m_dTotal;
     private DataLogicSystem dlSystem;
 
-    private final Map<String, JPaymentInterface> payments = new HashMap<>();
+    private final Map<String, JCloseCashInterface> payments = new HashMap<>();
     private String m_sTransactionID;
 
     private AppProperties m_props;
-    private ComboBoxValModel m_PeopleModel;
-    private SentenceList m_sentcat;
-    private DataLogicSales dlSales;
-    private TaxCategoryInfo m_People;
     
     @Override
     public String getTitle() {
@@ -282,52 +211,24 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
     public void init(AppView app) throws BeanFactoryException {
         this.app = app;
         dlSystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
-        dlSales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
-        m_sentcat = dlSales.getUserList();
-        m_PeopleModel = new ComboBoxValModel(); 
         
-        List catlist=null;
-        try {
-            catlist = m_sentcat.list();
-        } catch (BasicException ex) {
-            ex.getMessage();
-        }
-        catlist.add(0, null);
-        m_PeopleModel = new ComboBoxValModel(catlist);
-        jCBPeople.setModel(m_PeopleModel);
-        m_aPaymentInfo = new PaymentInfoList();
-
-        m_dTotal = getTotal();
+        m_dTotal = 0.0;
         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(m_dTotal));
 
         addTabs();
 
         if (m_jTabPayment.getTabCount() == 0) {
-            // No payment panels available            
-            m_aPaymentInfo.add(getDefaultPayment(m_dTotal));
-        } else {
+            ;
+         } else {
             //getRootPane().setDefaultButton(m_jButtonOK);
             printState();
             setVisible(true);
         }
     }
-
-    protected void setAddEnabled(boolean value) {
-        m_jButtonAdd.setEnabled(value);
-    }
     
-    
-    protected void setHeaderVisible(boolean value) {
-        jPanel6.setVisible(value);
-    }
-     
     @Override
     public Object getBean() {
         return this;
-    }
-
-    public List<PaymentInfo> getSelectedPayments() {
-        return m_aPaymentInfo.getPayments();
     }
 
     protected void setOKEnabled(boolean value) {
@@ -337,7 +238,7 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
     protected void addTabPayment(JPaymentCreator jpay) {
         if (app.getAppUserView().getUser().hasPermission(jpay.getKey())) {
 
-            JPaymentInterface jpayinterface = payments.get(jpay.getKey());
+            JCloseCashInterface jpayinterface = payments.get(jpay.getKey());
             if (jpayinterface == null) {
                 jpayinterface = jpay.createJPayment();
                 payments.put(jpay.getKey(), jpayinterface);
@@ -353,7 +254,7 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
 
     public interface JPaymentCreator {
 
-        public JPaymentInterface createJPayment();
+        public JCloseCashInterface createJPayment();
 
         public String getKey();
 
@@ -365,8 +266,8 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
     public class JPaymentCashCreator implements JPaymentCreator {
 
         @Override
-        public JPaymentInterface createJPayment() {
-            return new JPaymentCashPosDetail(JPanelCloseMoneyDetail.this,JPanelCloseMoneyDetail.this, dlSystem);
+        public JCloseCashInterface createJPayment() {
+            return new JPaymentCashPosDetail(dlSystem);
         }
 
         @Override
@@ -387,17 +288,9 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
 
 
     private void printState() {
-        m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(0.0));
-        m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());
         m_jTabPayment.setSelectedIndex(0); // selecciono el primero
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(null, getTotal(), m_sTransactionID);
-        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(getTotal()));
-    }
-
-    @Override
-    public void setStatus(boolean isPositive, boolean isComplete) {
-    	setAddEnabled(isPositive && !isComplete);
-        setStatusPanel(isPositive, isComplete);
+        ((JCloseCashInterface) m_jTabPayment.getSelectedComponent()).activate(m_dTotal, m_sTransactionID);
+        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(m_dTotal));
     }
 
     public void setTransactionID(String tID) {
@@ -408,30 +301,4 @@ public class JPanelCloseMoneyDetail extends javax.swing.JPanel implements JPanel
 	public void addTabs() {
             addTabPayment(new JPanelCloseMoneyDetail.JPaymentCashCreator());
 	}
-
-	@Override
-	public void setStatusPanel(boolean isPositive, boolean isComplete) {
-		setOKEnabled(isComplete);
-	}
-
-	@Override
-	public PaymentInfo getDefaultPayment(double total) {
-		return new PaymentInfoCash(total, total);
-	}
-
-	/**
-	 * @return the m_dTotal
-	 */
-	public double getTotal() {
-		return m_dTotal + m_aPaymentInfo.getPaid();
-	}
-
-	/**
-	 * @param m_dTotal the m_dTotal to set
-	 */
-	public void setTotal(double m_dTotal) {
-		this.m_dTotal = m_dTotal;
-	}
-	
-	
 }
