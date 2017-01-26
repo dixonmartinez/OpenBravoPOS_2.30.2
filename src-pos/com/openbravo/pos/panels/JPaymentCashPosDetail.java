@@ -16,35 +16,43 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-package com.openbravo.pos.payment;
+package com.openbravo.pos.panels;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+
+import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.MessageInf;
-import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.payment.JPaymentInterface;
+import com.openbravo.pos.payment.JPaymentNotifier;
+import com.openbravo.pos.payment.PaymentInfo;
+import com.openbravo.pos.payment.PaymentInfoCash;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.util.RoundUtils;
 import com.openbravo.pos.util.ThumbNailBuilder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
 
 /**
  *
  * @author adrianromero
  */
-public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInterface {
+public class JPaymentCashPosDetail extends javax.swing.JPanel implements JPaymentInterface {
 
     private JPaymentNotifier m_notifier;
-
+    private JPanelCloseMoneyDetail closeMoneyDetail;
     private double m_dPaid;
     private double m_dTotal;
 
@@ -52,13 +60,16 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
      * Creates new form JPaymentCash
      *
      * @param notifier
+     * @param jPanelCloseMoneyDetail 
      * @param dlSystem
      */
-    public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
+    public JPaymentCashPosDetail(JPaymentNotifier notifier, JPanelCloseMoneyDetail closeMoneyDetail, DataLogicSystem dlSystem) {
         m_notifier = notifier;
+        this.closeMoneyDetail = closeMoneyDetail;
         initComponents();
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
+        jPanel6.setVisible(false);        
         String code = dlSystem.getResourceAsXML("payment.cash");
         if (code != null) {
             try {
@@ -104,17 +115,20 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             m_dPaid = value;
         }
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
-        m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(m_dPaid));
-        m_jChangeEuros.setText(iCompare > 0
-                ? Formats.CURRENCY.formatValue(m_dPaid - m_dTotal)
-                : null);
         m_notifier.setStatus(m_dPaid > 0.0, iCompare >= 0);
+
+        //closeMoneyDetail.setTotal(m_dPaid);
+        m_jTendered.reset();
+        if(jPanel6.isVisible())
+        	jPanel6.setVisible(false);
+        	
     }
     
     private class RecalculateState implements PropertyChangeListener {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            printState();
+            if(m_jTendered.getDoubleValue() != null && m_jTendered.getDoubleValue() > 0.0)
+            	jPanel6.setVisible(true);
         }
     }
 
@@ -145,21 +159,23 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private class AddAmount implements ActionListener {
 
         private final double amount;
-
+        private double count;
         public AddAmount(double amount) {
             this.amount = amount;
+            count++;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             Double tendered = m_jTendered.getDoubleValue();
             if (tendered == null) {
-                m_jTendered.setDoubleValue(amount);
+                m_jTendered.setDoubleValue(count);
             } else {
-                m_jTendered.setDoubleValue(tendered + amount);
+                m_jTendered.setDoubleValue(tendered * amount);
             }
 
             printState();
+            closeMoneyDetail.returnPayment();
         }
     }
 
@@ -172,11 +188,6 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private void initComponents() {
 
         jPanel5 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        m_jChangeEuros = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        m_jMoneyEuros = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -187,35 +198,6 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         setLayout(new java.awt.BorderLayout());
 
         jPanel5.setLayout(new java.awt.BorderLayout());
-
-        jPanel4.setPreferredSize(new java.awt.Dimension(0, 100));
-        jPanel4.setLayout(null);
-
-        m_jChangeEuros.setBackground(java.awt.Color.white);
-        m_jChangeEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jChangeEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jChangeEuros.setOpaque(true);
-        m_jChangeEuros.setPreferredSize(new java.awt.Dimension(150, 25));
-        jPanel4.add(m_jChangeEuros);
-        m_jChangeEuros.setBounds(120, 50, 150, 25);
-
-        jLabel6.setText(AppLocal.getIntString("Label.ChangeCash")); // NOI18N
-        jPanel4.add(jLabel6);
-        jLabel6.setBounds(20, 50, 100, 15);
-
-        jLabel8.setText(AppLocal.getIntString("Label.InputCash")); // NOI18N
-        jPanel4.add(jLabel8);
-        jLabel8.setBounds(20, 20, 100, 15);
-
-        m_jMoneyEuros.setBackground(new java.awt.Color(153, 153, 255));
-        m_jMoneyEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jMoneyEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jMoneyEuros.setOpaque(true);
-        m_jMoneyEuros.setPreferredSize(new java.awt.Dimension(150, 25));
-        jPanel4.add(m_jMoneyEuros);
-        m_jMoneyEuros.setBounds(120, 20, 150, 25);
-
-        jPanel5.add(jPanel4, java.awt.BorderLayout.NORTH);
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
         jPanel5.add(jPanel6, java.awt.BorderLayout.CENTER);
@@ -240,17 +222,12 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JLabel m_jChangeEuros;
     private com.openbravo.editor.JEditorKeys m_jKeys;
-    private javax.swing.JLabel m_jMoneyEuros;
     private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
     // End of variables declaration//GEN-END:variables
 

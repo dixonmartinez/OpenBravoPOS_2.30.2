@@ -19,29 +19,34 @@
 
 package com.openbravo.pos.payment;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class PaymentInfoList {
     
-    private LinkedList<PaymentInfo> m_apayment;
+    private final LinkedList<PaymentInfo> m_apayment;
     
     /** Creates a new instance of PaymentInfoComposed */
     public PaymentInfoList() {
-        m_apayment = new LinkedList<PaymentInfo>();
+        m_apayment = new LinkedList<>();
     }
         
     public double getTotal() {
         
         double dTotal = 0.0;
-        Iterator i = m_apayment.iterator();
-        while (i.hasNext()) {
-            PaymentInfo p = (PaymentInfo) i.next();
+        for (PaymentInfo p : m_apayment) {
             dTotal += p.getTotal();
         }
         
         return dTotal;
     }     
+    
+    public double getPaid() {
+    	double paid = 0.0;
+    	for (PaymentInfo paymentInfo : m_apayment) {
+			paid += paymentInfo.getPaid();
+		}
+    	return paid;
+    }
     
     public boolean isEmpty() {
         return m_apayment.isEmpty();

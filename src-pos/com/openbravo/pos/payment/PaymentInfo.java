@@ -25,10 +25,11 @@ public abstract class PaymentInfo {
     
     public abstract String getName();
     public abstract double getTotal();
+    public abstract double getPaid();
     public abstract PaymentInfo copyPayment();
     public abstract String getTransactionID();
     
     public String printTotal() {
-        return Formats.CURRENCY.formatValue(new Double(getTotal()));
+        return Formats.CURRENCY.formatValue(getTotal());
     }
 }

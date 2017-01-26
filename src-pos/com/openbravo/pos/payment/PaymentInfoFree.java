@@ -40,4 +40,9 @@ public class PaymentInfoFree extends PaymentInfo {
     public String getTransactionID(){
         return "no ID";
     }
+
+	@Override
+	public double getPaid() {
+		return 0.0;
+	}
 }

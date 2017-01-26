@@ -312,7 +312,6 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         jPanel6.setVisible(value);
     }
     
-    private boolean appli = false;
     private void printState() {
         m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(m_dTotal - m_aPaymentInfo.getTotal()));
         m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());

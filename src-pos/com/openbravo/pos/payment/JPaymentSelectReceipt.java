@@ -31,11 +31,21 @@ import java.awt.Window;
  */
 public class JPaymentSelectReceipt extends JPaymentSelect {
     
-    /** Creates new form JPaymentSelect */
+    /** 
+     * Creates new form JPaymentSelect
+     * @param parent
+     * @param modal
+     * @param o 
+     */
     protected JPaymentSelectReceipt(java.awt.Frame parent, boolean modal, ComponentOrientation o) {
         super(parent, modal, o);
     }
-    /** Creates new form JPaymentSelect */
+    /** 
+     * Creates new form JPaymentSelect
+     * @param parent
+     * @param modal
+     * @param o 
+     */
     protected JPaymentSelectReceipt(java.awt.Dialog parent, boolean modal, ComponentOrientation o) {
         super(parent, modal, o);
     } 
@@ -51,6 +61,7 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
         }
     } 
     
+    @Override
     protected void addTabs() {
         
         addTabPayment(new JPaymentSelect.JPaymentCashCreator());
@@ -62,12 +73,14 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
         setHeaderVisible(true);
     }
     
+    @Override
     protected void setStatusPanel(boolean isPositive, boolean isComplete) {
         
         setAddEnabled(isPositive && !isComplete);
         setOKEnabled(isComplete);
     }
     
+    @Override
     protected PaymentInfo getDefaultPayment(double total) {
         return new PaymentInfoCash(total, total);
     }

@@ -23,36 +23,44 @@ import com.openbravo.format.Formats;
 
 public class PaymentInfoCash extends PaymentInfo {
     
-    private double m_dPaid;
-    private double m_dTotal;
+    private final double m_dPaid;
+    private final double m_dTotal;
     
-    /** Creates a new instance of PaymentInfoCash */
+    /** 
+     * Creates a new instance of PaymentInfoCash
+     * @param dTotal
+     * @param dPaid 
+     */
     public PaymentInfoCash(double dTotal, double dPaid) {
         m_dTotal = dTotal;
         m_dPaid = dPaid;
     }
     
+    @Override
     public PaymentInfo copyPayment(){
         return new PaymentInfoCash(m_dTotal, m_dPaid);
     }
     
+    @Override
     public String getName() {
         return "cash";
     }   
+    @Override
     public double getTotal() {
         return m_dTotal;
     }   
     public double getPaid() {
         return m_dPaid;
     }
+    @Override
     public String getTransactionID(){
         return "no ID";
     }
     
     public String printPaid() {
-        return Formats.CURRENCY.formatValue(new Double(m_dPaid));
+        return Formats.CURRENCY.formatValue(m_dPaid);
     }   
     public String printChange() {
-        return Formats.CURRENCY.formatValue(new Double(m_dPaid - m_dTotal));
+        return Formats.CURRENCY.formatValue(m_dPaid - m_dTotal);
     }    
 }

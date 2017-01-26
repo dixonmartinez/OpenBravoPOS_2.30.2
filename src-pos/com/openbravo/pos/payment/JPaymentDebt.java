@@ -90,6 +90,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         printState();
         
     }
+    
     public PaymentInfo executePayment() {
         return new PaymentInfoTicket(m_dPaid, "debt");      
     }

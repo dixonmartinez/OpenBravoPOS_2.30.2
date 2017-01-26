@@ -28,9 +28,25 @@ public class SpringDemo {
         Container cnt = frame.getContentPane();
         SpringLayout sl = new SpringLayout();
         cnt.setLayout(sl);
-        cnt.add(new JLabel("Label: "));
-        cnt.add(new JTextField("JTextField", 15));
+        JLabel jLabel = new JLabel("Label: ");
+        cnt.add(jLabel);
+        JTextField textField = new JTextField("JTextField", 15);
+        cnt.add(textField);
         
+        sl.putConstraint(SpringLayout.WEST, jLabel, 5, SpringLayout.WEST, cnt);
+        
+        sl.putConstraint(SpringLayout.NORTH, jLabel,
+                             5,
+                             SpringLayout.NORTH, cnt);
+ 
+        //Adjust constraints for the text field so it's at
+        //(<label's right edge> + 5, 5).
+        sl.putConstraint(SpringLayout.WEST, textField,
+                             5,
+                             SpringLayout.EAST, jLabel);
+        sl.putConstraint(SpringLayout.NORTH, textField,
+                             5,
+                             SpringLayout.NORTH, cnt);
         frame.pack();
         frame.setVisible(true);
     }
