@@ -25,6 +25,7 @@
     <class name="com.openbravo.pos.customers.CustomersPayment"/>
     <class name="com.openbravo.pos.panels.JPanelPayments"/>
     <class name="com.openbravo.pos.panels.JPanelCloseMoney"/>
+    <class name="com.openbravo.pos.panels.JPanelCloseMoneyFinal"/>
     <class name="/com/openbravo/reports/closedpos.bs"/>
     <class name="sales.EditLines"/>
     <class name="sales.EditTicket"/>

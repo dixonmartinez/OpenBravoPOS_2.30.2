@@ -98,6 +98,12 @@ INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('27', 'coin.5cent', 1, 
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('28', 'coin.2cent', 1, $FILE{/com/openbravo/pos/templates/coin.2cent.png});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('29', 'coin.1cent', 1, $FILE{/com/openbravo/pos/templates/coin.1cent.png});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('30', 'Printer.PartialCash', 0, $FILE{/com/openbravo/pos/templates/Printer.PartialCash.xml});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('31', 'pointofsale.name', 0, $FILE{/com/openbravo/pos/templates/pointofsale.name.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('32', 'card.type', 0, $FILE{/com/openbravo/pos/templates/card.type.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('33', 'tipo.persona', 0, $FILE{/com/openbravo/pos/templates/tipo.persona.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('34', 'payment.dollar.cash', 0, $FILE{/com/openbravo/pos/templates/payment.dollar.cash.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('35', 'tipo.ticket.alim', 0, $FILE{/com/openbravo/pos/templates/tipo.ticket.alim.txt});
+
 
 CREATE TABLE TAXCUSTCATEGORIES (
     ID VARCHAR NOT NULL,
@@ -323,8 +329,13 @@ CREATE TABLE CLOSEDCASH (
     HOSTSEQUENCE INTEGER NOT NULL,
     DATESTART TIMESTAMP NOT NULL,
     DATEEND TIMESTAMP,
-    PRIMARY KEY(MONEY)
+    PERSON VARCHAR NOT NULL,
+    DIFFERENCE DOUBLE DEFAULT 0,
+    PRIMARY KEY(MONEY),
+    CONSTRAINT CLOSEDCASH_FK FOREIGN KEY (PERSON) REFERENCES PEOPLE(ID),
 );
+
+
 CREATE INDEX CLOSEDCASH_INX_1 ON CLOSEDCASH(DATESTART);
 CREATE UNIQUE INDEX CLOSEDCASH_INX_SEQ ON CLOSEDCASH(HOST, HOSTSEQUENCE);
 

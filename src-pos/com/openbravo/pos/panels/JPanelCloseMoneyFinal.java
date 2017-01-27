@@ -47,7 +47,6 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Vector;
-//modificar reporte de cierre de caja
 
 /**
  *
@@ -57,22 +56,18 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     
     private AppView m_App;
     private DataLogicSystem m_dlSystem;
-    private BigDecimal amountCT;
-    private BigDecimal amountCash;
-    private BigDecimal amountCheque;
-    private BigDecimal amountCard;
-    private BigDecimal amountTransfer;
+    private Double amountCash;
+    private Double amountCheque;
+    private Double amountCard;
     //Variables con los valores ingresados por el usuario en la pantalla anterior
-    private BigDecimal insertedCT;
-    private BigDecimal insertedCash;
-    private BigDecimal insertedCheque;
-    private BigDecimal insertedCard;
-    private BigDecimal insertedTransfer;
+    private Double insertedCash;
+    private Double insertedCheque;
+    private Double insertedCard;
 
     private PaymentsModel m_PaymentsToClose = null;   
     
     private TicketParser m_TTP;
-    private BigDecimal sumAllPay;
+    private Double sumAllPay;
     
     private String m_UserID;
    
@@ -86,7 +81,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     
     public void init(AppView app) throws BeanFactoryException {
         m_App = app;        
-        m_dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        m_dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(
@@ -130,13 +125,10 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     }  
     
     private void loadData() throws BasicException {
-        closeMoney = (JPanelCloseMoney) m_App.getBean("com.openbravo.pos.panels.JPanelCloseMoney");
-        // TODO: se carga los valores ingresados en la pantalla anterior
-        insertedCT =closeMoney.getTotalCT();
+        closeMoney = (JPanelCloseMoney) m_App.getBean(JPanelCloseMoney.class.getName());
         insertedCash =closeMoney.getTotalCash();
         insertedCheque =closeMoney.getTotalCheque();
         insertedCard =closeMoney.getTotalCards();
-        insertedTransfer =closeMoney.getTotalTransfer();
         sumAllPay = closeMoney.getTotalPay();
         
         m_UserID = closeMoney.getUserID();
@@ -174,10 +166,11 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             m_jCount.setText(m_PaymentsToClose.printPayments());
             m_jRegister.setText(Formats.CURRENCY.formatValue(sumAllPay));
             m_jCash.setText(m_PaymentsToClose.printPaymentsTotal());
-            BigDecimal difference = sumAllPay.subtract(BigDecimal.valueOf(m_PaymentsToClose.getM_dPaymentsTotal()));
+            Double difference = sumAllPay - m_PaymentsToClose.getM_dPaymentsTotal(); // .subtract(BigDecimal.valueOf());
             m_jDifference.setText(Formats.CURRENCY.formatValue(difference));
-            if(difference.compareTo(BigDecimal.ZERO)!=0)
-                m_jDifference.setForeground(Color.red);
+            if(difference != 0.0) {
+            	m_jDifference.setForeground(Color.red);
+            }
             
             m_jSales.setText(m_PaymentsToClose.printSales());
             m_jSalesSubtotal.setText(m_PaymentsToClose.printSalesBase());
@@ -231,29 +224,21 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
          for (int i = 0; i < m_PaymentsToClose.getPaymentLines().size(); i++) {
               payLine= m_PaymentsToClose.getPaymentLines().get(i);
                  if(payLine.getType().toUpperCase().contains("CASH"))
-                   amountCash = BigDecimal.valueOf(payLine.getValue());
+                   amountCash = payLine.getValue();
                  if(payLine.getType().toUpperCase().contains("MAGCARD"))
-                    amountCard = BigDecimal.valueOf(payLine.getValue());
-                 if(payLine.getType().toUpperCase().contains("CESTA"))
-                    amountCT = BigDecimal.valueOf(payLine.getValue());
+                    amountCard = payLine.getValue();
                  if(payLine.getType().toUpperCase().contains("CHEQUE"))
-                     amountCheque = BigDecimal.valueOf(payLine.getValue());            
-                 if(payLine.getType().toUpperCase().contains("TRANSFER"))
-                     amountTransfer = BigDecimal.valueOf(payLine.getValue());            
+                     amountCheque = payLine.getValue();            
         }
     }
 
     private void compararValores() {
-        if (amountCT== null)
-            amountCT = BigDecimal.ZERO;
         if (amountCard == null)
-            amountCard = BigDecimal.ZERO;
+            amountCard = 0.0;
         if(amountCash == null)
-            amountCash = BigDecimal.ZERO;
+            amountCash = 0.0;
         if(amountCheque == null)
-            amountCheque = BigDecimal.ZERO;
-        if(amountTransfer == null)
-            amountTransfer = BigDecimal.ZERO;
+            amountCheque = 0.0;
         DefaultTableModel modeltbl = new ModelDifference();
         modeltbl.addColumn("Tipo de Pago:");
         modeltbl.addColumn("Dinero en Caja");
@@ -262,21 +247,12 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 
         tblDifference.setModel(modeltbl);
         
-        if(insertedCT.compareTo(amountCT)!=0 ){
-             Vector vectorTbl = new Vector();
-             vectorTbl.add("Cesta Ticket");
-             vectorTbl.add(Formats.CURRENCY.formatValue(amountCT));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCT));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCT.subtract(amountCT)));
-             modeltbl.addRow(vectorTbl);
-        }
-        
-        if(insertedCard.compareTo(amountCard)!=0){ 
+        if(insertedCard.equals(amountCard)){ 
              Vector vectorTbl = new Vector();
              vectorTbl.add("Tarjetas");
              vectorTbl.add(Formats.CURRENCY.formatValue(amountCard));
              vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard.subtract(amountCard)));
+             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard - amountCard));
              modeltbl.addRow(vectorTbl);
         }
         if(insertedCash.compareTo(amountCash)!=0 ){
@@ -284,7 +260,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
              vectorTbl.add("Efectivo");
              vectorTbl.add(Formats.CURRENCY.formatValue(amountCash));
              vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash.subtract(amountCash)));
+             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash - amountCash));
              modeltbl.addRow(vectorTbl);
         }
 
@@ -293,18 +269,10 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
              vectorTbl.add("Cheque");
              vectorTbl.add(Formats.CURRENCY.formatValue(amountCheque));
              vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque.subtract(amountCheque)));
+             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque - amountCheque));
              modeltbl.addRow(vectorTbl);
         }
 
-        if(insertedTransfer.compareTo(amountTransfer)!=0){
-             Vector vectorTbl = new Vector();
-             vectorTbl.add("Transferencias");
-             vectorTbl.add(Formats.CURRENCY.formatValue(amountTransfer));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedTransfer));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedTransfer.subtract(amountTransfer)));
-             modeltbl.addRow(vectorTbl);
-        }
     }
     
    public class ModelDifference extends DefaultTableModel{
@@ -659,7 +627,6 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     public void closeCash(){
-    
             Date dNow = new Date();
             String userID = null;
             
@@ -685,11 +652,9 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
                         .exec(new Object[] {dNow, d, userID, valcash[0].toString()}); 
                                         
 
-                    saveDetails(valcash[0].toString(), "cestaticket", insertedCT.doubleValue());
                     saveDetails(valcash[0].toString(), "cash", insertedCash.doubleValue());
                     saveDetails(valcash[0].toString(), "cheque", insertedCheque.doubleValue());
                     saveDetails(valcash[0].toString(), "magcard", insertedCard.doubleValue());
-                    saveDetails(valcash[0].toString(), "transfer", insertedTransfer.doubleValue());
         
                 }
             } catch (BasicException e) {
