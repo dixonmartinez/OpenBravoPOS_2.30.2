@@ -194,7 +194,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         
         @Override
         public JPaymentInterface createJPayment() {
-            return new JPaymentCheque(JPaymentSelect.this);
+            return new JPaymentCheque(app, JPaymentSelect.this);
         }
         @Override
         public String getKey() { return "payment.cheque"; }

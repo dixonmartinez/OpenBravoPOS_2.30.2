@@ -75,10 +75,5 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  
     public String printPaperTotal() {
         // En una devolucion hay que cambiar el signo al total
         return Formats.CURRENCY.formatValue(new Double(-m_dTicket));
-    }
-
-	@Override
-	public double getPaid() {
-		return 0;
-	}          
+    }    
 }

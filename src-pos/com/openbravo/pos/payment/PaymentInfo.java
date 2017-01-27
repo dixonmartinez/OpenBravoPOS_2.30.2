@@ -25,7 +25,6 @@ public abstract class PaymentInfo {
     
     public abstract String getName();
     public abstract double getTotal();
-    public abstract double getPaid();
     public abstract PaymentInfo copyPayment();
     public abstract String getTransactionID();
     

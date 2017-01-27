@@ -48,9 +48,6 @@ public class PaymentInfoCash extends PaymentInfo {
     @Override
     public double getTotal() {
         return m_dTotal;
-    }   
-    public double getPaid() {
-        return m_dPaid;
     }
     @Override
     public String getTransactionID(){

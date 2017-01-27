@@ -25,6 +25,9 @@ public class PaymentInfoMagcardRefund extends PaymentInfoMagcard {
     public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
        super(sHolderName, sCardNumber, sExpirationDate, track1, track2, track3, sTransactionID, dTotal);
     }
+    public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal,String puntoVenta, String carType) {
+       super(sHolderName, sCardNumber, sExpirationDate, track1, track2, track3, sTransactionID, dTotal,puntoVenta,carType);
+    }
     
     /** Creates a new instance of PaymentInfoMagcard */
     public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String sTransactionID, double dTotal) {

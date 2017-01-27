@@ -40,14 +40,6 @@ public class PaymentInfoList {
         return dTotal;
     }     
     
-    public double getPaid() {
-    	double paid = 0.0;
-    	for (PaymentInfo paymentInfo : m_apayment) {
-			paid += paymentInfo.getPaid();
-		}
-    	return paid;
-    }
-    
     public boolean isEmpty() {
         return m_apayment.isEmpty();
     }

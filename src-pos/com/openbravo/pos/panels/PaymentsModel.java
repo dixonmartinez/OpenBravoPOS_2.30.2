@@ -537,4 +537,13 @@ public class PaymentsModel {
 
     }
     //  End Dixon Martinez
+    
+    //Traer el total sin formato 
+    public Double getM_dPaymentsTotal() {
+        return m_dPaymentsTotal;
+    }
+
+    public void setM_dPaymentsTotal(Double m_dPaymentsTotal) {
+        this.m_dPaymentsTotal = m_dPaymentsTotal;
+    }
 }    

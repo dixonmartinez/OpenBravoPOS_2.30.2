@@ -97,7 +97,10 @@ public abstract class JPanelTable extends JPanel implements JPanelView, BeanFact
             if (cr != null) {
                 JListNavigator nl = new JListNavigator(bd);
                 nl.applyComponentOrientation(getComponentOrientation());
-                nl.setCellRenderer(cr);
+                if (cr != null) {
+                    nl.setCellRenderer(cr);
+                    
+                   }
                 container.add(nl, java.awt.BorderLayout.LINE_START);
             }
 

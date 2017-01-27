@@ -35,9 +35,12 @@ public class PaymentInfoMagcard extends PaymentInfo {
     protected String m_sAuthorization;    
     protected String m_sErrorMessage;
     protected String m_sReturnMessage;
+    protected String pointOfSales;
+    protected String carType;
     
     /** Creates a new instance of PaymentInfoMagcard */
-    public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
+    public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, 
+            String track3, String sTransactionID, double dTotal, String pointOfSales, String carType) {
         m_sHolderName = sHolderName;
         m_sCardNumber = sCardNumber;
         m_sExpirationDate = sExpirationDate;
@@ -51,15 +54,20 @@ public class PaymentInfoMagcard extends PaymentInfo {
         m_sAuthorization = null;
         m_sErrorMessage = null;
         m_sReturnMessage = null;
+        this.pointOfSales = pointOfSales;
+        this.carType = carType;
     }
+     public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
+         this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal, null, null);
+     }
     
     /** Creates a new instance of PaymentInfoMagcard */
     public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String sTransactionID, double dTotal) {
-        this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal);
+        this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal, null,null);
     }
     
     public PaymentInfo copyPayment(){
-        PaymentInfoMagcard p = new PaymentInfoMagcard(m_sHolderName, m_sCardNumber, m_sExpirationDate, track1, track2, track3, m_sTransactionID, m_dTotal);
+        PaymentInfoMagcard p = new PaymentInfoMagcard(m_sHolderName, m_sCardNumber, m_sExpirationDate, track1, track2, track3, m_sTransactionID, m_dTotal,pointOfSales,carType);
         p.m_sAuthorization = m_sAuthorization;
         p.m_sErrorMessage = m_sErrorMessage;
         return p;
@@ -149,7 +157,8 @@ public class PaymentInfoMagcard extends PaymentInfo {
             return m_sCardNumber.substring(0, m_sCardNumber.length()-4).replaceAll(".", "*") +
                     m_sCardNumber.substring(m_sCardNumber.length() - 4);
         } else {
-            return "****";
+            //return "****";
+            return m_sCardNumber;
         }
     }
     public String printExpirationDate() {
@@ -162,8 +171,21 @@ public class PaymentInfoMagcard extends PaymentInfo {
         return m_sTransactionID;
     }
 
-	@Override
-	public double getPaid() {
-		return 0;
-	}
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public String getPointOfSales() {
+        return pointOfSales;
+    }
+
+    public void setPointOfSales(String pointOfSales) {
+        this.pointOfSales = pointOfSales;
+    }
+    
 }
