@@ -274,14 +274,18 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         PaymentsModel.PaymentsLine payLine;
          for (int i = 0; i < m_PaymentsToClose.getPaymentLines().size(); i++) {
               payLine= m_PaymentsToClose.getPaymentLines().get(i);
-                 if(payLine.getType().toUpperCase().equals("CASH"))
-                   amountCash = payLine.getValue();
-                 if(payLine.getType().toUpperCase().equals("CASH_DOLLAR"))
-                     amountCashDollar = payLine.getValue();
-                 if(payLine.getType().toUpperCase().contains("MAGCARD"))
-                    amountCard = payLine.getValue();
-                 if(payLine.getType().toUpperCase().contains("CHEQUE"))
-                     amountCheque = payLine.getValue();            
+                 if(payLine.getType().toUpperCase().equals("CASH")) {
+                	 amountCash = payLine.getValue();
+                 }
+                 if(payLine.getType().toUpperCase().contains("MAGCARD")){
+                	 amountCard = payLine.getValue();
+                 }
+                 if(payLine.getType().toUpperCase().contains("CHEQUE")) {
+                	 amountCheque = payLine.getValue();      
+                 }
+                 if(payLine.getType().toUpperCase().equals("CASH_DOLLAR")) {
+                 	amountCashDollar = payLine.getValue();            
+                 }
         }
     }
 
@@ -797,6 +801,8 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
                 // we end date
                 m_PaymentsToClose.setDateEnd(dNow);
                 
+                m_jMaxDate.setText(Formats.TIMESTAMP.formatValue(dNow)/*Formats.DATE.formatValue(m_PaymentsToClose.getDateEnd())*/);
+                
                 // print report
                 printPayments("Printer.CloseCash");
                 
@@ -825,7 +831,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     
 private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
     // print report
-    printPayments("Printer.PartialCash");
+    printPayments("Printer.CloseCash");
     
 }//GEN-LAST:event_m_jPrintCashActionPerformed
     

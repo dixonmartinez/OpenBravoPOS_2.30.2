@@ -158,7 +158,7 @@ public class PaymentsModel {
         List l = new StaticSentence(app.getSession()            
             , "SELECT PAYMENTS.PAYMENT, SUM(PAYMENTS.TOTAL) " +
               "FROM PAYMENTS, RECEIPTS, TICKETS " +
-              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND TICKETS.ID = RECEIPTS.ID AND PAYMENT NOT IN ('cash_dollar') " +
+              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND TICKETS.ID = RECEIPTS.ID " +
               "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
               "GROUP BY PAYMENTS.PAYMENT"
             , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
@@ -169,8 +169,8 @@ public class PaymentsModel {
             p.m_lpayments = new ArrayList();
         } else {
             p.m_lpayments = l;
-        }        
-        
+        }  
+
         // Sales
         Object[] recsales = (Object []) new StaticSentence(app.getSession(),
             "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), TICKETS.PERSON " +
@@ -486,7 +486,7 @@ public class PaymentsModel {
             }
             @Override
             public int getRowCount() {
-                return m_lpayments.size();
+        		return m_lpayments.size();
             }
             @Override
             public int getColumnCount() {
@@ -494,7 +494,7 @@ public class PaymentsModel {
             }
             @Override
             public Object getValueAt(int row, int column) {
-                PaymentsLine l = m_lpayments.get(row);
+            	PaymentsLine l = m_lpayments.get(row);
                 switch (column) {
                 case 0: return l.getType();
                 case 1: return l.getValue();

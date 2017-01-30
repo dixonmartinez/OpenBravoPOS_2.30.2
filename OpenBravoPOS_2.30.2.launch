@@ -11,9 +11,6 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.openbravo.pos.forms.StartPOS"/>
-<<<<<<< HEAD
-=======
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value=","/>
->>>>>>> branch 'master' of https://dixon22ma@github.com/dixon22ma/OpenBravoPOS_2.30.2.git
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="OpenBravoPOS_2.30.2"/>
 </launchConfiguration>
