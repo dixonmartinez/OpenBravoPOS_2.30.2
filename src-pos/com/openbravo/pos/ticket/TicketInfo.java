@@ -22,7 +22,6 @@ import java.util.*;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.data.loader.DataRead;
@@ -143,15 +142,15 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.m_Customer = m_Customer;
         t.isDollarCash = isDollarCash;
         t.m_aLines = new ArrayList<>();
-        for (TicketLineInfo l : m_aLines) {
+        m_aLines.forEach((l) -> {
             t.m_aLines.add(l.copyTicketLine());
-        }
+        });
         t.refreshLines();
 
         t.payments = new LinkedList<>();
-        for (PaymentInfo p : payments) {
+        payments.forEach((p) -> {
             t.payments.add(p.copyPayment());
-        }
+        });
 
         // taxes are not copied, must be calculated again.
 
@@ -334,9 +333,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public double getSubTotal() {
         double sum = 0.0;
-        for (TicketLineInfo line : m_aLines) {
-            sum += line.getSubValue();
-        }
+        sum = m_aLines.stream().map((line) -> line.getSubValue()).reduce(sum, (accumulator, _item) -> accumulator + _item);
         return sum;
     }
 
@@ -344,13 +341,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
         double sum = 0.0;
         if (hasTaxesCalculated()) {
-            for (TicketTaxInfo tax : taxes) {
-                sum += tax.getTax(); // Taxes are already rounded...
-            }
+            sum = taxes.stream().map((tax) -> tax.getTax()).reduce(sum, (accumulator, _item) -> accumulator + _item); // Taxes are already rounded...
         } else {
-            for (TicketLineInfo line : m_aLines) {
-                sum += line.getTax();
-            }
+            sum = m_aLines.stream().map((line) -> line.getTax()).reduce(sum, (accumulator, _item) -> accumulator + _item);
         }
         return sum;
     }
@@ -363,11 +356,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     public double getTotalPaid() {
 
         double sum = 0.0;
-        for (PaymentInfo p : payments) {
-            if (!"debtpaid".equals(p.getName())) {
-                sum += p.getTotal();
-            }
-        }
+        sum = payments.stream().filter((p) -> (!"debtpaid".equals(p.getName()))).map((p) -> p.getTotal()).reduce(sum, (accumulator, _item) -> accumulator + _item);
         return sum;
     }
 
@@ -388,7 +377,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public void resetPayments() {
-        payments = new ArrayList<PaymentInfo>();
+        payments = new ArrayList<>();
     }
 
     public List<TicketTaxInfo> getTaxes() {
@@ -420,7 +409,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public TicketTaxInfo[] getTaxLines() {
 
-        Map<String, TicketTaxInfo> m = new HashMap<String, TicketTaxInfo>();
+        Map<String, TicketTaxInfo> m = new HashMap<>();
 
         TicketLineInfo oLine;
         for (Iterator<TicketLineInfo> i = m_aLines.iterator(); i.hasNext();) {
@@ -442,7 +431,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     public String printId() {
         if (m_iTicketId > 0) {
             // valid ticket id
-            return Formats.INT.formatValue(new Integer(m_iTicketId));
+            return Formats.INT.formatValue(m_iTicketId);
         } else {
             return "";
         }

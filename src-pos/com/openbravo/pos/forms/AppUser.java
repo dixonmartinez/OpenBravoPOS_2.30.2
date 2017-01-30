@@ -53,6 +53,7 @@ public class AppUser {
     private String m_sPassword;
     private final String m_sRole;
     private final Icon m_Icon;
+    private final String m_sSupervisor;
     
     private Set<String> m_apermissions;
     
@@ -68,8 +69,9 @@ public class AppUser {
      * @param card
      * @param role
      * @param icon 
+     * @param m_sSupervisor 
      */
-    public AppUser(String id, String name, String password, String card, String role, Icon icon) {
+    public AppUser(String id, String name, String password, String card, String role, Icon icon, String m_sSupervisor) {
         m_sId = id;
         m_sName = name;
         m_sPassword = password;
@@ -77,6 +79,7 @@ public class AppUser {
         m_sRole = role;
         m_Icon = icon;
         m_apermissions = null;
+        this.m_sSupervisor = m_sSupervisor;
     }
     
     public Icon getIcon() {
@@ -107,6 +110,10 @@ public class AppUser {
         return m_sCard;
     }
     
+    public String getSupervisor() {
+        return m_sSupervisor;
+    }
+    
     public boolean authenticate() {
         return m_sPassword == null || m_sPassword.equals("") || m_sPassword.startsWith("empty:");
     }
@@ -119,7 +126,7 @@ public class AppUser {
         // inicializamos los permisos
         m_apermissions = new HashSet<>();
         // Y lo que todos tienen permisos
-        m_apermissions.add("com.openbravo.pos.forms.JPanelMenu");
+        m_apermissions.add(JPanelMenu.class.getName());
         m_apermissions.add("Menu.Exit");        
         
         String sRolePermisions = dlSystem.findRolePermissions(m_sRole);
@@ -255,5 +262,9 @@ public class AppUser {
         public void characters(char[] ch, int start, int length) throws SAXException {}
     }     
     
+    @Override
+    public String toString() {
+        return "AppUser{" + "m_sId=" + m_sId + ", m_sName=" + m_sName + ", m_sSupervisor=" + m_sSupervisor + '}';
+    }
     
 }

@@ -45,6 +45,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     
     protected SentenceList m_peoplevisible;  
     protected SentenceFind m_peoplebycard;  
+    protected SentenceFind m_peoplebyid;  
     protected SerializerRead peopleread;
     
     private SentenceFind m_rolepermissions; 
@@ -81,20 +82,29 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 dr.getString(3),
                 dr.getString(4),
                 dr.getString(5),
-                new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))));
+                new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))),
+                dr.getString(7)
+        
+        );
 
         m_peoplevisible = new StaticSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, SUPERVISOR FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
             , null
             , peopleread);
 
         m_peoplebycard = new PreparedSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, SUPERVISOR FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
             , SerializerWriteString.INSTANCE
             , peopleread);
         
+        m_peoplebyid = new PreparedSentence(s
+                , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, SUPERVISOR FROM PEOPLE WHERE ID = ? AND VISIBLE = " + s.DB.TRUE()
+                , SerializerWriteString.INSTANCE
+                , peopleread);
+            
+        
         m_peoplebyName = new PreparedSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE NAME = ? AND VISIBLE = " + s.DB.TRUE()
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE, SUPERVISOR FROM PEOPLE WHERE NAME = ? AND VISIBLE = " + s.DB.TRUE()
             , SerializerWriteString.INSTANCE
             , peopleread);
          
@@ -161,6 +171,10 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }      
     public final AppUser findPeopleByCard(String card) throws BasicException {
         return (AppUser) m_peoplebycard.find(card);
+    }
+    
+    public final AppUser findPeopleByID(String id) throws BasicException {
+        return (AppUser) m_peoplebyid.find(id);
     }
     
     public final AppUser findPeopleByName(String name) throws BasicException {

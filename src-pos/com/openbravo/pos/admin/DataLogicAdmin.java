@@ -28,6 +28,7 @@ import com.openbravo.data.loader.TableDefinition;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.BeanFactoryDataSingle;
+import com.openbravo.pos.ticket.UserInfo;
 
 /**
  *
@@ -50,10 +51,18 @@ public class DataLogicAdmin extends BeanFactoryDataSingle {
         
         m_tpeople = new TableDefinition(s,
             "PEOPLE"
-            , new String[] {"ID", "NAME", "APPPASSWORD", "ROLE", "VISIBLE", "CARD", "IMAGE"}
-            , new String[] {"ID", AppLocal.getIntString("label.peoplename"), AppLocal.getIntString("Label.Password"), AppLocal.getIntString("label.role"), AppLocal.getIntString("label.peoplevisible"), AppLocal.getIntString("label.card"), AppLocal.getIntString("label.peopleimage")}
-            , new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.STRING, Datas.IMAGE}
-            , new Formats[] {Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.BOOLEAN, Formats.STRING, Formats.NULL}
+            , new String[] {"ID", "NAME", "APPPASSWORD", "ROLE", "VISIBLE", "CARD", "IMAGE", "SUPERVISOR"}
+            , new String[] {"ID", 
+                AppLocal.getIntString("label.peoplename"), 
+                AppLocal.getIntString("Label.Password"), 
+                AppLocal.getIntString("label.role"), 
+                AppLocal.getIntString("label.peoplevisible"), 
+                AppLocal.getIntString("label.card"), 
+                AppLocal.getIntString("label.peopleimage"),
+                AppLocal.getIntString("label.supervisor")
+            }
+            , new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.STRING, Datas.IMAGE, Datas.STRING}
+            , new Formats[] {Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.BOOLEAN, Formats.STRING, Formats.NULL, Formats.STRING, }
             , new int[] {0}
         );   
         
@@ -82,6 +91,22 @@ public class DataLogicAdmin extends BeanFactoryDataSingle {
             , null
             , new SerializerReadClass(RoleInfo.class));
     }
+    
+    public final SentenceList getUsersList() {
+        return new StaticSentence(s
+            , "SELECT ID, NAME FROM PEOPLE  ORDER BY NAME"
+            , null
+            , new SerializerReadClass(UserInfo.class));
+    }
+    
+    public final SentenceList getUsersByID(String user_ID) {
+        return new StaticSentence(s
+            , "SELECT ID, NAME FROM PEOPLE  WHERE ID = " + user_ID
+            , null
+            , new SerializerReadClass(UserInfo.class));
+    }
+    
+    
     public final TableDefinition getTablePeople() {
         return m_tpeople;
     }    

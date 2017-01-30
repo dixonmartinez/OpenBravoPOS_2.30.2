@@ -22,14 +22,13 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -38,6 +37,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.print.PrintService;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -45,6 +46,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.beans.JNumberDialog;
+import com.openbravo.beans.JPasswordDialog;
 import com.openbravo.beans.JPercentDialog;
 import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.gui.ListKeyed;
@@ -55,12 +57,14 @@ import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.customers.JCustomerFinder;
 import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.forms.AppUser;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.JRootApp;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.panels.JProductFinder;
 import com.openbravo.pos.payment.JPaymentSelect;
@@ -1907,14 +1911,76 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }//GEN-LAST:event_m_jKeyFactoryKeyTyped
 
     private void m_jDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDeleteActionPerformed
-        int i = m_ticketlines.getSelectedIndex();
-        if (i < 0) {
-            Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
-        } else {
-            removeTicketLine(i); // elimino la linea           
-        }
+    	AppUser appUser = m_App.getAppUserView().getUser();
+    	if(appUser.getSupervisor() != null) {
+    		AppUser appUserSup;
+			try {
+				appUserSup = dlSystem.findPeopleByID(appUser.getSupervisor());
+				new AppUserAction(appUserSup).actionPerformed(null);
+			} catch (BasicException e) {
+			}
+    	} else {
+    		int i = m_ticketlines.getSelectedIndex();
+            if (i < 0) {
+                Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+            } else {
+                removeTicketLine(i); // elimino la linea           
+            }
+    	}
     }//GEN-LAST:event_m_jDeleteActionPerformed
 
+    // La accion del selector
+    private class AppUserAction extends AbstractAction {
+        
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -8234794153954606765L;
+		private final AppUser m_actionuser;
+        
+        public AppUserAction(AppUser user) {
+            m_actionuser = user;
+            super.putValue(Action.SMALL_ICON, m_actionuser.getIcon());
+            super.putValue(Action.NAME, m_actionuser.getName());
+        }
+        
+        public AppUser getUser() {
+            return m_actionuser;
+        }
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+        	// String sPassword = m_actionuser.getPassword();
+            if (m_actionuser.authenticate()) {
+                // Direct, has no password
+            	int i = m_ticketlines.getSelectedIndex();
+                if (i < 0) {
+                    Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+                } else {
+                    removeTicketLine(i); // elimino la linea           
+                }
+            } else {
+                // comprobemos la clave antes de entrar...
+                String sPassword = JPasswordDialog.showEditPassword(JPanelTicket.this, 
+                        AppLocal.getIntString("Label.Password"),
+                        m_actionuser.getName(),
+                        m_actionuser.getIcon());
+                if (sPassword != null) {
+                    if (m_actionuser.authenticate(sPassword)) {
+                    	int i = m_ticketlines.getSelectedIndex();
+                        if (i < 0) {
+                            Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+                        } else {
+                            removeTicketLine(i); // elimino la linea           
+                        }
+                    } else {
+                        MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
+                        msg.show(JPanelTicket.this);                        
+                    }
+                }   
+            }
+        }
+    }
+    
     private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jUpActionPerformed
         m_ticketlines.selectionUp();
     }//GEN-LAST:event_m_jUpActionPerformed

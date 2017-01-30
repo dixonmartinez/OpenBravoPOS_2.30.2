@@ -18,22 +18,34 @@
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 package com.openbravo.pos.ticket;
 
-import java.io.Serializable;
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.IKeyed;
+import com.openbravo.data.loader.SerializableRead;
 
 /**
  *
  * @author adrianromero
  */
-public class UserInfo implements Serializable {
+public class UserInfo implements SerializableRead, IKeyed {
 
-    private static final long serialVersionUID = 7537578737839L;
     private String m_sId;
     private String m_sName;
+    private String m_sSupervisor;
 
-    /** Creates a new instance of UserInfoBasic */
+    /** 
+     * Creates a new instance of UserInfoBasic
+     * @param id
+     * @param name 
+     */
     public UserInfo(String id, String name) {
         m_sId = id;
         m_sName = name;
+    }
+
+    public UserInfo() {
+        m_sId = null;
+        m_sName = null;
     }
 
     public String getId() {
@@ -43,4 +55,36 @@ public class UserInfo implements Serializable {
     public String getName() {
         return m_sName;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+	@Override
+	public Object getKey() {
+		return m_sId;
+	}
+
+	@Override
+	public void readValues(DataRead dr) throws BasicException {
+		m_sId = dr.getString(1);
+        m_sName = dr.getString(2);
+	}
+
+	/**
+	 * @return the m_sSupervisor
+	 */
+	public String getSupervisor() {
+		return m_sSupervisor;
+	}
+
+	/**
+	 * @param m_sSupervisor the m_sSupervisor to set
+	 */
+	public void setSupervisor(String m_sSupervisor) {
+		this.m_sSupervisor = m_sSupervisor;
+	}
+    
+    
 }
