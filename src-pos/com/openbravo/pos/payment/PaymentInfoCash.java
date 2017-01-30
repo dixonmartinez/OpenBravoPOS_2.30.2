@@ -25,25 +25,32 @@ public class PaymentInfoCash extends PaymentInfo {
     
     private final double m_dPaid;
     private final double m_dTotal;
+    private boolean isDollarCash;
     
     /** 
      * Creates a new instance of PaymentInfoCash
      * @param dTotal
      * @param dPaid 
+     * @param isDollarCash 
      */
-    public PaymentInfoCash(double dTotal, double dPaid) {
+    public PaymentInfoCash(double dTotal, double dPaid, boolean isDollarCash) {
         m_dTotal = dTotal;
         m_dPaid = dPaid;
+        this.isDollarCash = isDollarCash;
     }
     
     @Override
     public PaymentInfo copyPayment(){
-        return new PaymentInfoCash(m_dTotal, m_dPaid);
+        return new PaymentInfoCash(m_dTotal, m_dPaid, isDollarCash);
     }
     
     @Override
     public String getName() {
-        return "cash";
+    	if(isDollarCash) {
+    		return "cash_dollar";
+    	} else {
+    		return "cash";
+    	}
     }   
     @Override
     public double getTotal() {

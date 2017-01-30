@@ -39,7 +39,7 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
         initComponents();
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
         m_dTotal = dTotal;
         
         m_notifier.setStatus(true, true);

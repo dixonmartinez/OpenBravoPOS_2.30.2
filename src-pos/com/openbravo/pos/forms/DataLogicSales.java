@@ -360,7 +360,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
                 // new ticket
                 new PreparedSentence(s
-                    , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER) VALUES (?, ?, ?, ?, ?)"
+                    , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER, ISDOLLARCASH) VALUES (?, ?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE
                     ).exec(new DataParams() {
                         @Override
@@ -370,6 +370,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setInt(3, ticket.getTicketId());
                         setString(4, ticket.getUser().getId());
                         setString(5, ticket.getCustomerId());
+                        setInt(6, ticket.isDollarCash() ? 1 : 0);
                     }});
 
                 SentenceExec ticketlineinsert = new PreparedSentence(s

@@ -38,7 +38,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
     
     private double m_dPaid;
     private double m_dTotal;
-
+    
     /** Creates new form JPaymentDebt */
     public JPaymentDebt(JPaymentNotifier notifier) {
         
@@ -51,7 +51,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
         
         this.customerext = customerext;
         m_dTotal = dTotal;

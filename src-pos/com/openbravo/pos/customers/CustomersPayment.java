@@ -76,9 +76,9 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     public void init(AppView app) throws BeanFactoryException {
 
         this.app = app;
-        dlcustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomers");
-        dlsales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
-        dlsystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        dlcustomers = (DataLogicCustomers) app.getBean(DataLogicCustomers.class.getName());
+        dlsales = (DataLogicSales) app.getBean(DataLogicSales.class.getName());
+        dlsystem = (DataLogicSystem) app.getBean(DataLogicSystem.class.getName());
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
     }
 
@@ -495,7 +495,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
         paymentdialog.setPrintSelected(true);
         
-        if (paymentdialog.showDialog(customerext.getCurdebt(), null)) {
+        if (paymentdialog.showDialog(customerext.getCurdebt(), null, null)) {
 
             // Save the ticket
             TicketInfo ticket = new TicketInfo();

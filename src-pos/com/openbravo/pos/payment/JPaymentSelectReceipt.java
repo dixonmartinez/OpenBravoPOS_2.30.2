@@ -82,6 +82,6 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
     
     @Override
     protected PaymentInfo getDefaultPayment(double total) {
-        return new PaymentInfoCash(total, total);
+        return new PaymentInfoCash(total, total, false);
     }
 }

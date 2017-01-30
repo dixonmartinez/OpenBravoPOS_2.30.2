@@ -52,7 +52,7 @@ public class JTicketsBagShared extends JTicketsBag {
         selectValidTicket();     
         
         // Authorization
-        m_jDelTicket.setEnabled(m_App.getAppUserView().getUser().hasPermission("com.openbravo.pos.sales.JPanelTicketEdits"));
+        m_jDelTicket.setEnabled(m_App.getAppUserView().getUser().hasPermission(JPanelTicketEdits.class.getName()));
        
         // postcondicion es que tenemos ticket activado aqui y ticket en el panel
     }

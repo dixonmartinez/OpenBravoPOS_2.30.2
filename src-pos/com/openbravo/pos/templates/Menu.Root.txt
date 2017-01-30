@@ -79,12 +79,6 @@
 	submenu.addTitle("Menu.Maintenance.Restaurant");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Floors", "com.openbravo.pos.mant.JPanelFloors");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Tables", "com.openbravo.pos.mant.JPanelPlaces");
-        // Currency
-	submenu.addTitle("Menu.Maintenance.Currency");
-		//submenu.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.Currency", "com.openbravo.pos.sales.currency.CurrencyPanel");
-        //submenu.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.ConversionType", "com.openbravo.pos.sales.currency.ConversionTypePanel");
-        submenu.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.ConversionRate", "com.openbravo.pos.sales.currency.ConversionRatePanel");
-
         submenu.addTitle("Menu.Maintenance.Reports");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.UsersReport", "/com/openbravo/reports/people.bs");
 // Deprecated options.

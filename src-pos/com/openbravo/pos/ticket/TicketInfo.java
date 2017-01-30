@@ -21,6 +21,8 @@ package com.openbravo.pos.ticket;
 import java.util.*;
 import java.io.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.data.loader.DataRead;
@@ -58,7 +60,8 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<PaymentInfo> payments;
     private List<TicketTaxInfo> taxes;
     private final String m_sResponse;
-
+    private boolean isDollarCash;
+    
     /** Creates new TicketModel */
     public TicketInfo() {
         m_sId = UUID.randomUUID().toString();
@@ -70,7 +73,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_Customer = null;
         m_sActiveCash = null;
         m_aLines = new ArrayList<>(); // vacio de lineas
-
+        isDollarCash = false;
         payments = new ArrayList<>();
         taxes = null;
         m_sResponse = null;
@@ -86,6 +89,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(m_dDate);
         out.writeObject(attributes);
         out.writeObject(m_aLines);
+        out.writeBoolean(isDollarCash);
     }
 
     @Override
@@ -100,7 +104,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_aLines = (List<TicketLineInfo>) in.readObject();
         m_User = null;
         m_sActiveCash = null;
-
+        isDollarCash = in.readBoolean();
         payments = new ArrayList<>();
         taxes = null;
     }
@@ -122,7 +126,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_User = new UserInfo(dr.getString(7), dr.getString(8));
         m_Customer = new CustomerInfoExt(dr.getString(9));
         m_aLines = new ArrayList<>();
-
+        isDollarCash = dr.getBoolean(10);
         payments = new ArrayList<>();
         taxes = null;
     }
@@ -137,7 +141,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.attributes = (Properties) attributes.clone();
         t.m_User = m_User;
         t.m_Customer = m_Customer;
-
+        t.isDollarCash = isDollarCash;
         t.m_aLines = new ArrayList<>();
         for (TicketLineInfo l : m_aLines) {
             t.m_aLines.add(l.copyTicketLine());
@@ -173,6 +177,14 @@ public class TicketInfo implements SerializableRead, Externalizable {
     public void setTicketId(int iTicketId) {
         m_iTicketId = iTicketId;
     // refreshLines();
+    }
+    
+    public boolean isDollarCash() {
+    	return isDollarCash;
+    }
+    
+    public void setDollarCash(boolean isDollarCash) {
+    	this.isDollarCash = isDollarCash;
     }
 
     public String getName(Object info) {
@@ -457,7 +469,12 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public String printTax() {
-        return Formats.CURRENCY.formatValue(getTax());
+    	if(isDollarCash()) {
+    		DecimalFormat formatDollar = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.US);
+            return formatDollar.format(getTax());
+    	} else {
+    		return Formats.CURRENCY.formatValue(getTax());
+    	}
     }
 
     public String printTotal() {

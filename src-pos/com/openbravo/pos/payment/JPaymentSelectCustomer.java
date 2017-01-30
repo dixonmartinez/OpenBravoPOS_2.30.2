@@ -30,7 +30,7 @@ import java.awt.Window;
  * @author adrianromero
  */
 public class JPaymentSelectCustomer extends JPaymentSelect {
-    
+	private boolean isDollarCash = false;
     /** Creates new form JPaymentSelect */
     protected JPaymentSelectCustomer(java.awt.Frame parent, boolean modal, ComponentOrientation o) {
         super(parent, modal, o);
@@ -67,6 +67,6 @@ public class JPaymentSelectCustomer extends JPaymentSelect {
     }
     
     protected PaymentInfo getDefaultPayment(double total) {
-        return new PaymentInfoCash(total, total);
+        return new PaymentInfoCash(total, total, isDollarCash);
     }    
 }

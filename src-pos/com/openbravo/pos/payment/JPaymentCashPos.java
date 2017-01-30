@@ -18,24 +18,27 @@
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 package com.openbravo.pos.payment;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+
 import com.openbravo.data.gui.MessageInf;
-import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.util.RoundUtils;
 import com.openbravo.pos.util.ThumbNailBuilder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
 
 /**
  *
@@ -43,23 +46,37 @@ import javax.swing.SwingConstants;
  */
 public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInterface {
 
-    private JPaymentNotifier m_notifier;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7578607518833113676L;
+
+	private JPaymentNotifier m_notifier;
 
     private double m_dPaid;
     private double m_dTotal;
+    private boolean isDollarCash;
 
     /**
      * Creates new form JPaymentCash
      *
      * @param notifier
      * @param dlSystem
+     * @param isDollarCash 
      */
-    public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
+    public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem, boolean isDollarCash) {
         m_notifier = notifier;
         initComponents();
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
-        String code = dlSystem.getResourceAsXML("payment.cash");
+        this.isDollarCash = isDollarCash; 
+        String code;
+        if(isDollarCash) {
+            code = dlSystem.getResourceAsXML("payment.dollar.cash");
+        } else {
+            code = dlSystem.getResourceAsXML("payment.cash");
+        }
+        
         if (code != null) {
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.BEANSHELL);
@@ -73,10 +90,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     }
 
     @Override
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
         m_dTotal = dTotal;
         m_jTendered.reset();
         m_jTendered.activate();
+        this.isDollarCash = isDollarCash; 
         printState();
     }
 
@@ -84,10 +102,10 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     public PaymentInfo executePayment() {
         if (m_dPaid - m_dTotal >= 0.0) {
             // pago completo
-            return new PaymentInfoCash(m_dTotal, m_dPaid);
+            return new PaymentInfoCash(m_dTotal, m_dPaid, isDollarCash);
         } else {
             // pago parcial
-            return new PaymentInfoCash(m_dPaid, m_dPaid);
+            return new PaymentInfoCash(m_dPaid, m_dPaid, isDollarCash);
         }
     }
 

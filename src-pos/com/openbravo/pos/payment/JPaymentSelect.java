@@ -24,8 +24,10 @@ import java.awt.ComponentOrientation;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -36,6 +38,7 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppProperties;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.ticket.TicketInfo;
 
 /**
  *
@@ -53,12 +56,11 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private double m_dTotal; 
     private CustomerInfoExt customerext;
     private DataLogicSystem dlSystem;
-    
-    private final Map<String, JPaymentInterface> payments = new HashMap<>();
+    private Map<String, JPaymentInterface> payments = new HashMap<>();
     private String m_sTransactionID;
     
     private AppProperties m_props;
-    
+    private TicketInfo m_Ticket;
     /** 
      * Creates new form JPaymentSelect
      * @param parent
@@ -105,18 +107,15 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     public List<PaymentInfo> getSelectedPayments() {
         return m_aPaymentInfo.getPayments();
     }
-            
-    public boolean showDialog(double total, CustomerInfoExt customerext) {
+    public boolean showDialog(double total, CustomerInfoExt customerext, TicketInfo  m_Ticket) {
         m_aPaymentInfo = new PaymentInfoList();
         accepted = false;
         
         m_dTotal = total;
-        
+        this.m_Ticket = m_Ticket;
         this.customerext = customerext;        
-
         m_jButtonPrint.setSelected(printselected);
         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(m_dTotal));
-        
         addTabs();
 
         if (m_jTabPayment.getTabCount() == 0) {
@@ -167,7 +166,6 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
     }
     
-    
     public interface JPaymentCreator {
         public JPaymentInterface createJPayment();
         public String getKey();
@@ -178,7 +176,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     public class JPaymentCashCreator implements JPaymentCreator {
         @Override
         public JPaymentInterface createJPayment() {
-            return new JPaymentCashPos(JPaymentSelect.this, dlSystem);
+            return new JPaymentCashPos(JPaymentSelect.this, dlSystem, m_Ticket.isDollarCash());
         }
         @Override
         public String getKey() { return "payment.cash"; }
@@ -316,7 +314,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(m_dTotal - m_aPaymentInfo.getTotal()));
         m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());
         m_jTabPayment.setSelectedIndex(0); // selecciono el primero
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID, m_Ticket.isDollarCash());
     }
     
     protected static Window getWindow(Component parent) {
@@ -492,7 +490,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void m_jTabPaymentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_m_jTabPaymentStateChanged
 
         if (m_jTabPayment.getSelectedComponent() != null) {
-            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
+            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID, m_Ticket.isDollarCash());
         }
         
     }//GEN-LAST:event_m_jTabPaymentStateChanged
@@ -505,15 +503,21 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             accepted = true;
             dispose();
         }           
-        
+        resetTabs();
     }//GEN-LAST:event_m_jButtonOKActionPerformed
 
     private void m_jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonCancelActionPerformed
-
+    	resetTabs();
+        m_Ticket.setDollarCash(false);
         dispose();
         
     }//GEN-LAST:event_m_jButtonCancelActionPerformed
        
+    private void resetTabs() {
+        payments = new HashMap<>();
+        // remove all tabs        
+        m_jTabPayment.removeAll();
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -22,17 +22,15 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.Normalizer.Form;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,7 +65,8 @@ import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
-import com.sun.glass.ui.Pixels.Format;
+import com.openbravo.pos.util.CurrencyChange;
+import com.openbravo.pos.util.ThumbNailBuilder;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -89,6 +88,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	private JLabel lblTotalDollarCash;
 	private JLabel lblTotalCards;
 	private JLabel lblTotalPay;
+	private JLabel lblTotalPayDollar;
 	private JLabel lblTotalCheque;
 	private JLabel lblPeople;
 	private JTextField txtCheque;
@@ -97,9 +97,11 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	private AppView m_App;
 	private PaymentsModel m_PaymentsToClose;
 	private Double totalCash;
+	private Double totalCashDollar;
 	private Double totalCards;
 	private Double totalCheque;
 	private Double totalPay;
+	private Double totalPayDollar;
 	private JButton btnCloseCash;
 	private JButton btnClearTxt;
 	private JTextField txtFirstTextField;
@@ -132,6 +134,12 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		vectorTxtCard = new ArrayList<>();
 		isFirstTxt = true;
 		m_App = app;
+		
+		amtCash = 0.0;
+		amtCashDollar = 0.0;
+		amtCard = 0.0;
+		amtChek = 0.0;
+		
 		setLayout(new MigLayout());
 		setBorder(new EmptyBorder(5, 160, 5, 5));
 
@@ -175,7 +183,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		pnlCash.add(new JSeparator(), "gapleft rel, growx,wrap,span");
 		createPanelFromScript(pnlCash, "payment.dollar.cash", vectorTxtCashDollar);
 		JLabel lblTotal = new JLabel(AppLocal.getIntString("label.money"));
-		lblTotalDollarCash = new JLabel(Formats.CURRENCY.formatValue(0.0));
+                lblTotalDollarCash = new JLabel(CurrencyChange.FORMAT_DOLLAR.format(0.0));
 		pnlCash.add(new JSeparator(), "gapleft rel, growx,wrap,span");
 		pnlCash.add(lblTotal, "align center");
 		pnlCash.add(lblTotalDollarCash, "width 50,align center");
@@ -191,8 +199,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		String arraycard[] = cardType.split(",");
 		String cardType2 = dlSystem.getResourceAsXML("card.type");
 		String arraycard2[] = cardType2.split(",");
-		ArrayList<String> aCard = new ArrayList<String>();
-		ArrayList<String> bCard = new ArrayList<String>();
+		ArrayList<String> aCard = new ArrayList<>();
+		ArrayList<String> bCard = new ArrayList<>();
 		aCard.addAll(Arrays.asList(arraycard));
 		bCard.addAll(Arrays.asList(arraycard2));
 		JCBNombreBanco = new JComboBox<>(aCard.toArray());
@@ -250,8 +258,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		String arraycard[] = cardType.split(",");
 		String cardType2 = dlSystem.getResourceAsXML("tipo.persona");
 		String arraycard2[] = cardType2.split(",");
-		ArrayList<String> aCheque = new ArrayList<String>();
-		ArrayList<String> bCheque = new ArrayList<String>();
+		ArrayList<String> aCheque = new ArrayList<>();
+		ArrayList<String> bCheque = new ArrayList<>();
 		aCheque.addAll(Arrays.asList(arraycard));
 		bCheque.addAll(Arrays.asList(arraycard2));
 		String[] transType = { "Transferencia", AppLocal.getIntString("Label.Cheque") };
@@ -301,29 +309,17 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
 	private JPanel panelCloseCash() {
 
-		btnCloseCash = new JButton();
+		btnCloseCash = new JButton(AppLocal.getIntString("Close.Cash"));
 		btnCloseCash.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/close_cash.png")));
-		btnCloseCash.setText(AppLocal.getIntString("Close.Cash"));
 		btnCloseCash.setName("btnCloseCash");
-		btnCloseCash.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				btnCloseCashActionPerformed(evt);
-			}
-		});
+		btnCloseCash.addActionListener(this::btnCloseCashActionPerformed);
 		btnCloseCash.setEnabled(false);
 
-		btnClearTxt = new JButton();
+		btnClearTxt = new JButton(AppLocal.getIntString("Label.Clean.Fields"));
 		btnClearTxt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/clean.png")));
-		btnClearTxt.setText(AppLocal.getIntString("Label.Clean.Fields"));
 		btnClearTxt.setName("btnClearTxt");
 
-		btnClearTxt.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				btnClearTxtActionPerformed(evt);
-			}
-		});
+		btnClearTxt.addActionListener(this::btnClearTxtActionPerformed);
 		btnClearTxt.setEnabled(false);
 
 		m_sentcat = dlSales.getUserList();
@@ -344,10 +340,12 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		addKeyListenertoCombo(JCBPeople);
 
 		lblTotalPay = new JLabel(Formats.CURRENCY.formatValue(0.0));
+		lblTotalPayDollar = new JLabel(CurrencyChange.FORMAT_DOLLAR.format(0.0));
 		lblInfo = new JLabel();
 		lblInfo.setForeground(Color.RED);
 
-		JLabel lblTotal = new JLabel("Total en caja");
+		JLabel lblTotal = new JLabel(AppLocal.getIntString(AppLocal.getIntString("label.money")));
+//		AppLocal.getIntString("Label.Cash.Dollar")
 		JPanel pnlCloseCash = new JPanel();
 		pnlCloseCash.setLayout(new MigLayout());
 		pnlCloseCash.setBorder(BorderFactory.createEtchedBorder());
@@ -358,7 +356,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		pnlCloseCash.add(JCBPeople, "cell 1 0,wrap");
 
 		pnlCloseCash.add(lblTotal, "align center");
-		pnlCloseCash.add(lblTotalPay, "wrap");
+		pnlCloseCash.add(lblTotalPay, "align center");
+		pnlCloseCash.add(lblTotalPayDollar, "align center");
 		pnlCloseCash.add(lblInfo, "span 2,align center");
 		return pnlCloseCash;
 	}
@@ -366,6 +365,10 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	private void clearTextFields() {
 		for (int i = 0; i < vectorTxtCard.size(); i++) {
 			JTextField txtAmountCard = (JTextField) vectorTxtCard.get(i);
+			txtAmountCard.setText("");
+		}
+		for (int i = 0; i < vectorTxtCash.size(); i++) {
+			JTextField txtAmountCard = (JTextField) vectorTxtCashDollar.get(i);
 			txtAmountCard.setText("");
 		}
 		for (int i = 0; i < vectorTxtCT.size(); i++) {
@@ -401,6 +404,9 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 			lblTotalCash.setText(Formats.CURRENCY.formatValue(0.0));
 		}
 
+		if(lblTotalDollarCash != null) {			
+			lblTotalDollarCash.setText(CurrencyChange.FORMAT_DOLLAR.format(0.0));
+		}
 		if (lblTotalPay != null) {
 			lblTotalPay.setText(Formats.CURRENCY.formatValue(0.0));
 		}
@@ -428,6 +434,12 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		if (JCBPeople != null) {
 			JCBPeople.setSelectedIndex(0);
 		}
+		
+		amtCash = 0.0;
+		amtCashDollar = 0.0;
+		amtCard = 0.0;
+		amtChek = 0.0;
+		
 		buttonsActions(0.0);
 	}
 
@@ -465,9 +477,12 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		totalCash = amtCash;
 		totalCards = amtCard;
 		totalCheque = amtChek;
+		totalCashDollar = amtCashDollar;
 		totalPay = totalCash + totalCards + totalCheque;
+		totalPayDollar = totalCashDollar;
 		lblTotalPay.setText(Formats.CURRENCY.formatValue(totalPay));
-		buttonsActions(totalPay);
+		lblTotalPayDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(totalPayDollar));
+		buttonsActions(totalPay + totalPayDollar);
 	}
 
 	// Valida si hay ventas o el monto es mayor a cero para poder hacer el
@@ -475,27 +490,28 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	private void buttonsActions(Double total) {
 		try {
 			boolean isDiffZero = total != 0.0;
-			String sUser = "";
-
+			String sUser;
+			boolean isPayReg = false;
 			isDiffZero = isDiffZero && JCBPeople.getSelectedIndex() > 0;
 
 			if (JCBPeople.getSelectedIndex() > 0) {
 				m_People = (TaxCategoryInfo) JCBPeople.getSelectedItem();
-				sUser = m_People.getID().toString();
+				sUser = m_People.getID();
 
-				m_PaymentsToClose = PaymentsModel.loadInstance(m_App);
-				boolean isPayReg = false;
+				m_PaymentsToClose = PaymentsModel.loadInstance(m_App, sUser);
 				// Revisamos si hay ventas para realizar el cuadre de caja
-				if ((m_PaymentsToClose.getPayments() != 0 || m_PaymentsToClose.getSales() != 0)) {
+				if (
+						(m_PaymentsToClose.getPayments() != 0 
+							|| m_PaymentsToClose.getDollarPayments() != 0) 
+								|| ((m_PaymentsToClose.getSales() != 0 ||m_PaymentsToClose.getSalesDollar() != 0))) {
 					lblInfo.setText("");
 					isPayReg = true;
 				} else {
 					lblInfo.setText(AppLocal.getIntString("label.nosales"));
 				}
-
-				btnClearTxt.setEnabled(isDiffZero);
-				btnCloseCash.setEnabled(isDiffZero && isPayReg);
 			}
+			btnClearTxt.setEnabled(isDiffZero);
+			btnCloseCash.setEnabled(isDiffZero && isPayReg);
 		} catch (BasicException ex) {
 			Logger.getLogger(JPanelCloseMoney.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -513,13 +529,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 			}
 		}
 		if(lblTotalCash != null) {
-			try {
-				amtCash = amount;
-				String amt = Formats.CURRENCY.parseValue(amtCash.toString()).toString();
-				lblTotalCash.setText(amt);
-			} catch (BasicException e) {
-			}
-			
+			amtCash = amount;
+			lblTotalCash.setText(Formats.CURRENCY.formatValue(amtCash));
 		}
 	}
 	
@@ -535,12 +546,9 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 			}
 		}
 		if(lblTotalDollarCash!= null) {
-			try {
-				amtCashDollar = amount;
-				String amt = Formats.CURRENCY.parseValue(amtCashDollar.toString()).toString();
-				lblTotalDollarCash.setText(amt);
-			} catch (BasicException e) {
-			}
+			amtCashDollar = amount;
+			String amt = CurrencyChange.FORMAT_DOLLAR.format(amtCashDollar);
+			lblTotalDollarCash.setText(amt);
 			
 		}
 	}
@@ -575,12 +583,10 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	}
 
 	private void addKeyListenertoCombo(final JComboBox comboBox) {
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (comboBox.getSelectedIndex() > 0)
-					btnCalculateActionPerformed(null);
-			}
-		});
+		comboBox.addActionListener((ActionEvent e) -> {
+                    if (comboBox.getSelectedIndex() > 0)
+                        btnCalculateActionPerformed(null);
+                });
 	}
 
 	// Añade acciones a los JTextField creados
@@ -628,23 +634,16 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	}
 
 	private void ListenerCard() {
-		JCBNombreBanco.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				JCBtipoTarjeta.setEnabled(true);
-			}
-		});
-		JCBtipoTarjeta.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				if (!txtCard.getText().equals("")) {
-					cargarAddGrillaCard();
-					btnCalculateActionPerformed(null);
-					txtCard.requestFocus();
-				}
-			}
-
-		});
+		JCBNombreBanco.addActionListener((ActionEvent ae) -> {
+                    JCBtipoTarjeta.setEnabled(true);
+                });
+		JCBtipoTarjeta.addActionListener((ActionEvent ae) -> {
+                    if (!txtCard.getText().equals("")) {
+                        cargarAddGrillaCard();
+                        btnCalculateActionPerformed(null);
+                        txtCard.requestFocus();
+                    }
+                });
 		JCBtipoTarjeta.addFocusListener(new FocusListener() {
 			Double aux = 0.0;
 
@@ -689,23 +688,16 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	}
 
 	private void ListenerCheque() {
-		JCBNombreBancoCheque.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				JCBtipoPersona.setEnabled(true);
-			}
-		});
-		JCBtipoPersona.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				if (!txtCheque.getText().equals("")) {
-					cargarAddGrillacheque();
-					btnCalculateActionPerformed(null);
-					txtCheque.requestFocus();
-				}
-			}
-
-		});
+		JCBNombreBancoCheque.addActionListener((ActionEvent ae) -> {
+                    JCBtipoPersona.setEnabled(true);
+                });
+		JCBtipoPersona.addActionListener((ActionEvent ae) -> {
+                    if (!txtCheque.getText().equals("")) {
+                        cargarAddGrillacheque();
+                        btnCalculateActionPerformed(null);
+                        txtCheque.requestFocus();
+                    }
+                });
 		JCBtipoPersona.addFocusListener(new FocusListener() {
 			Double aux = 0.0;
 
@@ -751,19 +743,22 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	public class ScriptPayments {
 		private final JPanel panel;
 		private final ArrayList vectorAmount;
-
+		private final ThumbNailBuilder tnbbutton;
+		
 		public ScriptPayments(JPanel panel, ArrayList vectorAmount) {
 			this.panel = panel;
 			this.vectorAmount = vectorAmount;
+			tnbbutton = new ThumbNailBuilder(64, 54, "com/openbravo/images/cash.png");
 		}
 
 		public void addButton(String image, double amount) {
-			String monto = amount + " BsF.";
+			String monto = amount + "";
 			final JTextField tf = new JTextField(" ");
 			tf.setName(amount + "");
 			addKeyListenertoTxt(tf, false);
 			JLabel jlabel = new JLabel(monto);
-			ImageIcon imageIcon = new ImageIcon(dlSystem.getResourceAsImage(image));
+			//ImageIcon imageIcon = new ImageIcon(dlSystem.getResourceAsImage(image));
+			ImageIcon imageIcon = new ImageIcon(tnbbutton.getThumbNailText(dlSystem.getResourceAsImage(image), ""));
 			Image img = imageIcon.getImage();
 			Image newimg = img.getScaledInstance(25, 25, java.awt.Image.SCALE_SMOOTH);
 			jlabel.setIcon(new ImageIcon(newimg));
@@ -785,14 +780,11 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	@Override
 	public void activate() throws BasicException {
 		clearTextFields();
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				if(txtFirstTextField != null) {
-					txtFirstTextField.requestFocus();
-				}
-			}
-		});
+		EventQueue.invokeLater(() -> {
+                    if(txtFirstTextField != null) {
+                        txtFirstTextField.requestFocus();
+                    }
+                });
 	}
 
 	@Override
@@ -813,7 +805,15 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 	public Double getTotalCash() {
 		return totalCash;
 	}
+	
+	public Double getTotalCashDollar() {
+		return totalCashDollar;
+	}
 
+	public void setTotalCashDollar(Double totalCashDollar) {
+		this.totalCashDollar = totalCashDollar;
+	}
+	
 	public String getUserID() {
 		return m_People.getID();
 	}
@@ -846,4 +846,11 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 		this.totalPay = totalPay;
 	}
 
+	public Double getTotalPayDollar() {
+		return totalPayDollar;
+	}
+
+	public void setTotalPayDollar(Double totalPayDollar) {
+		this.totalPayDollar = totalPayDollar;
+	}
 }

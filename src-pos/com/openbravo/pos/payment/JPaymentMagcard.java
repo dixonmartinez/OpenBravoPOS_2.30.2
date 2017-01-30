@@ -59,7 +59,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         }
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {   
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {   
         this.transaction = transID;
 
         if (m_cardpanel == null) {

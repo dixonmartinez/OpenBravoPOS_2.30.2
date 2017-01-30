@@ -26,6 +26,7 @@ import com.openbravo.data.loader.*;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.util.StringUtils;
 
 /**
@@ -41,6 +42,9 @@ public class PaymentsModel {
             
     private Integer m_iPayments;
     private Double m_dPaymentsTotal;
+    private Double m_dPaymentsDollarTotal;
+    private Integer m_iDollarPayments;
+    
     //  Dixon Martinez
     private Integer m_ProductSalesRows;
     private Double m_ProductSalesTotalUnits;
@@ -55,10 +59,16 @@ public class PaymentsModel {
     
     private Integer m_iSales;
     private Double m_dSalesBase;
+    private Integer m_iSalesDollar;
+    private Double m_dSalesBaseDollar;
     private Double m_dSalesTaxes;
     private java.util.List<SalesLine> m_lsales;
     
     private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
+
+    private DataLogicSystem m_dlSystem;
+	private Double m_dSalesDollarTaxes;
+    static protected SentenceFind m_activecash;
 
     private PaymentsModel() {
     }    
@@ -71,38 +81,53 @@ public class PaymentsModel {
         p.m_dPaymentsTotal = 0.0;
         p.m_lpayments = new ArrayList<>();
         //  Dixon Martinez
+        p.m_dPaymentsDollarTotal = 0.0;
+        p.m_iDollarPayments = 0;
+        
         p.m_ProductSalesRows = 0;
         p.m_ProductSalesTotalUnits = 0.0;
         p.m_ProductSalesTotal = 0.0;
         p.m_ProductSales = new ArrayList<>();
         //  End Dixon Martinez
         p.m_iSales = null;
+        p.m_iSalesDollar = null;
         p.m_dSalesBase = null;
+        p.m_dSalesBaseDollar = null;
         p.m_dSalesTaxes = null;
+        p.m_dSalesDollarTaxes = null;
         p.m_lsales = new ArrayList<>();
         
         return p;
     }
     
-    public static PaymentsModel loadInstance(AppView app) throws BasicException {
+    public static PaymentsModel loadInstance(final AppView app, String user) throws BasicException {
         
         PaymentsModel p = new PaymentsModel();
         
-        // Propiedades globales
+        Object[] activeCash = (Object []) new StaticSentence(app.getSession()
+            , "SELECT A.MONEY, A.HOSTSEQUENCE, A.DATESTART, A.DATEEND, A.PERSON FROM CLOSEDCASH A INNER JOIN " +
+                "(SELECT PERSON, MAX(HOSTSEQUENCE) HOSTSEQUENCE FROM CLOSEDCASH WHERE PERSON = ? AND DATEEND IS NULL GROUP BY PERSON) B " +
+                "ON A.HOSTSEQUENCE = B.HOSTSEQUENCE AND A.PERSON = B.PERSON "
+            , SerializerWriteString.INSTANCE
+            , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING}))
+            .find(user);
+        String activeCashIndex = activeCash == null ? "0" : activeCash[0].toString();
+
+        // global Properties
         p.m_sHost = app.getProperties().getHost();
-        p.m_iSeq = app.getActiveCashSequence();
+        p.m_iSeq = Integer.parseInt(activeCash == null ? "0" : activeCash[1].toString());
         p.m_dDateStart = app.getActiveCashDateStart();
         p.m_dDateEnd = null;
-        p.m_User = app.getAppUserView().getUser().getName();
         
         // Pagos
-        Object[] valtickets = (Object []) new StaticSentence(app.getSession()
-            , "SELECT COUNT(*), SUM(PAYMENTS.TOTAL) " +
-              "FROM PAYMENTS, RECEIPTS " +
-              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ?"
-            , SerializerWriteString.INSTANCE
+        Object[] valtickets = (Object []) new StaticSentence(app.getSession(),
+              "SELECT COUNT(*), COALESCE(SUM(PAYMENTS.TOTAL), 0) " +
+              "FROM PAYMENTS, RECEIPTS, TICKETS " +
+              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND TICKETS.ID = RECEIPTS.ID AND PAYMENT NOT IN ('cash_dollar') " +
+              "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
+            , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
             , new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE}))
-            .find(app.getActiveCashIndex());
+            .find(activeCashIndex, user);
             
         if (valtickets == null) {
             p.m_iPayments = 0;
@@ -112,14 +137,33 @@ public class PaymentsModel {
             p.m_dPaymentsTotal = (Double) valtickets[1];
         }  
         
+        valtickets = (Object []) new StaticSentence(app.getSession(),
+                "SELECT COUNT(*), CAST(COALESCE(SUM(PAYMENTS.TOTAL),0) + 0.005 AS DECIMAL(15,2)) " +
+                "FROM PAYMENTS, RECEIPTS, TICKETS " +
+                "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND TICKETS.ID = RECEIPTS.ID AND PAYMENT = 'cash_dollar' " +
+                "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
+              , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
+              , new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE}))
+              .find(activeCashIndex, user);
+              
+          if (valtickets == null) {
+              p.m_iDollarPayments = 0;
+              p.m_dPaymentsDollarTotal = 0.0;
+          } else {
+              p.m_iDollarPayments = (Integer) valtickets[0];
+              p.m_dPaymentsDollarTotal = (Double) valtickets[1];
+          }  
+          
+        
         List l = new StaticSentence(app.getSession()            
             , "SELECT PAYMENTS.PAYMENT, SUM(PAYMENTS.TOTAL) " +
-              "FROM PAYMENTS, RECEIPTS " +
-              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ? " +
+              "FROM PAYMENTS, RECEIPTS, TICKETS " +
+              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND TICKETS.ID = RECEIPTS.ID AND PAYMENT NOT IN ('cash_dollar') " +
+              "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
               "GROUP BY PAYMENTS.PAYMENT"
-            , SerializerWriteString.INSTANCE
+            , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
             , new SerializerReadClass(PaymentsModel.PaymentsLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
-            .list(app.getActiveCashIndex()); 
+            .list(activeCashIndex, user); 
         
         if (l == null) {
             p.m_lpayments = new ArrayList();
@@ -129,30 +173,64 @@ public class PaymentsModel {
         
         // Sales
         Object[] recsales = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE) " +
-            "FROM RECEIPTS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.MONEY = ?",
-            SerializerWriteString.INSTANCE,
-            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE}))
-            .find(app.getActiveCashIndex());
+            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), TICKETS.PERSON " +
+            "FROM RECEIPTS, TICKETS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.ID = TICKETS.ID " +
+            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
+            "GROUP BY TICKETS.PERSON, TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 0 ",
+            new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}),
+            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.STRING}))
+            .find(activeCashIndex, user);
         if (recsales == null) {
             p.m_iSales = null;
             p.m_dSalesBase = null;
         } else {
             p.m_iSales = (Integer) recsales[0];
             p.m_dSalesBase = (Double) recsales[1];
-        }             
+        }
         
+        recsales = (Object []) new StaticSentence(app.getSession(),
+            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), TICKETS.PERSON " +
+            "FROM RECEIPTS, TICKETS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.ID = TICKETS.ID " +
+            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
+            "GROUP BY TICKETS.PERSON, TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 1 ",
+            new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}),
+            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.STRING}))
+            .find(activeCashIndex, user);
+        if (recsales == null) {
+            p.m_iSalesDollar = null;
+            p.m_dSalesBaseDollar = null;
+        } else {
+            p.m_iSalesDollar = (Integer) recsales[0];
+            p.m_dSalesBaseDollar = (Double) recsales[1];
+        }
+    
         // Taxes
         Object[] rectaxes = (Object []) new StaticSentence(app.getSession(),
             "SELECT SUM(TAXLINES.AMOUNT) " +
-            "FROM RECEIPTS, TAXLINES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.MONEY = ?"
-            , SerializerWriteString.INSTANCE
+            "FROM RECEIPTS, TAXLINES, TICKETS WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.ID = TICKETS.ID " +
+            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
+            + " GROUP BY TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 0 "
+            , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
             , new SerializerReadBasic(new Datas[] {Datas.DOUBLE}))
-            .find(app.getActiveCashIndex());            
+            .find(activeCashIndex, user);            
         if (rectaxes == null) {
             p.m_dSalesTaxes = null;
         } else {
             p.m_dSalesTaxes = (Double) rectaxes[0];
+        } 
+        
+        rectaxes = (Object []) new StaticSentence(app.getSession(),
+            "SELECT COALESCE(SUM(TAXLINES.AMOUNT), 0) " +
+            "FROM RECEIPTS, TAXLINES, TICKETS WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.ID = TICKETS.ID " +
+            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
+            + " GROUP BY TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 1 "
+            , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
+            , new SerializerReadBasic(new Datas[] {Datas.DOUBLE}))
+            .find(activeCashIndex, user);            
+        if (rectaxes == null) {
+            p.m_dSalesDollarTaxes = null;
+        } else {
+            p.m_dSalesDollarTaxes = (Double) rectaxes[0];
         } 
                 
         List<SalesLine> asales = new StaticSentence(app.getSession(),
@@ -160,9 +238,9 @@ public class PaymentsModel {
                 "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
                 "AND RECEIPTS.MONEY = ?" +
                 "GROUP BY TAXCATEGORIES.NAME"
-                , SerializerWriteString.INSTANCE
+                , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
                 , new SerializerReadClass(PaymentsModel.SalesLine.class))
-                .list(app.getActiveCashIndex());
+                .list(activeCashIndex, user);
         if (asales == null) {
             p.m_lsales = new ArrayList<>();
         } else {
@@ -273,6 +351,14 @@ public class PaymentsModel {
     public double getTotal() {
         return m_dPaymentsTotal;
     }
+    
+    public int getDollarPayments() {
+        return m_iPayments;
+    }
+    public double getPaymentsTotal() {
+        return m_dPaymentsTotal;
+    }
+    
     public String getHost() {
         return m_sHost;
     }
@@ -306,9 +392,36 @@ public class PaymentsModel {
         return Formats.INT.formatValue(m_iPayments);
     }
 
+    public String printDollarPayments() {
+        return Formats.INT.formatValue(m_iDollarPayments);
+    }
+
+    
     public String printPaymentsTotal() {
         return Formats.CURRENCY.formatValue(m_dPaymentsTotal);
-    }     
+    }  
+    
+    public String printPaymentsDollarTotal() {
+        return Formats.CURRENCY.formatValue(m_dPaymentsDollarTotal);
+    }  
+    
+    //Traer el total sin formato 
+    public Double getM_dPaymentsTotal() {
+        return m_dPaymentsTotal;
+    }
+
+    public void setM_dPaymentsTotal(Double m_dPaymentsTotal) {
+        this.m_dPaymentsTotal = m_dPaymentsTotal;
+    }
+    
+    public Double getPaymentsDollarTotal() {
+        return m_dPaymentsDollarTotal;
+    }
+    
+    public void setPaymentsDollarTotal( double m_dPaymentsDollarTotal) {
+        this.m_dPaymentsDollarTotal = m_dPaymentsDollarTotal;
+    }
+    
     
     public List<PaymentsLine> getPaymentLines() {
         return m_lpayments;
@@ -317,20 +430,50 @@ public class PaymentsModel {
     public int getSales() {
         return m_iSales == null ? 0 : m_iSales;
     }    
+    
+    public int getSalesDollar() {
+        return m_iSalesDollar == null ? 0 : m_iSalesDollar;
+    }    
+    
     public String printSales() {
         return Formats.INT.formatValue(m_iSales);
     }
+    
+    public String printSalesDollar() {
+        return Formats.INT.formatValue(m_iSalesDollar);
+    }
+    
     public String printSalesBase() {
         return Formats.CURRENCY.formatValue(m_dSalesBase);
     }     
+    
+    public String printSalesBaseDollar() {
+        return Formats.CURRENCY.formatValue(m_dSalesBaseDollar);
+    }     
+    
     public String printSalesTaxes() {
         return Formats.CURRENCY.formatValue(m_dSalesTaxes);
     }     
+    
+    public String printSalesDollarTaxes() {
+        return Formats.CURRENCY.formatValue(m_dSalesDollarTaxes);
+    }     
+    
     public String printSalesTotal() {            
         return Formats.CURRENCY.formatValue((m_dSalesBase == null || m_dSalesTaxes == null)
                 ? null
                 : m_dSalesBase + m_dSalesTaxes);
-    }     
+    }
+    
+    public String printSalesDollarTotal() {
+        return Formats.CURRENCY.formatValue((m_dSalesBaseDollar == null || m_dSalesDollarTaxes == null)
+                ? null
+                : m_dSalesBaseDollar + m_dSalesDollarTaxes);
+
+        
+    }
+    
+    
     public List<SalesLine> getSaleLines() {
         return m_lsales;
     }
@@ -537,13 +680,4 @@ public class PaymentsModel {
 
     }
     //  End Dixon Martinez
-    
-    //Traer el total sin formato 
-    public Double getM_dPaymentsTotal() {
-        return m_dPaymentsTotal;
-    }
-
-    public void setM_dPaymentsTotal(Double m_dPaymentsTotal) {
-        this.m_dPaymentsTotal = m_dPaymentsTotal;
-    }
 }    

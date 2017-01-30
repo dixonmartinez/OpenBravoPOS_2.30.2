@@ -19,10 +19,18 @@
 
 package com.openbravo.pos.util;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import com.openbravo.format.Formats;
+
 public final class CurrencyChange {
 
     public static double DOLAR_CHANGE = 0.046;
-
+    public static DecimalFormat FORMAT_DOLLAR = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.US);
+    public static DecimalFormat FORMAT_LOCALE = (DecimalFormat) DecimalFormat.getCurrencyInstance(new Locale("es", "VE"));
+    
     private CurrencyChange() {
     }
   
@@ -37,5 +45,15 @@ public final class CurrencyChange {
 		System.out.println(changeEurosToPts(30));
 		System.out.println(changePtsToEuros(changeEurosToPts(30)));
 		System.out.println(changeEurosToPts(1.5));
+	}
+
+	public static void setCurrencyDollar() {
+        DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.US);
+        String strange = "'$' #,##0.00";
+        Formats.setCurrencyPattern(strange, dfs);
+	}
+
+	public static void setCurrencyLocale() {
+		Formats.setCurrencyPattern(null);
 	}
 }

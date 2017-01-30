@@ -112,7 +112,7 @@ public class JRootApp extends JPanel implements AppView {
             return false;
         }
 
-        m_dlSystem = (DataLogicSystem) getBean("com.openbravo.pos.forms.DataLogicSystem");
+        m_dlSystem = (DataLogicSystem) getBean(DataLogicSystem.class.getName());
         
         // Create or upgrade the database if database version is not the expected
         String sDBVersion = readDataBaseVersion();        
@@ -162,30 +162,6 @@ public class JRootApp extends JPanel implements AppView {
         // Cargamos las propiedades de base de datos
         m_propsdb = m_dlSystem.getResourceAsProperties(m_props.getHost() + "/properties");
         
-        // creamos la caja activa si esta no existe      
-        try {
-            String sActiveCashIndex = m_propsdb.getProperty("activecash");
-            Object[] valcash = sActiveCashIndex == null
-                    ? null
-                    : m_dlSystem.findActiveCash(sActiveCashIndex);
-            if (valcash == null || !m_props.getHost().equals(valcash[0])) {
-                // no la encuentro o no es de mi host por tanto creo una...
-                setActiveCash(UUID.randomUUID().toString(), m_dlSystem.getSequenceCash(m_props.getHost()) + 1, new Date(), null);
-
-                // creamos la caja activa      
-                m_dlSystem.execInsertCash(
-                        new Object[] {getActiveCashIndex(), m_props.getHost(), getActiveCashSequence(), getActiveCashDateStart(), getActiveCashDateEnd()});                  
-            } else {
-                setActiveCash(sActiveCashIndex, (Integer) valcash[1], (Date) valcash[2], (Date) valcash[3]);
-            }
-        } catch (BasicException e) {
-            // Casco. Sin caja no hay pos
-            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-            msg.show(this);
-            session.close();
-            return false;
-        }  
-        
         // Leo la localizacion de la caja (Almacen).
         m_sInventoryLocation = m_propsdb.getProperty("location");
         if (m_sInventoryLocation == null) {
@@ -208,10 +184,14 @@ public class JRootApp extends JPanel implements AppView {
             m_propsdb.setProperty("usercard", m_PrefUserCard);
             m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
         }
-        try {
-            m_DollarValue = (Double) Formats.DOUBLE.parseValue(m_propsdb.getProperty("dollar.amount"));
-        } catch (BasicException ex) {
+        m_sDollarValue = m_propsdb.getProperty("dollar.amount");
+        if(m_sDollarValue == null) {
+        	m_sDollarValue = "0.0";
+        	m_propsdb.setProperty("dollar.amount", m_sDollarValue);
+        } else {
+        	m_dDollarValue = Double.parseDouble(m_propsdb.getProperty("dollar.amount")); 
         }
+        
         //  End Dixon Martinez
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
@@ -495,8 +475,10 @@ public class JRootApp extends JPanel implements AppView {
         public void actionPerformed(ActionEvent evt) {
             // String sPassword = m_actionuser.getPassword();
             if (m_actionuser.authenticate()) {
-                // p'adentro directo, no tiene password        
-                openAppView(m_actionuser);         
+                // Direct, has no password
+                if(createCash(m_actionuser.getId().toString())) {
+                    openAppView(m_actionuser);                
+                }
             } else {
                 // comprobemos la clave antes de entrar...
                 String sPassword = JPasswordDialog.showEditPassword(JRootApp.this, 
@@ -505,7 +487,9 @@ public class JRootApp extends JPanel implements AppView {
                         m_actionuser.getIcon());
                 if (sPassword != null) {
                     if (m_actionuser.authenticate(sPassword)) {
-                        openAppView(m_actionuser);                
+                        if(createCash(m_actionuser.getId().toString())) {
+                            openAppView(m_actionuser);                
+                        }
                     } else {
                         MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
                         msg.show(JRootApp.this);                        
@@ -513,6 +497,32 @@ public class JRootApp extends JPanel implements AppView {
                 }   
             }
         }
+    }
+    
+    private boolean createCash(String userID) {
+        // create the box if it is active      
+        try {
+            String sActiveCashIndex = null;
+            Object[] valcash = m_dlSystem.findActiveCash(userID);
+            if (valcash == null || !userID.equals(valcash[4])) {
+                // can not find it or not my host so I think a...
+                setActiveCash(UUID.randomUUID().toString(), m_dlSystem.getSequenceCash(userID) + 1, new Date(), null);
+                // create the active transmission      
+                m_dlSystem.execInsertCash(
+                        new Object[] {getActiveCashIndex(), getActiveCashSequence(), getActiveCashDateStart(), getActiveCashDateEnd(), userID});                  
+            } else {
+                sActiveCashIndex = valcash[0].toString();
+                setActiveCash(sActiveCashIndex, (Integer) valcash[1], (Date) valcash[2], (Date) valcash[3]);
+            }
+        } catch (BasicException e) {
+            // But there is no post box
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+            msg.show(this);
+            session.close();
+            return false;
+        }  
+    
+        return true;
     }
     
     private void showView(String view) {
@@ -782,5 +792,6 @@ public class JRootApp extends JPanel implements AppView {
 
     private String m_PrefCustCard;
     private String m_PrefUserCard;
-    private Double m_DollarValue;
+    private String m_sDollarValue;
+    private Double m_dDollarValue;
 }

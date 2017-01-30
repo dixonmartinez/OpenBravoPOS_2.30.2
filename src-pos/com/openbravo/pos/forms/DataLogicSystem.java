@@ -60,6 +60,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     protected SentenceExec m_insertcash;
     
     private Map<String, byte[]> resourcescache;
+    private PreparedSentence m_peoplebyName;
     
     /** Creates a new instance of DataLogicSystem */
     public DataLogicSystem() {            
@@ -91,6 +92,11 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
             , SerializerWriteString.INSTANCE
             , peopleread);
+        
+        m_peoplebyName = new PreparedSentence(s
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE NAME = ? AND VISIBLE = " + s.DB.TRUE()
+            , SerializerWriteString.INSTANCE
+            , peopleread);
          
         m_resourcebytes = new PreparedSentence(s
             , "SELECT CONTENT FROM RESOURCES WHERE NAME = ?"
@@ -115,27 +121,19 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 ,new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}));
 
         m_sequencecash = new StaticSentence(s,
-                "SELECT MAX(HOSTSEQUENCE) FROM CLOSEDCASH WHERE HOST = ?",
+                "SELECT MAX(HOSTSEQUENCE) FROM CLOSEDCASH WHERE PERSON = ?",
                 SerializerWriteString.INSTANCE,
                 SerializerReadInteger.INSTANCE);
-        
-        /*m_activecash = new StaticSentence(s
-            , "SELECT HOST, HOSTSEQUENCE, DATESTART, DATEEND FROM CLOSEDCASH WHERE MONEY = ?"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP})); 
-        */
         m_activecash = new StaticSentence(s
                 , "SELECT A.MONEY, A.HOSTSEQUENCE, A.DATESTART, A.DATEEND, A.PERSON FROM CLOSEDCASH A INNER JOIN " +
                     "(SELECT PERSON, MAX(HOSTSEQUENCE) HOSTSEQUENCE FROM CLOSEDCASH WHERE PERSON = ? AND DATEEND IS NULL GROUP BY PERSON) B " +
                     "ON A.HOSTSEQUENCE = B.HOSTSEQUENCE AND A.PERSON = B.PERSON "
                 , SerializerWriteString.INSTANCE
                 , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING}));            
-            
-        
         m_insertcash = new StaticSentence(s
-                , "INSERT INTO CLOSEDCASH(MONEY, HOST, HOSTSEQUENCE, DATESTART, DATEEND) " +
+                , "INSERT INTO CLOSEDCASH(MONEY, HOSTSEQUENCE, DATESTART, DATEEND, PERSON) " +
                   "VALUES (?, ?, ?, ?, ?)"
-                , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP}));
+                , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING}));
             
         m_locationfind = new StaticSentence(s
                 , "SELECT NAME FROM LOCATIONS WHERE ID = ?"
@@ -163,7 +161,11 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }      
     public final AppUser findPeopleByCard(String card) throws BasicException {
         return (AppUser) m_peoplebycard.find(card);
-    }   
+    }
+    
+    public final AppUser findPeopleByName(String name) throws BasicException {
+        return (AppUser) m_peoplebyName.find(name);
+    } 
     
     public final String findRolePermissions(String sRole) {
         
@@ -263,14 +265,27 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
         return p;
     }
+    // carga desde un archivo binario desde la base de datos y devuelve un archivo con EXTENSION .properties
+     public final Properties getResourceBDAsProperties(String sName) {
+        
+        Properties p = new Properties();
+        try {
+            byte[] img = getResourceAsBinary(sName);
+            if (img != null) {
+                p.load(new ByteArrayInputStream(img));
+            }
+        } catch (IOException e) {
+        }
+        return p;
+    }
 
-    public final int getSequenceCash(String host) throws BasicException {
-        Integer i = (Integer) m_sequencecash.find(host);
+    public final int getSequenceCash(String person) throws BasicException {
+        Integer i = (Integer) m_sequencecash.find(person);
         return (i == null) ? 1 : i;
     }
 
-    public final Object[] findActiveCash(String sActiveCashIndex) throws BasicException {
-        return (Object[]) m_activecash.find(sActiveCashIndex);
+    public final Object[] findActiveCash(String sUserID) throws BasicException {
+        return (Object[]) m_activecash.find(sUserID);
     }
     
     public final void execInsertCash(Object[] cash) throws BasicException {
