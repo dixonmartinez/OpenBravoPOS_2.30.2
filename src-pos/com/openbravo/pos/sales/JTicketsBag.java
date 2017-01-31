@@ -31,11 +31,15 @@ public abstract class JTicketsBag extends JPanel {
     protected DataLogicSales m_dlSales;
     protected TicketsEditor m_panelticket;    
     
-    /** Creates new form JTicketsBag */
+    /** 
+     * Creates new form JTicketsBag
+     * @param oApp
+     * @param panelticket 
+     */
     public JTicketsBag(AppView oApp, TicketsEditor panelticket) {        
         m_App = oApp;     
         m_panelticket = panelticket;        
-        m_dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
+        m_dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
     }
     
     public abstract void activate();
@@ -47,13 +51,16 @@ public abstract class JTicketsBag extends JPanel {
     
     public static JTicketsBag createTicketsBag(String sName, AppView app, TicketsEditor panelticket) {
         
-        if ("standard".equals(sName)) {
-            // return new JTicketsBagMulti(oApp, user, panelticket);
-            return new JTicketsBagShared(app, panelticket);
-        } else if ("restaurant".equals(sName)) {
-            return new JTicketsBagRestaurantMap(app, panelticket);
-        } else { // "simple"
+        if (null == sName) { // "simple"
             return new JTicketsBagSimple(app, panelticket);
+        } else switch (sName) {
+            case "standard":
+                return new JTicketsBagShared(app, panelticket);
+            case "restaurant":
+                return new JTicketsBagRestaurantMap(app, panelticket);
+            default:
+                // "simple"
+                return new JTicketsBagSimple(app, panelticket);
         }
     }   
 }

@@ -30,8 +30,13 @@ import com.openbravo.format.Formats;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.LocalRes;
 import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.AppProperties;
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.payment.PaymentInfoMagcard;
+import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.StringUtils;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -60,6 +65,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<TicketTaxInfo> taxes;
     private final String m_sResponse;
     private boolean isDollarCash;
+    private int m_OrderNumber;
     
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -76,6 +82,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         payments = new ArrayList<>();
         taxes = null;
         m_sResponse = null;
+        m_OrderNumber = 0;
     }
 
     @Override
@@ -89,6 +96,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(attributes);
         out.writeObject(m_aLines);
         out.writeBoolean(isDollarCash);
+        out.writeInt(m_OrderNumber);
     }
 
     @Override
@@ -106,6 +114,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         isDollarCash = in.readBoolean();
         payments = new ArrayList<>();
         taxes = null;
+        m_OrderNumber = in.readInt();
     }
 
     @Override
@@ -128,6 +137,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         isDollarCash = dr.getBoolean(10);
         payments = new ArrayList<>();
         taxes = null;
+        m_OrderNumber = dr.getInt(11);
     }
 
     public TicketInfo copyTicket() {
@@ -151,6 +161,8 @@ public class TicketInfo implements SerializableRead, Externalizable {
         payments.forEach((p) -> {
             t.payments.add(p.copyPayment());
         });
+        
+        t.m_OrderNumber = m_OrderNumber;
 
         // taxes are not copied, must be calculated again.
 
@@ -473,4 +485,46 @@ public class TicketInfo implements SerializableRead, Externalizable {
     public String printTotalPaid() {
         return Formats.CURRENCY.formatValue(getTotalPaid());
     }
+    
+    public int getOrderNumber() {
+        JOptionPane.showMessageDialog(null, m_OrderNumber);
+        return m_OrderNumber;
+    }
+    
+    private void setNextOrderNumber() {
+        this.m_OrderNumber = m_Prop.getProperty("orderNumber") != null 
+                ? Integer.valueOf(m_Prop.getProperty("orderNumber"))
+                : -1;
+        int m_ResetOrderNumber = m_Prop.getProperty("resetOrderNumber") != null 
+                ? Integer.valueOf(m_Prop.getProperty("resetOrderNumber"))
+                : -1;
+        
+        if(this.m_OrderNumber == m_ResetOrderNumber ) {
+            this.m_OrderNumber = 1;
+        } else {
+            JOptionPane.showMessageDialog(null, m_OrderNumber);
+            this.m_OrderNumber +=  1;
+        }
+        m_Prop.setProperty("orderNumber", String.valueOf(this.m_OrderNumber));
+        dlSystem.setResourceAsProperties(m_AppProp.getHost() + "/properties", m_Prop);
+        
+    }
+    
+    protected DataLogicSystem dlSystem;
+    private Properties m_Prop; 
+    private AppView m_App;
+    private AppProperties m_AppProp;
+    
+    public void setNextOrderNumber(AppView m_App, TicketInfo ticket) {
+        this.m_App = m_App;
+        dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName()); 
+        this.m_AppProp = m_App.getProperties();
+        this.m_Prop = dlSystem.getResourceAsProperties(m_App.getProperties().getHost() + "/properties");
+        setNextOrderNumber();
+    }
+    
+    public String printOrderNumber() {
+        return Formats.INT.formatValue(getOrderNumber());
+    }
+    
 }

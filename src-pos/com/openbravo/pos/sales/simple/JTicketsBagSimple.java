@@ -26,7 +26,11 @@ import com.openbravo.pos.ticket.TicketInfo;
 
 public class JTicketsBagSimple extends JTicketsBag {
     
-    /** Creates new form JTicketsBagSimple */
+    /** 
+     * Creates new form JTicketsBagSimple
+     * @param app
+     * @param panelticket 
+     */
     public JTicketsBagSimple(AppView app, TicketsEditor panelticket) {
         
         super(app, panelticket);
@@ -34,26 +38,31 @@ public class JTicketsBagSimple extends JTicketsBag {
         initComponents();
     }
     
+    @Override
     public void activate() {
         
         m_panelticket.setActiveTicket(new TicketInfo(), null);
         
         // Authorization
-        m_jDelTicket.setEnabled(m_App.getAppUserView().getUser().hasPermission("com.openbravo.pos.sales.JPanelTicketEdits"));
+        m_jDelTicket.setEnabled(m_App.getAppUserView().getUser().hasPermission(JPanelTicketEdits.class.getName()));
 
     }
+    @Override
     public boolean deactivate() {
         m_panelticket.setActiveTicket(null, null);      
         return true;
     }
     
+    @Override
     public void deleteTicket() {           
         m_panelticket.setActiveTicket(new TicketInfo(), null);
     }
     
+    @Override
     protected JComponent getBagComponent() {
         return this;
     }
+    @Override
     protected JComponent getNullComponent() {
         return new JPanel();
     }

@@ -327,6 +327,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     switch (ticket.getTicketType()) {
                         case TicketInfo.RECEIPT_NORMAL:
                             ticket.setTicketId(getNextTicketIndex());
+                            //ticket.setTicketOrder(getNextOrderIndex());
                             break;
                         case TicketInfo.RECEIPT_REFUND:
                             ticket.setTicketId(getNextTicketRefundIndex());
@@ -519,6 +520,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM").find();
     }
 
+    public final Integer getNextOrderIndex() throws BasicException {
+        return (Integer) s.DB.getSequenceSentence(s, "ORDERSEQ").find();
+    }
+
+    
     public final Integer getNextTicketRefundIndex() throws BasicException {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_REFUND").find();
     }

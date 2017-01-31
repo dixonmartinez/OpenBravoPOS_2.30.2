@@ -36,6 +36,8 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         jTxtPrefCustCard.getDocument().addDocumentListener(m_Dirty);
         jTxtPrefUserCard.getDocument().addDocumentListener(m_Dirty);
         jTxtDollarValue.getDocument().addDocumentListener(m_Dirty);
+        jTxtOrderNumber.getDocument().addDocumentListener(m_Dirty);
+        jTxtResetOrderNumber.getDocument().addDocumentListener(m_Dirty);
         
         jCmbWarehouse.addActionListener(m_Dirty);
     }
@@ -60,6 +62,10 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         jTxtPrefUserCard = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jTxtDollarValue = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jTxtOrderNumber = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jTxtResetOrderNumber = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jCmbWarehouse = new javax.swing.JComboBox<>();
@@ -96,6 +102,10 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
 
         jLabel4.setText(bundle.getString("Label.Currency.Dollar")); // NOI18N
 
+        jLabel5.setText(bundle.getString("Label.OrderNumber")); // NOI18N
+
+        jLabel6.setText(bundle.getString("Label.ResetOrderNumber")); // NOI18N
+
         javax.swing.GroupLayout jPanelPreffixLayout = new javax.swing.GroupLayout(jPanelPreffix);
         jPanelPreffix.setLayout(jPanelPreffixLayout);
         jPanelPreffixLayout.setHorizontalGroup(
@@ -106,13 +116,19 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
                     .addGroup(jPanelPreffixLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanelPreffixLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTxtPrefCustCard)
                     .addComponent(jTxtPrefUserCard, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
-                    .addComponent(jTxtDollarValue))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jTxtDollarValue)
+                    .addComponent(jTxtOrderNumber))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTxtResetOrderNumber)
+                .addGap(205, 205, 205))
         );
         jPanelPreffixLayout.setVerticalGroup(
             jPanelPreffixLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,6 +145,13 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
                             .addComponent(jTxtDollarValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)))
                     .addComponent(jTxtPrefUserCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelPreffixLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTxtOrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanelPreffixLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(jTxtResetOrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -215,6 +238,8 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         jTxtPrefCustCard.setText(m_Prop.getProperty("customercard"));
         jTxtPrefUserCard.setText(m_Prop.getProperty("usercard"));
         jTxtDollarValue.setText(m_Prop.getProperty("dollar.amount"));
+        jTxtOrderNumber.setText(m_Prop.getProperty("orderNumber"));
+        jTxtResetOrderNumber.setText(m_Prop.getProperty("resetOrderNumber"));
         
         m_SentListWarehouse = m_DLSales.getLocationsList();
         m_ComBoxModWarehouse = new ComboBoxValModel(m_SentListWarehouse.list());
@@ -267,6 +292,10 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
         m_Prop.setProperty("usercard", jTxtPrefUserCard.getText());
         m_Prop.setProperty("location", m_ComBoxModWarehouse.getSelectedKey().toString()); 
         m_Prop.setProperty("dollar.amount", jTxtDollarValue.getText());
+        
+        m_Prop.setProperty("orderNumber", jTxtOrderNumber.getText());
+        m_Prop.setProperty("resetOrderNumber", jTxtResetOrderNumber.getText());
+        
         m_DLSystem.setResourceAsProperties(m_AppProp.getHost() + "/properties", m_Prop);
         
         JOptionPane.showMessageDialog(
@@ -285,14 +314,18 @@ public class JPanelSettingsDefault extends javax.swing.JPanel implements JPanelV
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanelPreffix;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTxtDollarValue;
+    private javax.swing.JTextField jTxtOrderNumber;
     private javax.swing.JTextField jTxtPrefCustCard;
     private javax.swing.JTextField jTxtPrefUserCard;
+    private javax.swing.JTextField jTxtResetOrderNumber;
     // End of variables declaration//GEN-END:variables
     
     private final DirtyManager m_Dirty = new DirtyManager();

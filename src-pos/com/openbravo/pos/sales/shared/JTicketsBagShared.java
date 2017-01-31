@@ -32,18 +32,23 @@ public class JTicketsBagShared extends JTicketsBag {
     
     private String m_sCurrentTicket = null;
     private DataLogicReceipts dlReceipts = null;
+    private AppView m_App;
     
-    
-    /** Creates new form JTicketsBagShared */
+    /** 
+     * Creates new form JTicketsBagShared
+     * @param app
+     * @param panelticket 
+     */
     public JTicketsBagShared(AppView app, TicketsEditor panelticket) {
         
         super(app, panelticket);
         
-        dlReceipts = (DataLogicReceipts) app.getBean("com.openbravo.pos.sales.DataLogicReceipts");
-        
+        dlReceipts = (DataLogicReceipts) app.getBean(DataLogicReceipts.class.getName());
+        this.m_App = app;
         initComponents();
     }
     
+    @Override
     public void activate() {
         
         // precondicion es que no tenemos ticket activado ni ticket en el panel
@@ -57,6 +62,7 @@ public class JTicketsBagShared extends JTicketsBag {
         // postcondicion es que tenemos ticket activado aqui y ticket en el panel
     }
     
+    @Override
     public boolean deactivate() {
         
         // precondicion es que tenemos ticket activado aqui y ticket en el panel 
@@ -71,15 +77,18 @@ public class JTicketsBagShared extends JTicketsBag {
         // postcondicion es que no tenemos ticket activado ni ticket en el panel
     }
         
+    @Override
     public void deleteTicket() {          
         m_sCurrentTicket = null;
         selectValidTicket();      
     }
     
+    @Override
     protected JComponent getBagComponent() {
         return this;
     }
     
+    @Override
     protected JComponent getNullComponent() {
         return new JPanel();
     }
@@ -115,7 +124,7 @@ public class JTicketsBagShared extends JTicketsBag {
         
         try {
             List<SharedTicketInfo> l = dlReceipts.getSharedTicketList();
-            if (l.size() == 0) {
+            if (l.isEmpty()) {
                 newTicket();
             } else {
                 setActiveTicket(l.get(0).getId());
@@ -130,7 +139,8 @@ public class JTicketsBagShared extends JTicketsBag {
         
         saveCurrentTicket();
 
-        TicketInfo ticket = new TicketInfo();    
+        TicketInfo ticket = new TicketInfo();  
+        ticket.setNextOrderNumber(m_App, ticket);
         m_sCurrentTicket = UUID.randomUUID().toString(); // m_fmtid.format(ticket.getId());
         m_panelticket.setActiveTicket(ticket, null);      
     }
@@ -195,23 +205,20 @@ public class JTicketsBagShared extends JTicketsBag {
     private void m_jListTicketsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jListTicketsActionPerformed
 
         
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                List<SharedTicketInfo> l = dlReceipts.getSharedTicketList();
                 
-                try {
-                    List<SharedTicketInfo> l = dlReceipts.getSharedTicketList();
-
-                    JTicketsBagSharedList listDialog = JTicketsBagSharedList.newJDialog(JTicketsBagShared.this);
-                    String id = listDialog.showTicketsList(l); 
-
-                    if (id != null) {
-                        saveCurrentTicket();
-                        setActiveTicket(id); 
-                    }
-                } catch (BasicException e) {
-                    new MessageInf(e).show(JTicketsBagShared.this);
-                    newTicket();
-                }                    
+                JTicketsBagSharedList listDialog = JTicketsBagSharedList.newJDialog(JTicketsBagShared.this);
+                String id = listDialog.showTicketsList(l);
+                
+                if (id != null) {
+                    saveCurrentTicket();
+                    setActiveTicket(id);
+                }
+            } catch (BasicException e) {
+                new MessageInf(e).show(JTicketsBagShared.this);
+                newTicket();                    
             }
         });
         
