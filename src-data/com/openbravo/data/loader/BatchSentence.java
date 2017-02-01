@@ -130,7 +130,7 @@ public abstract class BatchSentence extends BaseSentence {
         String sLine;
         StringBuffer sSentence = new StringBuffer();
         List aExceptions = new ArrayList();
-
+        List scripts = new ArrayList<>();
         try {
             while ((sLine = br.readLine()) != null) {
                 sLine = sLine.trim();
@@ -162,10 +162,10 @@ public abstract class BatchSentence extends BaseSentence {
                             }
                         }
                         matcher.appendTail(buf); 
-                        
+                        BaseSentence sent = null;
                         // La disparo
                         try {
-                            BaseSentence sent;
+                            
                             if (paramlist.isEmpty()) {
                                 sent = new StaticSentence(m_s, buf.toString());
                                 sent.exec();
@@ -175,6 +175,7 @@ public abstract class BatchSentence extends BaseSentence {
                             }
                         } catch (BasicException eD) {
                             aExceptions.add(eD);
+                            scripts.add(buf.toString());
                         }
                         sSentence = new StringBuffer();
 
@@ -184,7 +185,9 @@ public abstract class BatchSentence extends BaseSentence {
                     }
                 }
             }
-
+            for (Object object : scripts) {
+				System.out.println(object);
+			}
             br.close();
 
         } catch (IOException eIO) {

@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-2017-01-30 18:39:55.626 GMT:
- Booting Derby version The Apache Software Foundation - Apache Derby - 10.4.2.0 - (689064): instance a816c00e-0159-f0ad-2090-000005892de0
-on database directory /home/tt-01/openbravopos-db  
+2017-02-01 00:34:10.657 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.4.2.0 - (689064): instance a816c00e-0159-f717-d008-000004ee71b0
+on database directory /home/dixon/openbravopos-db  
 
 Database Class Loader started - derby.database.classpath=''

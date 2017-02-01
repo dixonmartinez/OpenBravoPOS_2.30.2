@@ -47,6 +47,10 @@
             <text align="left" length="15">Receipt:</text>
             <text>${ticket.printId()}</text>
         </line>
+        <line>
+            <text align="left" length="15">Order #:</text>
+            <text>${ticket.printOrderNumber()}</text>
+        </line>
         #end
         #if (${ticket.ticketType} == 1)
         <line>
@@ -79,6 +83,7 @@
             <text align ="left" length="17">Item</text>
             <text align ="right" length="10">Price</text>
             <text align ="right" length="5"></text>
+	    	<text align ="right" length="5">Disc.</text>
             <text align ="right" length="10">Value</text>
         </line>      
         <line>
@@ -93,6 +98,7 @@
             #end
             <text align ="right" length="10">${ticketline.printPrice()}</text>
             <text align ="right" length="5">x${ticketline.printMultiply()}</text>
+            <text align ="right" length="5">x${ticketline.printDiscountRate()}</text>
             <text align ="right" length="10">${ticketline.printSubValue()}</text>
         </line> 
         #if ($ticketline.productAttSetInstId)

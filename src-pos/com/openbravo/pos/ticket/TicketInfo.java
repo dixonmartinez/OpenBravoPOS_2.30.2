@@ -30,6 +30,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.LocalRes;
 import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppProperties;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSystem;
@@ -137,7 +138,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         isDollarCash = dr.getBoolean(10);
         payments = new ArrayList<>();
         taxes = null;
-        m_OrderNumber = dr.getInt(11);
+        m_OrderNumber = dr.getInt(11) == null ? 0 : dr.getInt(11) ;
     }
 
     public TicketInfo copyTicket() {
@@ -220,7 +221,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         } else {
             name.append(info.toString());
         }
-        
+        name.append(" " + AppLocal.getIntString("Label.OrderNumber") + ":" + getOrderNumber());
         return name.toString();
     }
 
@@ -487,7 +488,6 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
     
     public int getOrderNumber() {
-        JOptionPane.showMessageDialog(null, m_OrderNumber);
         return m_OrderNumber;
     }
     
@@ -502,7 +502,6 @@ public class TicketInfo implements SerializableRead, Externalizable {
         if(this.m_OrderNumber == m_ResetOrderNumber ) {
             this.m_OrderNumber = 1;
         } else {
-            JOptionPane.showMessageDialog(null, m_OrderNumber);
             this.m_OrderNumber +=  1;
         }
         m_Prop.setProperty("orderNumber", String.valueOf(this.m_OrderNumber));

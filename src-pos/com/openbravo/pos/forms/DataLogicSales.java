@@ -287,7 +287,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
         TicketInfo ticket = (TicketInfo) new PreparedSentence(s
-                , "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID WHERE T.TICKETTYPE = ? AND T.TICKETID = ?"
+                , "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER, T.ISDOLLARCASH, T.ORDERNUMBER FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID WHERE T.TICKETTYPE = ? AND T.TICKETID = ?"
                 , SerializerWriteParams.INSTANCE
                 , new SerializerReadClass(TicketInfo.class))
                 .find(new DataParams() { 
@@ -327,7 +327,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     switch (ticket.getTicketType()) {
                         case TicketInfo.RECEIPT_NORMAL:
                             ticket.setTicketId(getNextTicketIndex());
-                            //ticket.setTicketOrder(getNextOrderIndex());
                             break;
                         case TicketInfo.RECEIPT_REFUND:
                             ticket.setTicketId(getNextTicketRefundIndex());
@@ -361,7 +360,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
                 // new ticket
                 new PreparedSentence(s
-                    , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER, ISDOLLARCASH) VALUES (?, ?, ?, ?, ?, ?)"
+                    , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER, ISDOLLARCASH, ORDERNUMBER) VALUES (?, ?, ?, ?, ?, ?,? )"
                     , SerializerWriteParams.INSTANCE
                     ).exec(new DataParams() {
                         @Override
@@ -372,6 +371,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setString(4, ticket.getUser().getId());
                         setString(5, ticket.getCustomerId());
                         setInt(6, ticket.isDollarCash() ? 1 : 0);
+                        setInt(7, ticket.getOrderNumber());
                     }});
 
                 SentenceExec ticketlineinsert = new PreparedSentence(s
@@ -520,11 +520,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM").find();
     }
 
-    public final Integer getNextOrderIndex() throws BasicException {
-        return (Integer) s.DB.getSequenceSentence(s, "ORDERSEQ").find();
-    }
-
-    
     public final Integer getNextTicketRefundIndex() throws BasicException {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_REFUND").find();
     }
