@@ -56,6 +56,8 @@ CP=$CP:$DIRNAME/lib/wsdl4j-1.5.1.jar
 CP=$CP:$DIRNAME/lib/commons-discovery-0.2.jar
 CP=$CP:$DIRNAME/lib/commons-logging-1.0.4.jar
 
+CP=$CP:$DIRNAME/lib/miglayout-4.0.jar
+
 CP=$CP:$DIRNAME/locales/
 CP=$CP:$DIRNAME/reports/
 
