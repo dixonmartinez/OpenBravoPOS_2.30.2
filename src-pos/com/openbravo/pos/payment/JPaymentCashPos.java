@@ -37,6 +37,7 @@ import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
+import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.RoundUtils;
 import com.openbravo.pos.util.ThumbNailBuilder;
 
@@ -56,7 +57,7 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private double m_dPaid;
     private double m_dTotal;
     private boolean isDollarCash;
-
+    
     /**
      * Creates new form JPaymentCash
      *
@@ -123,9 +124,18 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         }
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(m_dPaid));
-        m_jChangeEuros.setText(iCompare > 0
-                ? Formats.CURRENCY.formatValue(m_dPaid - m_dTotal)
-                : null);
+        String amt;
+        if(iCompare > 0) {
+            if(isDollarCash) {
+                double amtDollar = CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal);
+                amt = String.valueOf(amtDollar);
+            }else {
+                amt = Formats.CURRENCY.formatValue(m_dPaid - m_dTotal);
+            }
+        }else {
+            amt = null;
+        }
+        m_jChangeEuros.setText(amt);
         m_notifier.setStatus(m_dPaid > 0.0, iCompare >= 0);
     }
     

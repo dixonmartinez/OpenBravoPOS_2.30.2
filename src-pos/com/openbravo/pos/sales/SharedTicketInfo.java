@@ -39,10 +39,12 @@ public class SharedTicketInfo implements SerializableRead, SerializableWrite {
     public SharedTicketInfo() {
     }
     
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         id = dr.getString(1);
         name = dr.getString(2);
     }   
+    @Override
     public void writeValues(DataWrite dp) throws BasicException {
         dp.setString(1, id);
         dp.setString(2, name);

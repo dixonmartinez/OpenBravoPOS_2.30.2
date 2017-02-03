@@ -24,10 +24,8 @@ import java.awt.ComponentOrientation;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
-import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JFrame;

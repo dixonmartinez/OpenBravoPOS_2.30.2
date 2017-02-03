@@ -92,6 +92,10 @@
             <text length="18">Machine:</text>
             <text>${payments.printHost()}</text>
         </line>    
+         <line>
+            <text length="18">Cashier:</text>
+            <text>${payments.printUser()}</text>
+        </line> 
         <line>
             <text length="18">Sequence:</text>
             <text length="24" align="right">${payments.printSequence()}</text>

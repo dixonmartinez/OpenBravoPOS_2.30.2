@@ -16,7 +16,6 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-
 package com.openbravo.pos.util;
 
 import java.awt.Component;
@@ -29,14 +28,13 @@ import com.openbravo.beans.JPasswordDialog;
 import com.openbravo.pos.forms.AppLocal;
 
 public class Hashcypher {
-    
-    
-    /** Creates a new instance of Hashcypher */
+
+    /**
+     * Creates a new instance of Hashcypher
+     */
     public Hashcypher() {
     }
-    
-    
-    
+
     public static boolean authenticate(String sPassword, String sHashPassword) {
         if (sHashPassword == null || sHashPassword.equals("") || sHashPassword.startsWith("empty:")) {
             return sPassword == null || sPassword.equals("");
@@ -46,11 +44,11 @@ public class Hashcypher {
             return sHashPassword.equals("plain:" + sPassword);
         } else {
             return sHashPassword.equals(sPassword);
-        } 
+        }
     }
-    
+
     public static String hashString(String sPassword) {
-        
+
         if (sPassword == null || sPassword.equals("")) {
             return "empty:";
         } else {
@@ -59,51 +57,48 @@ public class Hashcypher {
                 md.update(sPassword.getBytes("UTF-8"));
                 byte[] res = md.digest();
                 return "sha1:" + StringUtils.byte2hex(res);
-            } catch (NoSuchAlgorithmException e) {
-                return "plain:" + sPassword;
-            } catch (UnsupportedEncodingException e) {
+            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
                 return "plain:" + sPassword;
             }
         }
     }
-    
+
     public static String changePassword(Component parent) {
         // Show the changePassword dialogs but do not check the old password
-        
-        String sPassword = JPasswordDialog.showEditPassword(parent,                 
-                AppLocal.getIntString("Label.Password"), 
+
+        String sPassword = JPasswordDialog.showEditPassword(parent,
+                AppLocal.getIntString("Label.Password"),
                 AppLocal.getIntString("label.passwordnew"),
                 new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
         if (sPassword != null) {
-            String sPassword2 = JPasswordDialog.showEditPassword(parent,                 
-                    AppLocal.getIntString("Label.Password"), 
+            String sPassword2 = JPasswordDialog.showEditPassword(parent,
+                    AppLocal.getIntString("Label.Password"),
                     AppLocal.getIntString("label.passwordrepeat"),
                     new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
             if (sPassword2 != null) {
                 if (sPassword.equals(sPassword2)) {
-                    return  Hashcypher.hashString(sPassword);
+                    return Hashcypher.hashString(sPassword);
                 } else {
                     JOptionPane.showMessageDialog(parent, AppLocal.getIntString("message.changepassworddistinct"), AppLocal.getIntString("message.title"), JOptionPane.WARNING_MESSAGE);
                 }
             }
-        }   
-        
+        }
+
         return null;
     }
 
-    
     public static String changePassword(Component parent, String sOldPassword) {
-        
-        String sPassword = JPasswordDialog.showEditPassword(parent,                 
-                AppLocal.getIntString("Label.Password"), 
+
+        String sPassword = JPasswordDialog.showEditPassword(parent,
+                AppLocal.getIntString("Label.Password"),
                 AppLocal.getIntString("label.passwordold"),
                 new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
         if (sPassword != null) {
             if (Hashcypher.authenticate(sPassword, sOldPassword)) {
-                return changePassword(parent);               
+                return changePassword(parent);
             } else {
                 JOptionPane.showMessageDialog(parent, AppLocal.getIntString("message.BadPassword"), AppLocal.getIntString("message.title"), JOptionPane.WARNING_MESSAGE);
-           }
+            }
         }
         return null;
     }

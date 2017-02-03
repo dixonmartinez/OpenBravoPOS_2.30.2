@@ -221,7 +221,10 @@ public class TicketInfo implements SerializableRead, Externalizable {
         } else {
             name.append(info.toString());
         }
-        name.append(" " + AppLocal.getIntString("Label.OrderNumber") + ":" + getOrderNumber());
+        name.append(" ")
+                .append(AppLocal.getIntString("Label.OrderNumber"))
+                .append(":")
+                .append(getOrderNumber());
         return name.toString();
     }
 

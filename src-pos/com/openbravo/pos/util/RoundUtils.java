@@ -38,6 +38,6 @@ public class RoundUtils {
     }   
     
     public static double getValue(Double value) {
-        return value == null ? 0.0 : value.doubleValue();
+        return value == null ? 0.0 : value;
     }
 }

@@ -152,6 +152,20 @@
             <text align ="right" length="20">${paymentline.printChange()}</text>
         </line>   
         #end
+        #if ($paymentline.name == "cash_dollar")
+        <line></line>     
+        <line>
+            <text bold="true">Cash Dollar</text>
+        </line>  
+        <line>
+            <text align="left" length="22">Tendered:</text>
+            <text align ="right" length="20">${paymentline.printPaid()}</text>
+        </line>  
+        <line>
+            <text align="left" length="22">Change:</text>
+            <text align ="right" length="20">${paymentline.printChange()}</text>
+        </line>   
+        #end
         #if ($paymentline.name == "cashrefund")
         <line></line>     
         <line>

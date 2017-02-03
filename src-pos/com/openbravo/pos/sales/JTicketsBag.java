@@ -19,6 +19,9 @@
 
 package com.openbravo.pos.sales;
 
+import com.openbravo.basic.BasicException;
+import com.openbravo.beans.JPasswordDialog;
+import com.openbravo.data.gui.MessageInf;
 import com.openbravo.pos.sales.simple.JTicketsBagSimple;
 import com.openbravo.pos.forms.*; 
 import javax.swing.*;
@@ -29,7 +32,8 @@ public abstract class JTicketsBag extends JPanel {
     
     protected AppView m_App;     
     protected DataLogicSales m_dlSales;
-    protected TicketsEditor m_panelticket;    
+    protected TicketsEditor m_panelticket;  
+    protected DataLogicSystem dlSystem;
     
     /** 
      * Creates new form JTicketsBag
@@ -40,6 +44,7 @@ public abstract class JTicketsBag extends JPanel {
         m_App = oApp;     
         m_panelticket = panelticket;        
         m_dlSales = (DataLogicSales) m_App.getBean(DataLogicSales.class.getName());
+        dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
     }
     
     public abstract void activate();
@@ -63,4 +68,36 @@ public abstract class JTicketsBag extends JPanel {
                 return new JTicketsBagSimple(app, panelticket);
         }
     }   
+    
+    public boolean verifyAcces() {
+        AppUser appUser = m_App.getAppUserView().getUser();
+        if (appUser.getSupervisor() != null) {
+            try {
+                AppUser appUserSup = dlSystem.findPeopleByID(appUser.getSupervisor());
+                if (appUserSup.authenticate()) {
+                    return true;
+                } else {
+                    // comprobemos la clave antes de entrar...
+                    String sPassword = JPasswordDialog.showEditPassword(this,
+                            AppLocal.getIntString("Label.Password"),
+                            appUserSup.getName(),
+                            appUserSup.getIcon());
+                    if (sPassword != null) {
+                        if (appUserSup.authenticate(sPassword)) {
+                            return true;
+                        } else {
+                            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
+                            msg.show(this);
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            } catch (BasicException e) {
+                return false;
+            }
+        }         
+        return true;
+    }
 }

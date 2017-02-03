@@ -220,9 +220,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // inicializamos
         m_oTicket = null;
         m_oTicketExt = null;
-        
+
         m_Prop = dlSystem.getResourceAsProperties(m_App.getProperties().getHost() + "/properties");
-	CurrencyChange.DOLAR_CHANGE = m_Prop.getProperty("dollar.amount") != null 
+        CurrencyChange.DOLAR_CHANGE = m_Prop.getProperty("dollar.amount") != null
                 ? Double.valueOf(m_Prop.getProperty("dollar.amount"))
                 : 0.0;
         jDollar.setText(String.valueOf(CurrencyChange.DOLAR_CHANGE));
@@ -325,7 +325,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_oTicket.setUser(m_App.getAppUserView().getUser().getUserInfo());
             m_oTicket.setActiveCash(m_App.getActiveCashIndex());
             m_oTicket.setDate(new Date()); // Set the edition date.
-            if(m_oTicket.isDollarCash()) {
+            if (m_oTicket.isDollarCash()) {
                 jRBDolar.setSelected(true);
                 CurrencyChange.setCurrencyDollar();
             } else {
@@ -514,11 +514,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             ProductInfoExt prod;
             try {
                 prod = dlSales.getProductInfo(m_TicketInfo.getLine(i).getProductID());
-                if(jRBDolar.isSelected()) {
+                if (jRBDolar.isSelected()) {
                     CurrencyChange.setCurrencyDollar();
-                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changeEurosToPts(prod.getPriceSell()));
+                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changePesoToDollar(prod.getPriceSell()));
                 } else if (jRBPeso.isSelected()) {
-                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changePtsToEuros(CurrencyChange.changeEurosToPts(prod.getPriceSell())));
+                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changeDollarToPeso(CurrencyChange.changePesoToDollar(prod.getPriceSell())));
                     CurrencyChange.setCurrencyLocale();
                 }
                 paintTicketLine(i, m_TicketInfo.getLine(i));
@@ -924,7 +924,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     // Delete one product of the selected line
                 } else if (cTrans == '-'
                         && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines") && m_ticketsbag.verifyAcces()) {
 
                     int i = m_ticketlines.getSelectedIndex();
                     if (i < 0) {
@@ -1108,11 +1108,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 msg.show(this);
                 resultok = false;
             }
-            
+
             // reset the payment info
             m_oTicket.resetTaxes();
             m_oTicket.resetPayments();
-            
+
         }
         // cancelled the ticket.total script
         // or canceled the payment dialog
@@ -1733,7 +1733,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         bgCurrency.add(jRBPeso);
         jRBPeso.setSelected(true);
-        jRBPeso.setText("Pesos");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
+        jRBPeso.setText(bundle.getString("Label.Currency.Pesos")); // NOI18N
         jRBPeso.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRBPesoActionPerformed(evt);
@@ -1742,7 +1743,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel7.add(jRBPeso);
 
         bgCurrency.add(jRBDolar);
-        jRBDolar.setText("Dolar");
+        jRBDolar.setText(bundle.getString("Label.Currency.Dollar")); // NOI18N
         jRBDolar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRBDolarActionPerformed(evt);
@@ -1911,76 +1912,49 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }//GEN-LAST:event_m_jKeyFactoryKeyTyped
 
     private void m_jDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDeleteActionPerformed
-    	AppUser appUser = m_App.getAppUserView().getUser();
-    	if(appUser.getSupervisor() != null) {
-    		AppUser appUserSup;
-			try {
-				appUserSup = dlSystem.findPeopleByID(appUser.getSupervisor());
-				new AppUserAction(appUserSup).actionPerformed(null);
-			} catch (BasicException e) {
-			}
-    	} else {
-    		int i = m_ticketlines.getSelectedIndex();
+        if (m_ticketsbag.verifyAcces()) {
+            int i = m_ticketlines.getSelectedIndex();
             if (i < 0) {
                 Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
             } else {
                 removeTicketLine(i); // elimino la linea           
             }
-    	}
+        }
+
     }//GEN-LAST:event_m_jDeleteActionPerformed
 
-    // La accion del selector
-    private class AppUserAction extends AbstractAction {
-        
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = -8234794153954606765L;
-		private final AppUser m_actionuser;
-        
-        public AppUserAction(AppUser user) {
-            m_actionuser = user;
-            super.putValue(Action.SMALL_ICON, m_actionuser.getIcon());
-            super.putValue(Action.NAME, m_actionuser.getName());
-        }
-        
-        public AppUser getUser() {
-            return m_actionuser;
-        }
-        @Override
-        public void actionPerformed(ActionEvent evt) {
-        	// String sPassword = m_actionuser.getPassword();
-            if (m_actionuser.authenticate()) {
-                // Direct, has no password
-            	int i = m_ticketlines.getSelectedIndex();
-                if (i < 0) {
-                    Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+    public boolean verifyAcces() {
+        AppUser appUser = m_App.getAppUserView().getUser();
+        if (appUser.getSupervisor() != null) {
+            try {
+                AppUser appUserSup = dlSystem.findPeopleByID(appUser.getSupervisor());
+                if (appUserSup.authenticate()) {
+                    return true;
                 } else {
-                    removeTicketLine(i); // elimino la linea           
-                }
-            } else {
-                // comprobemos la clave antes de entrar...
-                String sPassword = JPasswordDialog.showEditPassword(JPanelTicket.this, 
-                        AppLocal.getIntString("Label.Password"),
-                        m_actionuser.getName(),
-                        m_actionuser.getIcon());
-                if (sPassword != null) {
-                    if (m_actionuser.authenticate(sPassword)) {
-                    	int i = m_ticketlines.getSelectedIndex();
-                        if (i < 0) {
-                            Toolkit.getDefaultToolkit().beep(); // No hay ninguna seleccionada
+                    // comprobemos la clave antes de entrar...
+                    String sPassword = JPasswordDialog.showEditPassword(JPanelTicket.this,
+                            AppLocal.getIntString("Label.Password"),
+                            appUserSup.getName(),
+                            appUserSup.getIcon());
+                    if (sPassword != null) {
+                        if (appUserSup.authenticate(sPassword)) {
+                            return true;
                         } else {
-                            removeTicketLine(i); // elimino la linea           
+                            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
+                            msg.show(JPanelTicket.this);
+                            return false;
                         }
-                    } else {
-                        MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
-                        msg.show(JPanelTicket.this);                        
                     }
-                }   
+                }
+            } catch (BasicException e) {
+                return false;
             }
-        }
+        }         
+        return true;
     }
+
     
+
     private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jUpActionPerformed
         m_ticketlines.selectionUp();
     }//GEN-LAST:event_m_jUpActionPerformed
@@ -2090,12 +2064,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }//GEN-LAST:event_m_jKeypadDiscountRateActionPerformed
 
     private void jRBPesoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRBPesoActionPerformed
-    	m_oTicket.setDollarCash(false);
-    	refreshTicket(m_oTicket);
+        m_oTicket.setDollarCash(false);
+        refreshTicket(m_oTicket);
     }//GEN-LAST:event_jRBPesoActionPerformed
 
     private void jRBDolarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRBDolarActionPerformed
-    	m_oTicket.setDollarCash(true);
+        m_oTicket.setDollarCash(true);
         refreshTicket(m_oTicket);
     }//GEN-LAST:event_jRBDolarActionPerformed
 
@@ -2159,7 +2133,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private boolean typeDiscRate;
     private PropertiesConfig propConfig;
-    private Properties m_Prop; 
+    private Properties m_Prop;
     private double m_DiscRate1;
     private double m_DiscRate2;
     private double m_DiscRate3;

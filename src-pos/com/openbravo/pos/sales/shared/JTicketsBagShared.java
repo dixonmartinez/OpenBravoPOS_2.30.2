@@ -78,7 +78,7 @@ public class JTicketsBagShared extends JTicketsBag {
     }
         
     @Override
-    public void deleteTicket() {          
+    public void deleteTicket() { 
         m_sCurrentTicket = null;
         selectValidTicket();      
     }
@@ -225,12 +225,12 @@ public class JTicketsBagShared extends JTicketsBag {
     }//GEN-LAST:event_m_jListTicketsActionPerformed
 
     private void m_jDelTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDelTicketActionPerformed
-        
         int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannadelete"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (res == JOptionPane.YES_OPTION) {
-            deleteTicket();
-        }
-        
+            if (res == JOptionPane.YES_OPTION) {
+                if(verifyAcces()) {
+                    deleteTicket();
+                }
+            }       
     }//GEN-LAST:event_m_jDelTicketActionPerformed
 
     private void m_jNewTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jNewTicketActionPerformed

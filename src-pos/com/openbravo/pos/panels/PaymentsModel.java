@@ -27,6 +27,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.util.StringUtils;
 
 /**
@@ -104,7 +105,7 @@ public class PaymentsModel {
         
         PaymentsModel p = new PaymentsModel();
         
-        Object[] activeCash = (Object []) new StaticSentence(app.getSession()
+        Object[]  activeCash = (Object []) new StaticSentence(app.getSession()
             , "SELECT A.MONEY, A.HOSTSEQUENCE, A.DATESTART, A.DATEEND, A.PERSON FROM CLOSEDCASH A INNER JOIN " +
                 "(SELECT PERSON, MAX(HOSTSEQUENCE) HOSTSEQUENCE FROM CLOSEDCASH WHERE PERSON = ? AND DATEEND IS NULL GROUP BY PERSON) B " +
                 "ON A.HOSTSEQUENCE = B.HOSTSEQUENCE AND A.PERSON = B.PERSON "
@@ -310,6 +311,10 @@ public class PaymentsModel {
     //  Dixon Martinez
     public double getProductSalesRows() {
         return m_ProductSalesRows;
+    }
+    
+    public void setUserName(TaxCategoryInfo m_People) {
+        this.m_User = m_People.getName();
     }
     
     public String printUser() {

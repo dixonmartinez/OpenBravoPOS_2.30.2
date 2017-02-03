@@ -16,16 +16,12 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-
 package com.openbravo.pos.panels;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -50,10 +46,9 @@ import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.JPanelView;
-import com.openbravo.pos.forms.JRootApp;
+import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
-import com.openbravo.pos.sales.JPanelTicket;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
@@ -64,7 +59,7 @@ import com.openbravo.pos.util.CurrencyChange;
  * @author adrianromero
  */
 public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFactoryApp {
-    
+
     private AppView m_App;
     private DataLogicSystem m_dlSystem;
     private Double amountCash;
@@ -77,47 +72,50 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     private Double insertedCheque;
     private Double insertedCard;
 
-    private PaymentsModel m_PaymentsToClose = null;   
-    
+    private PaymentsModel m_PaymentsToClose = null;
+
     private TicketParser m_TTP;
     //private Double sumAllPay;
-    
+
     private String m_UserID;
-   
+    private TaxCategoryInfo m_People;
+
     JPanelCloseMoney closeMoney;
     private Double totalAmtCash;
     private Double totalAmtDollarCash;
-	private Double differenceCash;
-	private Double differenceDollar;
-	private String sDifferenceDollar;
-    
-    /** Creates new form JPanelCloseMoney */
+    private Double differenceCash;
+    private Double differenceDollar;
+    private String sDifferenceDollar;
+
+    /**
+     * Creates new form JPanelCloseMoney
+     */
     public JPanelCloseMoneyFinal() {
-        
-        initComponents();                   
+
+        initComponents();
     }
-    
+
     @Override
     public void init(AppView app) throws BeanFactoryException {
-        m_App = app;        
+        m_App = app;
         m_dlSystem = (DataLogicSystem) m_App.getBean(DataLogicSystem.class.getName());
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(
-                new Formats[] {new FormatsPayment(), Formats.CURRENCY}));
+                new Formats[]{new FormatsPayment(), Formats.CURRENCY}));
         m_jTicketTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        m_jScrollTableTicket.getVerticalScrollBar().setPreferredSize(new Dimension(25,25));       
-        m_jTicketTable.getTableHeader().setReorderingAllowed(false);         
+        m_jScrollTableTicket.getVerticalScrollBar().setPreferredSize(new Dimension(25, 25));
+        m_jTicketTable.getTableHeader().setReorderingAllowed(false);
         m_jTicketTable.setRowHeight(25);
-        m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);         
-        
+        m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         m_jsalestable.setDefaultRenderer(Object.class, new TableRendererBasic(
-                new Formats[] {Formats.STRING, Formats.CURRENCY, Formats.CURRENCY, Formats.CURRENCY}));
+                new Formats[]{Formats.STRING, Formats.CURRENCY, Formats.CURRENCY, Formats.CURRENCY}));
         m_jsalestable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        m_jScrollSales.getVerticalScrollBar().setPreferredSize(new Dimension(25,25));       
-        m_jsalestable.getTableHeader().setReorderingAllowed(false);         
+        m_jScrollSales.getVerticalScrollBar().setPreferredSize(new Dimension(25, 25));
+        m_jsalestable.getTableHeader().setReorderingAllowed(false);
         m_jsalestable.setRowHeight(25);
-        m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         amountCashDollar = 0.0;
         amountCash = 0.0;
         amountCard = 0.0;
@@ -127,13 +125,12 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         insertedCheque = 0.0;
         insertedCard = 0.0;
     }
-    
-    
+
     @Override
     public Object getBean() {
         return this;
     }
-    
+
     @Override
     public JComponent getComponent() {
         return this;
@@ -142,29 +139,30 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.CloseTPV");
-    }    
-    
+    }
+
     @Override
     public void activate() throws BasicException {
         loadData();
         closeCash();
-    }   
-    
+    }
+
     @Override
     public boolean deactivate() {
         // I must be allowed to cancel the deactivate   
         return true;
-    }  
-    
+    }
+
     private void loadData() throws BasicException {
         closeMoney = (JPanelCloseMoney) m_App.getBean(JPanelCloseMoney.class.getName());
-        insertedCash =closeMoney.getTotalCash();
-        insertedCheque =closeMoney.getTotalCheque();
-        insertedCard =closeMoney.getTotalCards();
+        insertedCash = closeMoney.getTotalCash();
+        insertedCheque = closeMoney.getTotalCheque();
+        insertedCard = closeMoney.getTotalCards();
         totalAmtCash = closeMoney.getTotalPay();
         totalAmtDollarCash = closeMoney.getTotalCashDollar();
         insertedCashDollar = closeMoney.getTotalCashDollar();
         m_UserID = closeMoney.getUserID();
+        m_People = closeMoney.getPeople();
         
         // Reset
         m_jSequence.setText(null);
@@ -182,23 +180,22 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         m_jSalesSubtotal.setText(null);
         m_jSalesTaxes.setText(null);
         m_jSalesTotal.setText(null);
-        
+
         m_jTicketTable.setModel(new DefaultTableModel());
         m_jsalestable.setModel(new DefaultTableModel());
-            
+
         // LoadData
         m_PaymentsToClose = PaymentsModel.loadInstance(m_App, m_UserID);
-        
+        m_PaymentsToClose.setUserName(m_People);
         asignarMontos(m_PaymentsToClose);
 
         // Populate Data
         m_jSequence.setText(m_PaymentsToClose.printSequence());
         m_jMinDate.setText(m_PaymentsToClose.printDateStart());
         m_jMaxDate.setText(m_PaymentsToClose.printDateEnd());
-        
-        if (
-    			(m_PaymentsToClose.getPayments() != 0 || m_PaymentsToClose.getDollarPayments() != 0) 
-    				|| ( m_PaymentsToClose.getSales() != 0 || m_PaymentsToClose.getSalesDollar() != 0)) {
+
+        if ((m_PaymentsToClose.getPayments() != 0 || m_PaymentsToClose.getDollarPayments() != 0)
+                || (m_PaymentsToClose.getSales() != 0 || m_PaymentsToClose.getSalesDollar() != 0)) {
 
             m_jPrintCash.setEnabled(true);
 
@@ -206,54 +203,53 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             m_jCountDollar.setText(m_PaymentsToClose.printDollarPayments());
             m_jRegister.setText(Formats.CURRENCY.formatValue(totalAmtCash));
             m_jRegisterDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(totalAmtDollarCash));
-            m_jCash.setText(m_PaymentsToClose.printPaymentsTotal()); 
+            m_jCash.setText(m_PaymentsToClose.printPaymentsTotal());
             m_jCashDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(m_PaymentsToClose.getPaymentsDollarTotal()));
             differenceCash = totalAmtCash - m_PaymentsToClose.getPaymentsTotal(); // .subtract(BigDecimal.valueOf());
             m_jDifference.setText(Formats.CURRENCY.formatValue(differenceCash));
-            if(differenceCash != 0.0) {
-            	m_jDifference.setForeground(Color.red);
+            if (differenceCash != 0.0) {
+                m_jDifference.setForeground(Color.red);
             }
-            
+
             sDifferenceDollar = Formats.DOUBLE.formatValue(totalAmtDollarCash - m_PaymentsToClose.getPaymentsDollarTotal());
             differenceDollar = (Double) Formats.DOUBLE.parseValue(sDifferenceDollar);
             m_jDifferenceDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(differenceDollar));
-            if(differenceDollar != 0.0) {
+            if (differenceDollar != 0.0) {
                 m_jDifferenceDollar.setForeground(Color.red);
             }
-            
+
             m_jSales.setText(m_PaymentsToClose.printSales());
             m_jSalesSubtotal.setText(m_PaymentsToClose.printSalesBase());
             m_jSalesTaxes.setText(m_PaymentsToClose.printSalesTaxes());
             m_jSalesTotal.setText(m_PaymentsToClose.printSalesTotal());
-            
+
             m_jSalesDollar.setText(m_PaymentsToClose.printSalesDollar());
             m_jSalesSubtotalDollar.setText(m_PaymentsToClose.printSalesBaseDollar());
             m_jSalesTaxesDollar.setText(m_PaymentsToClose.printSalesDollarTaxes());
             m_jSalesTotalDollar.setText(m_PaymentsToClose.printSalesDollarTotal());
-        }          
-        
+        }
+
         m_jTicketTable.setModel(m_PaymentsToClose.getPaymentsModel());
-                
+
         TableColumnModel jColumns = m_jTicketTable.getColumnModel();
         jColumns.getColumn(0).setPreferredWidth(200);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
-        
+
         m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
-        
+
         jColumns = m_jsalestable.getColumnModel();
         jColumns.getColumn(0).setPreferredWidth(200);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
-                
-       
+
         compararValores();
-    }   
-    
+    }
+
     private void printPayments(String report) {
-        
+
         String sresource = m_dlSystem.getResourceAsXML(report);
         if (sresource == null) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"));
@@ -272,104 +268,112 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 
     private void asignarMontos(PaymentsModel m_PaymentsToClose) {
         PaymentsModel.PaymentsLine payLine;
-         for (int i = 0; i < m_PaymentsToClose.getPaymentLines().size(); i++) {
-              payLine= m_PaymentsToClose.getPaymentLines().get(i);
-                 if(payLine.getType().toUpperCase().equals("CASH")) {
-                	 amountCash = payLine.getValue();
-                 }
-                 if(payLine.getType().toUpperCase().contains("MAGCARD")){
-                	 amountCard = payLine.getValue();
-                 }
-                 if(payLine.getType().toUpperCase().contains("CHEQUE")) {
-                	 amountCheque = payLine.getValue();      
-                 }
-                 if(payLine.getType().toUpperCase().equals("CASH_DOLLAR")) {
-                 	amountCashDollar = payLine.getValue();            
-                 }
+        for (int i = 0; i < m_PaymentsToClose.getPaymentLines().size(); i++) {
+            payLine = m_PaymentsToClose.getPaymentLines().get(i);
+            if (payLine.getType().toUpperCase().equals("CASH")) {
+                amountCash = payLine.getValue();
+            }
+            if (payLine.getType().toUpperCase().contains("MAGCARD")) {
+                amountCard = payLine.getValue();
+            }
+            if (payLine.getType().toUpperCase().contains("CHEQUE")) {
+                amountCheque = payLine.getValue();
+            }
+            if (payLine.getType().toUpperCase().equals("CASH_DOLLAR")) {
+                amountCashDollar = payLine.getValue();
+            }
         }
     }
 
     private void compararValores() {
-        if (amountCard == null)
+        if (amountCard == null) {
             amountCard = 0.0;
-        if(amountCash == null)
+        }
+        if (amountCash == null) {
             amountCash = 0.0;
-        if(amountCashDollar == null)
+        }
+        if (amountCashDollar == null) {
             amountCashDollar = 0.0;
-        if(amountCheque == null)
+        }
+        if (amountCheque == null) {
             amountCheque = 0.0;
-        
+        }
+
         DefaultTableModel modeltbl = new ModelDifference();
         modeltbl.addColumn(AppLocal.getIntString("Label.PaymentType"));
         modeltbl.addColumn(AppLocal.getIntString("Label.MoneyInBox"));
         modeltbl.addColumn(AppLocal.getIntString("Label.MoneyRegistered"));
-        modeltbl.addColumn(AppLocal.getIntString("label.difference")); 
+        modeltbl.addColumn(AppLocal.getIntString("label.difference"));
 
         tblDifference.setModel(modeltbl);
-        
-        if(insertedCard.compareTo(amountCard) != 0){ 
-             Vector vectorTbl = new Vector();
-             vectorTbl.add(AppLocal.getIntString("tab.magcard"));
-             vectorTbl.add(Formats.CURRENCY.formatValue(amountCard));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard - amountCard));
-             modeltbl.addRow(vectorTbl);
+
+        if (insertedCard.compareTo(amountCard) != 0) {
+            Vector vectorTbl = new Vector();
+            vectorTbl.add(AppLocal.getIntString("tab.magcard"));
+            vectorTbl.add(Formats.CURRENCY.formatValue(amountCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard - amountCard));
+            modeltbl.addRow(vectorTbl);
         }
-        if(insertedCash.compareTo(amountCash) !=0 ){
-             Vector vectorTbl = new Vector();
-             vectorTbl.add(AppLocal.getIntString("tab.cash"));
-             vectorTbl.add(Formats.CURRENCY.formatValue(amountCash));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash - amountCash));
-             modeltbl.addRow(vectorTbl);
+        if (insertedCash.compareTo(amountCash) != 0) {
+            Vector vectorTbl = new Vector();
+            vectorTbl.add(AppLocal.getIntString("tab.cash"));
+            vectorTbl.add(Formats.CURRENCY.formatValue(amountCash));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCash - amountCash));
+            modeltbl.addRow(vectorTbl);
         }
-        
-        if(insertedCashDollar.compareTo(amountCashDollar) !=0 ){
+
+        if (insertedCashDollar.compareTo(amountCashDollar) != 0) {
             Vector vectorTbl = new Vector();
             vectorTbl.add(AppLocal.getIntString("tab.dollar"));
             vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(amountCashDollar));
             vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(insertedCashDollar));
             vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(insertedCashDollar - amountCashDollar));
             modeltbl.addRow(vectorTbl);
-       }
+        }
 
-        if(insertedCheque.compareTo(amountCheque) !=0){
-             Vector vectorTbl = new Vector();
-             vectorTbl.add(AppLocal.getIntString("tab.cheque"));
-             vectorTbl.add(Formats.CURRENCY.formatValue(amountCheque));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque));
-             vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque - amountCheque));
-             modeltbl.addRow(vectorTbl);
+        if (insertedCheque.compareTo(amountCheque) != 0) {
+            Vector vectorTbl = new Vector();
+            vectorTbl.add(AppLocal.getIntString("tab.cheque"));
+            vectorTbl.add(Formats.CURRENCY.formatValue(amountCheque));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCheque - amountCheque));
+            modeltbl.addRow(vectorTbl);
         }
 
     }
-    
-   public class ModelDifference extends DefaultTableModel{
+
+    public class ModelDifference extends DefaultTableModel {
+
         @Override
-        public boolean isCellEditable (int row, int column){
-               return false;
+        public boolean isCellEditable(int row, int column) {
+            return false;
         }
-   }
+    }
 
     private class FormatsPayment extends Formats {
+
         @Override
         protected String formatValueInt(Object value) {
             return AppLocal.getIntString("transpayment." + (String) value);
-        }   
+        }
+
         @Override
         protected Object parseValueInt(String value) throws ParseException {
             return value;
         }
+
         @Override
         public int getAlignment() {
             return javax.swing.SwingConstants.LEFT;
-        }         
-    }    
-   
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -762,80 +766,81 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
-    
-    public void closeCash(){
-            Date dNow = new Date();
-            String userID = null;            
-            try {               
-                // Close the case if pending closing.
-                Object[] valcash = m_dlSystem.findActiveCash(m_UserID);
-                userID = valcash[4].toString();
-                if (m_App.getActiveCashDateEnd() == null) {
-                    new StaticSentence(m_App.getSession()
-                        , "UPDATE CLOSEDCASH SET DATEEND = ?, DIFFERENCECASH = ?, DIFFERENCEDOLLAR = ? WHERE PERSON = ? AND MONEY = ?"
-                        , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING}))
-                        .exec(new Object[] {dNow, differenceCash, differenceDollar, userID, valcash[0].toString()}); 
-                    saveDetails(valcash[0].toString(), "cash", insertedCash);
-                    saveDetails(valcash[0].toString(), "cash_dollar", insertedCashDollar);
-                    saveDetails(valcash[0].toString(), "cheque", insertedCheque);
-                    saveDetails(valcash[0].toString(), "magcard", insertedCard);
-                }
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-                msg.show(this);
-            }
-            
-            try {
-                // Create a new box       
-                m_App.setActiveCash(UUID.randomUUID().toString(), m_App.getActiveCashSequence() + 1, dNow, null);
 
-                // create the active transmission
-                if (m_UserID == null ? userID == null : m_UserID.equals(userID))
-                    m_dlSystem.execInsertCash(
-                            new Object[] {m_App.getActiveCashIndex(), 
-                            		m_App.getActiveCashSequence(), 
-                            		m_App.getActiveCashDateStart(), 
-                            		m_App.getActiveCashDateEnd(), 
-                            		m_UserID});
-               
-                // we end date
-                m_PaymentsToClose.setDateEnd(dNow);
-                
-                m_jMaxDate.setText(Formats.TIMESTAMP.formatValue(dNow)/*Formats.DATE.formatValue(m_PaymentsToClose.getDateEnd())*/);
-                
-                // print report
-                printPayments("Printer.CloseCash");
-                
-                // We show the message
-                JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.closecashok"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-                msg.show(this);
-            }
-    }
-    
-    public void saveDetails(String money, String type, Double amount){
+    public void closeCash() {
+        Date dNow = new Date();
+        String userID = null;
         try {
-            new StaticSentence(m_App.getSession()
-                , "INSERT INTO CLOSEDCASHLINES(id, money, payment, total, pointofsales, cardtype) " +
-                "VALUES (?, ?, ?, ?, ?, ?)"
-                , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING, Datas.STRING}))
-                .exec(new Object[] {UUID.randomUUID().toString(), money, type, amount, "", ""}); 
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-                msg.show(this);
+            // Close the case if pending closing.
+            Object[] valcash = m_dlSystem.findActiveCash(m_UserID);
+            userID = valcash[4].toString();
+            if (m_App.getActiveCashDateEnd() == null) {
+                new StaticSentence(m_App.getSession(),
+                         "UPDATE CLOSEDCASH SET DATEEND = ?, DIFFERENCECASH = ?, DIFFERENCEDOLLAR = ? WHERE PERSON = ? AND MONEY = ?",
+                         new SerializerWriteBasic(new Datas[]{Datas.TIMESTAMP, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING}))
+                        .exec(new Object[]{dNow, differenceCash, differenceDollar, userID, valcash[0].toString()});
+                saveDetails(valcash[0].toString(), "cash", insertedCash);
+                saveDetails(valcash[0].toString(), "cash_dollar", insertedCashDollar);
+                saveDetails(valcash[0].toString(), "cheque", insertedCheque);
+                saveDetails(valcash[0].toString(), "magcard", insertedCard);
             }
-        
+        } catch (BasicException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+            msg.show(this);
+        }
+
+        try {
+            // Create a new box       
+            m_App.setActiveCash(UUID.randomUUID().toString(), m_App.getActiveCashSequence() + 1, dNow, null);
+
+            // create the active transmission
+            if (m_UserID == null ? userID == null : m_UserID.equals(userID)) {
+                m_dlSystem.execInsertCash(
+                        new Object[]{m_App.getActiveCashIndex(),
+                            m_App.getActiveCashSequence(),
+                            m_App.getActiveCashDateStart(),
+                            m_App.getActiveCashDateEnd(),
+                            m_UserID});
+            }
+
+            // we end date
+            m_PaymentsToClose.setDateEnd(dNow);
+
+            m_jMaxDate.setText(Formats.TIMESTAMP.formatValue(dNow)/*Formats.DATE.formatValue(m_PaymentsToClose.getDateEnd())*/);
+
+            // print report
+            printPayments("Printer.CloseCash");
+
+            // We show the message
+            JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.closecashok"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);
+        } catch (BasicException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+            msg.show(this);
+        }
     }
-    
-    
+
+    public void saveDetails(String money, String type, Double amount) {
+        try {
+            new StaticSentence(m_App.getSession(),
+                     "INSERT INTO CLOSEDCASHLINES(id, money, payment, total, pointofsales, cardtype) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)",
+                     new SerializerWriteBasic(new Datas[]{Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING, Datas.STRING}))
+                    .exec(new Object[]{UUID.randomUUID().toString(), money, type, amount, "", ""});
+        } catch (BasicException e) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+            msg.show(this);
+        }
+
+    }
+
+
 private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
     // print report
     printPayments("Printer.CloseCash");
-    
+
 }//GEN-LAST:event_m_jPrintCashActionPerformed
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -880,5 +885,5 @@ private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JTable m_jsalestable;
     private javax.swing.JTable tblDifference;
     // End of variables declaration//GEN-END:variables
-    
+
 }
