@@ -37,7 +37,7 @@ import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.customers.JCustomerFinder;
 import com.openbravo.pos.customers.CustomerInfo;
 
-public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements EditorRecord {
+public final class JTicketsBagRestaurantRes extends javax.swing.JPanel implements EditorRecord {
 
     private JTicketsBagRestaurantMap m_restaurantmap;
     
@@ -59,12 +59,16 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
 
     // private Date dinitdate = new GregorianCalendar(1900, 0, 0, 12, 0).getTime();
     
-    /** Creates new form JPanelReservations */
+    /** 
+     * Creates new form JPanelReservations 
+     * @param oApp
+     * @param restaurantmap 
+     */
     public JTicketsBagRestaurantRes(AppView oApp, JTicketsBagRestaurantMap restaurantmap) {
         
         m_restaurantmap = restaurantmap;
         
-        dlCustomers = (DataLogicCustomers) oApp.getBean("com.openbravo.pos.customers.DataLogicCustomers");
+        dlCustomers = (DataLogicCustomers) oApp.getBean(DataLogicCustomers.class.getName());
 
         m_dcurrentday = null;
         
@@ -89,13 +93,11 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         m_Dirty = new DirtyManager();
         m_timereservation.addPropertyChangeListener("Date", m_Dirty);
         txtCustomer.addPropertyChangeListener("Text", m_Dirty);
-        txtCustomer.addPropertyChangeListener("Text", new PropertyChangeListener(){
-            public void propertyChange(PropertyChangeEvent evt) {
-                customer = new CustomerInfo(null);
-                customer.setTaxid(null);
-                customer.setSearchkey(null);
-                customer.setName(txtCustomer.getText());            
-            }
+        txtCustomer.addPropertyChangeListener("Text", (PropertyChangeEvent evt) -> {
+            customer = new CustomerInfo(null);
+            customer.setTaxid(null);
+            customer.setSearchkey(null);
+            customer.setName(txtCustomer.getText());
         });
         m_jtxtChairs.addPropertyChangeListener("Text", m_Dirty);
         m_jtxtDescription.addPropertyChangeListener("Text", m_Dirty);
@@ -119,6 +121,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     }
     
     private class MyDateFilter implements EditorCreator {
+        @Override
         public Object createValue() throws BasicException {           
             return new Object[] {m_dcurrentday, new Date(m_dcurrentday.getTime() + 3600000L)};   // m_dcurrentday ya no tiene ni minutos, ni segundos.             
         }
@@ -128,6 +131,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         reload(DateUtils.getTodayHours(new Date()));
     }
     
+    @Override
     public void refresh() {
     }  
     
@@ -141,6 +145,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         }
     }
     
+    @Override
     public void writeValueEOF() {
         m_sID = null;
         m_dCreated = null;
@@ -157,6 +162,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         
         m_jbtnReceive.setEnabled(false);
     }    
+    @Override
     public void writeValueInsert() {
         m_sID = null;
         m_dCreated = null;
@@ -176,6 +182,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         
         txtCustomer.activate();
     }
+    @Override
     public void writeValueDelete(Object value) {
         Object[] res = (Object[]) value;
         m_sID = res[0];
@@ -187,8 +194,8 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         c.setSearchkey((String) res[5]);
         c.setName((String) res[6]);
         assignCustomer(c);        
-        m_jtxtChairs.setValueInteger(((Integer)res[7]).intValue());
-        m_bReceived = ((Boolean)res[8]).booleanValue();
+        m_jtxtChairs.setValueInteger(((Integer)res[7]));
+        m_bReceived = ((Boolean)res[8]);
         m_jtxtDescription.setText(Formats.STRING.formatValue(res[9]));
         m_timereservation.setEnabled(false);
         txtCustomer.setEnabled(false);
@@ -198,6 +205,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         
         m_jbtnReceive.setEnabled(false); 
     }  
+    @Override
     public void writeValueEdit(Object value) {
         Object[] res = (Object[]) value;
         m_sID = res[0];
@@ -209,8 +217,8 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         c.setSearchkey((String) res[5]);
         c.setName((String) res[6]);
         assignCustomer(c);  
-        m_jtxtChairs.setValueInteger(((Integer)res[7]).intValue());
-        m_bReceived = ((Boolean)res[8]).booleanValue();
+        m_jtxtChairs.setValueInteger(((Integer)res[7]));
+        m_bReceived = ((Boolean)res[8]);
         m_jtxtDescription.setText(Formats.STRING.formatValue(res[9]));
         m_timereservation.setEnabled(true);
         txtCustomer.setEnabled(true);
@@ -223,6 +231,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         txtCustomer.activate();
     }    
 
+    @Override
     public Object createValue() throws BasicException {
         
         Object[] res = new Object[10];
@@ -234,18 +243,20 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         res[4] = customer.getTaxid();
         res[5] = customer.getSearchkey();
         res[6] = customer.getName();
-        res[7] = new Integer(m_jtxtChairs.getValueInteger());
-        res[8] = new Boolean(m_bReceived);
+        res[7] = m_jtxtChairs.getValueInteger();
+        res[8] = m_bReceived;
         res[9] = m_jtxtDescription.getText();
 
         return res;
     }    
     
+    @Override
     public Component getComponent() {
         return this;
     }  
     
     private static class CompareReservations implements Comparator {
+        @Override
         public int compare(Object o1, Object o2) {
             Object[] a1 = (Object[]) o1;
             Object[] a2 = (Object[]) o2;
@@ -296,6 +307,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     }
     
     private class DateChangeCalendarListener implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (!m_bpaintlock) {
                 reload(DateUtils.getTodayHours(DateUtils.getDate(m_datepanel.getDate(), m_timepanel.getDate())));
@@ -304,6 +316,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     }
         
     private class DateChangeTimeListener implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (!m_bpaintlock) {
                 reload(DateUtils.getTodayHours(DateUtils.getDate(m_datepanel.getDate(), m_timepanel.getDate())));

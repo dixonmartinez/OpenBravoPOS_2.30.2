@@ -45,7 +45,13 @@ public class SimpleReceipt extends javax.swing.JPanel {
     private TicketInfo ticket;
     private Object ticketext;
     
-    /** Creates new form SimpleReceipt */
+    /** 
+     * Creates new form SimpleReceipt
+     * @param ticketline
+     * @param dlSales
+     * @param dlCustomers
+     * @param taxeslogic 
+     */
     public SimpleReceipt(String ticketline, DataLogicSales dlSales, DataLogicCustomers dlCustomers, TaxesLogic taxeslogic) {        
         
         initComponents();
@@ -125,7 +131,7 @@ public class SimpleReceipt extends javax.swing.JPanel {
        
         if (i >= 0) {
 
-            List<TicketLineInfo> l = new ArrayList<TicketLineInfo>();
+            List<TicketLineInfo> l = new ArrayList<>();
             
             TicketLineInfo line = ticket.getLine(i);
             l.add(line);
@@ -157,7 +163,7 @@ public class SimpleReceipt extends javax.swing.JPanel {
             
             if (line.getMultiply() >= 1.0) {
                 
-                List<TicketLineInfo> l = new ArrayList<TicketLineInfo>();
+                List<TicketLineInfo> l = new ArrayList<>();
                 
                 if (line.getMultiply() > 1.0) {
                     line.setMultiply(line.getMultiply() -1.0);

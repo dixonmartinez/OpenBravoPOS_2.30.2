@@ -294,7 +294,8 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
     @Override
     public void deleteTicket() {
         
-        if (m_PlaceCurrent != null) {
+        if (m_PlaceCurrent != null
+                && verifyAcces()) {
             
             String id = m_PlaceCurrent.getId();
             try {

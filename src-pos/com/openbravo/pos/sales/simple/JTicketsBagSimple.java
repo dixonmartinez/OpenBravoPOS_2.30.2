@@ -97,7 +97,9 @@ public class JTicketsBagSimple extends JTicketsBag {
         
         int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannadelete"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (res == JOptionPane.YES_OPTION) {
-            deleteTicket();
+            if(verifyAcces()) {
+                deleteTicket();
+            }
         }
         
     }//GEN-LAST:event_m_jDelTicketActionPerformed
