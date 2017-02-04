@@ -29,6 +29,7 @@ public class SerializerWriteString implements SerializerWrite<String> {
     private SerializerWriteString() {
     }
     
+    @Override
     public void writeValues(DataWrite dp, String obj) throws BasicException {
         Datas.STRING.setValue(dp, 1, obj);
     }  
