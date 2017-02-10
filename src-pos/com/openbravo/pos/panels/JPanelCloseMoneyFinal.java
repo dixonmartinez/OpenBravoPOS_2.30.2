@@ -26,7 +26,6 @@ import java.util.UUID;
 import java.util.Vector;
 
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -53,6 +52,7 @@ import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.util.CurrencyChange;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -870,6 +870,9 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
     // print report
     printPayments("Printer.CloseCash");
+    if(closeMoney.getPrintSalesReport()) {
+          printPayments("Printer.CloseCashDetailSales");
+      }
 
 }//GEN-LAST:event_m_jPrintCashActionPerformed
 

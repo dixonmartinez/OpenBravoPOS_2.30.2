@@ -30,7 +30,6 @@ import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.StringUtils;
-import javax.swing.JOptionPane;
 
 /**
  *

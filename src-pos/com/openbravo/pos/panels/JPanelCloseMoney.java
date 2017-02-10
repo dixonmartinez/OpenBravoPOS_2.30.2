@@ -38,7 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -67,6 +66,7 @@ import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.ThumbNailBuilder;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -312,7 +312,6 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
     private boolean b_PrintSalesReport = false;
     
     public boolean getPrintSalesReport() {
-        JOptionPane.showMessageDialog(null, b_PrintSalesReport);
         return b_PrintSalesReport;
     }
     
@@ -322,7 +321,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         printSalesReport.addActionListener((ActionEvent e) -> {
             b_PrintSalesReport =  printSalesReport.isSelected();
         });
-        btnCloseCash = new JButton(AppLocal.getIntString("Close.Cash"));
+        btnCloseCash = new JButton(AppLocal.getIntString("Menu.CloseTPV"));
         btnCloseCash.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/close_cash.png")));
         btnCloseCash.setName("btnCloseCash");
         btnCloseCash.addActionListener(this::btnCloseCashActionPerformed);
@@ -360,7 +359,6 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         lblInfo.setForeground(Color.RED);
 
         JLabel lblTotal = new JLabel(AppLocal.getIntString(AppLocal.getIntString("label.money")));
-//		AppLocal.getIntString("Label.Cash.Dollar")
         JPanel pnlCloseCash = new JPanel();
         pnlCloseCash.setLayout(new MigLayout());
         pnlCloseCash.setBorder(BorderFactory.createEtchedBorder());
@@ -525,7 +523,6 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
             btnCloseCash.setEnabled(isDiffZero && isPayReg);
         } catch (BasicException ex) {
             Logger.getLogger(JPanelCloseMoney.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex.toString());
         }
     }
 
@@ -683,11 +680,9 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
             @Override
             public void focusLost(FocusEvent fe) {
                 if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("creditcard")) {
-                    JOptionPane.showMessageDialog(null, amtCreditCard);
                     aux += amtCreditCard;
                 } 
                 if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("debitcard")) {
-                    JOptionPane.showMessageDialog(null, amtDebitCard);
                     aux += amtDebitCard;
                 }
                 JCBNombreBanco.setEnabled(false);

@@ -279,6 +279,10 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         if (m_PlaceCurrent != null) {
                          
             try {
+                if( m_panelticket.getActiveTicket().getOrderNumber() <= 0) {
+                     m_panelticket.getActiveTicket().setNextOrderNumber(m_App,  m_panelticket.getActiveTicket());
+                }
+                
                 dlReceipts.updateSharedTicket(m_PlaceCurrent.getId(), m_panelticket.getActiveTicket());                
             } catch (BasicException e) {
                 new MessageInf(e).show(this); // maybe other guy deleted it
