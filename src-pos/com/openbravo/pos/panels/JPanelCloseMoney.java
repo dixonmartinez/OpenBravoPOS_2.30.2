@@ -65,6 +65,8 @@ import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.ThumbNailBuilder;
+import java.awt.event.ActionListener;
+import javax.swing.JCheckBox;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -97,7 +99,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
     private PaymentsModel m_PaymentsToClose;
     private Double totalCash;
     private Double totalCashDollar;
-    private Double totalCards;
+    private Double totalDebitCards;
+    private Double totalCreditCards;
     private Double totalCheque;
     private Double totalPay;
     private Double totalPayDollar;
@@ -120,7 +123,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
     private static Double amtCash = 0.0;
     private static Double amtCashDollar = 0.0;
-    private static Double amtCard = 0.0;
+    private static Double amtCreditCard = 0.0;
+    private static Double amtDebitCard = 0.0;
     private static Double amtChek = 0.0;
 
     @Override
@@ -136,7 +140,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
         amtCash = 0.0;
         amtCashDollar = 0.0;
-        amtCard = 0.0;
+        amtCreditCard = 0.0;
+        amtDebitCard = 0.0;
         amtChek = 0.0;
 
         setLayout(new MigLayout());
@@ -146,7 +151,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         add(panelCash(), "dock west,cell 0 0");
         add(panelCashDollar(), "dock west,cell 0 0");
         add(panelCard(), "width 150, dock west, cell 0 1");
-        add(panelCheque(), "width 200, dock west, cell 0 1");
+        //add(panelCheque(), "width 200, dock west, cell 0 1");
     }
 
     // Panel efectivo
@@ -289,7 +294,6 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         lblTotalCheque = new JLabel("0");
         txtCheque = new JTextField();
         addKeyListenertoTxt(txtCheque, true);
-        ListenerCheque();
         pnlCheque.add(lblImage, "span,wrap 15");
         pnlCheque.add(jlabelMonto, "cell 0 2");
         pnlCheque.add(txtCheque, "cell 1 2,width 120,align right");
@@ -305,15 +309,25 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         pnlCheque.add(lblTotalCheque);
         return pnlCheque;
     }
-
+    private boolean b_PrintSalesReport = false;
+    
+    public boolean getPrintSalesReport() {
+        JOptionPane.showMessageDialog(null, b_PrintSalesReport);
+        return b_PrintSalesReport;
+    }
+    
     private JPanel panelCloseCash() {
-
+        printSalesReport = new JCheckBox(AppLocal.getIntString("PrintSalesReport"));
+        printSalesReport.setSelected(false);
+        printSalesReport.addActionListener((ActionEvent e) -> {
+            b_PrintSalesReport =  printSalesReport.isSelected();
+        });
         btnCloseCash = new JButton(AppLocal.getIntString("Close.Cash"));
         btnCloseCash.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/close_cash.png")));
         btnCloseCash.setName("btnCloseCash");
         btnCloseCash.addActionListener(this::btnCloseCashActionPerformed);
         btnCloseCash.setEnabled(false);
-
+        
         btnClearTxt = new JButton(AppLocal.getIntString("Label.Clean.Fields"));
         btnClearTxt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/clean.png")));
         btnClearTxt.setName("btnClearTxt");
@@ -323,7 +337,9 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
         m_sentcat = dlSales.getUserList();
         m_PeopleModel = new ComboBoxValModel();
-
+        
+        
+        
         List catlist = null;
         try {
             catlist = m_sentcat.list();
@@ -358,15 +374,16 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         pnlCloseCash.add(lblTotalPay, "align center");
         pnlCloseCash.add(lblTotalPayDollar, "align center");
         pnlCloseCash.add(lblInfo, "span 2,align center");
+        pnlCloseCash.add(printSalesReport, "span 2,align center");
         return pnlCloseCash;
     }
-
+    JCheckBox  printSalesReport;
     private void clearTextFields() {
         for (int i = 0; i < vectorTxtCard.size(); i++) {
             JTextField txtAmountCard = (JTextField) vectorTxtCard.get(i);
             txtAmountCard.setText("");
         }
-        for (int i = 0; i < vectorTxtCash.size(); i++) {
+        for (int i = 0; i < vectorTxtCashDollar.size(); i++) {
             JTextField txtAmountCard = (JTextField) vectorTxtCashDollar.get(i);
             txtAmountCard.setText("");
         }
@@ -436,7 +453,8 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
         amtCash = 0.0;
         amtCashDollar = 0.0;
-        amtCard = 0.0;
+        amtCreditCard = 0.0;
+        amtDebitCard = 0.0;
         amtChek = 0.0;
 
         buttonsActions(0.0);
@@ -457,12 +475,6 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         dtmCard.addRow(newRow);
     }
 
-    private void cargarAddGrillacheque() {
-        Object[] newRow = {JCBNombreBancoCheque.getSelectedItem(), JCBtipoPersona.getSelectedItem(),
-            txtCheque.getText()};
-        dtmCheque.addRow(newRow);
-    }
-
     private void btnCloseCashActionPerformed(ActionEvent evt) {
         btnCalculateActionPerformed(null);
         callCloseCash();
@@ -472,12 +484,13 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         calculateAmountCash();
         calculateAmountDollarCash();
         calculateAmountCard();
-        calculateAmountCheque();
+        // calculateAmountCheque();
         totalCash = amtCash;
-        totalCards = amtCard;
+        totalDebitCards = amtDebitCard;
+        totalCreditCards = amtCreditCard;
         totalCheque = amtChek;
         totalCashDollar = amtCashDollar;
-        totalPay = totalCash + totalCards + totalCheque;
+        totalPay = totalCash + totalDebitCards + totalCreditCards + totalCheque;
         totalPayDollar = totalCashDollar;
         lblTotalPay.setText(Formats.CURRENCY.formatValue(totalPay));
         lblTotalPayDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(totalPayDollar));
@@ -512,6 +525,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
             btnCloseCash.setEnabled(isDiffZero && isPayReg);
         } catch (BasicException ex) {
             Logger.getLogger(JPanelCloseMoney.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex.toString());
         }
     }
 
@@ -553,10 +567,22 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
     private void calculateAmountCard() {
         Double cant = txtCard.getText() != null && !txtCard.getText().trim().equals("") ? Double.parseDouble(txtCard.getText()) : 0.0;
-        amtCard = amtCard + cant;
-        lblTotalCards.setText(Formats.CURRENCY.formatValue(amtCard));
+        if(amtCreditCard == null) {
+            amtCreditCard = 0.0;
+        }        
+        if(amtDebitCard == null) {
+            amtDebitCard = 0.0;
+        }        
+        if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("creditcard")) {
+            amtCreditCard += cant;
+        } 
+        if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("debitcard")) {
+            amtDebitCard += cant;
+        }
+        
+        lblTotalCards.setText(Formats.CURRENCY.formatValue(amtCreditCard + amtDebitCard));
     }
-
+    
     private void calculateAmountCheque() {
         Double cant = txtCheque.getText() != null && !txtCheque.getText().trim().equals("") ? Double.parseDouble(txtCheque.getText()) : 0.0;
         amtChek = amtChek + cant;
@@ -656,7 +682,14 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
 
             @Override
             public void focusLost(FocusEvent fe) {
-                aux = amtCard;
+                if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("creditcard")) {
+                    JOptionPane.showMessageDialog(null, amtCreditCard);
+                    aux += amtCreditCard;
+                } 
+                if(JCBtipoTarjeta.getModel().getSelectedItem().toString().trim().equals("debitcard")) {
+                    JOptionPane.showMessageDialog(null, amtDebitCard);
+                    aux += amtDebitCard;
+                }
                 JCBNombreBanco.setEnabled(false);
                 JCBtipoTarjeta.setEnabled(false);
                 txtCard.setText("");
@@ -677,65 +710,18 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
                     res = JOptionPane.showConfirmDialog(tableCard, "Desea Eliminar el Registro: " + (row + 1),
                             "Eliminar Registro", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (res == JOptionPane.YES_OPTION) {
-                        Object aa = dtmCard.getValueAt(row, 2);
-                        aux = aux + amtCard;
+                        Object aa = dtmCard.getValueAt(row, 2);        
+                        Object type = dtmCard.getValueAt(row, 1);
                         product = product + Double.parseDouble(aa.toString());
-                        amtCard = aux - product;
-                        lblTotalCards.setText(Formats.CURRENCY.formatValue(amtCard));
+                        if(type.toString().trim().equals("creditcard")) {
+                            aux = aux + amtCreditCard;
+                            amtCreditCard = aux - product;
+                        }else if(type.toString().trim().equals("debitcard")) {
+                            aux = aux + amtDebitCard;
+                            amtDebitCard = aux - product;
+                        }
+                        lblTotalCards.setText(Formats.CURRENCY.formatValue(amtDebitCard + amtCreditCard));
                         dtmCard.removeRow(row);
-                        btnCalculateActionPerformed(null);
-                    }
-                }
-            }
-        });
-    }
-
-    private void ListenerCheque() {
-        JCBNombreBancoCheque.addActionListener((ActionEvent ae) -> {
-            JCBtipoPersona.setEnabled(true);
-        });
-        JCBtipoPersona.addActionListener((ActionEvent ae) -> {
-            if (!txtCheque.getText().equals("")) {
-                cargarAddGrillacheque();
-                btnCalculateActionPerformed(null);
-                txtCheque.requestFocus();
-            }
-        });
-        JCBtipoPersona.addFocusListener(new FocusListener() {
-            Double aux = 0.0;
-
-            @Override
-            public void focusGained(FocusEvent fe) {
-            }
-
-            @Override
-            public void focusLost(FocusEvent fe) {
-                aux = amtChek;
-                JCBNombreBancoCheque.setEnabled(false);
-                JCBtipoPersona.setEnabled(false);
-                txtCheque.setText("");
-                lblTotalCheque.setText(Formats.CURRENCY.formatValue(aux));
-            }
-
-        });
-        tableCheque.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int row = tableCheque.rowAtPoint(evt.getPoint());
-                int col = tableCheque.columnAtPoint(evt.getPoint());
-                Double aux = 0.0;
-                Double product = 0.0;
-
-                if (row >= 0 && col >= 0) {
-                    int res = JOptionPane.showConfirmDialog(tableCheque, "Desea Eliminar el Registro: " + (row + 1),
-                            "Eliminar Registro", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (res == JOptionPane.YES_OPTION) {
-                        Object a2 = dtmCheque.getValueAt(row, 2);
-                        aux = aux + amtChek;
-                        product = product + Double.parseDouble(a2.toString());
-                        amtChek = aux - product;
-                        lblTotalCheque.setText(Formats.CURRENCY.formatValue(amtChek));
-                        dtmCheque.removeRow(row);
                         btnCalculateActionPerformed(null);
                     }
                 }
@@ -831,12 +817,20 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         this.totalCash = totalCash;
     }
 
-    public Double getTotalCards() {
-        return totalCards;
+    public Double getTotalCreditCards() {
+        return totalCreditCards;
     }
 
-    public void setTotalCards(Double totalCards) {
-        this.totalCards = totalCards;
+    public void setTotalCreditCards(Double totalCreditCards) {
+        this.totalCreditCards = totalCreditCards;
+    }
+    
+    public Double getTotalDebitCards() {
+        return totalCreditCards;
+    }
+
+    public void setTotalDebitCards(Double totalDebitCards) {
+        this.totalDebitCards = totalDebitCards;
     }
 
     public Double getTotalCheque() {

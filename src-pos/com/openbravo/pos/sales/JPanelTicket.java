@@ -22,7 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +36,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.print.PrintService;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -64,7 +61,6 @@ import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.JPanelView;
-import com.openbravo.pos.forms.JRootApp;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.panels.JProductFinder;
 import com.openbravo.pos.payment.JPaymentSelect;
@@ -81,7 +77,6 @@ import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
-import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.JRPrinterAWT300;
 import com.openbravo.pos.util.ReportUtils;
 
@@ -222,10 +217,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_oTicketExt = null;
 
         m_Prop = dlSystem.getResourceAsProperties(m_App.getProperties().getHost() + "/properties");
-        CurrencyChange.DOLAR_CHANGE = m_Prop.getProperty("dollar.amount") != null
-                ? Double.valueOf(m_Prop.getProperty("dollar.amount"))
-                : 0.0;
-        jDollar.setText(String.valueOf(CurrencyChange.DOLAR_CHANGE));
     }
 
     @Override
@@ -325,13 +316,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_oTicket.setUser(m_App.getAppUserView().getUser().getUserInfo());
             m_oTicket.setActiveCash(m_App.getActiveCashIndex());
             m_oTicket.setDate(new Date()); // Set the edition date.
-            if (m_oTicket.isDollarCash()) {
-                jRBDolar.setSelected(true);
-                CurrencyChange.setCurrencyDollar();
-            } else {
-                jRBPeso.setSelected(true);
-                CurrencyChange.setCurrencyLocale();
-            }
         }
 
         executeEvent(m_oTicket, m_oTicketExt, "ticket.show");
@@ -411,7 +395,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void printPartialTotals() {
 
         if (m_oTicket.getLinesCount() == 0) {
-            jRBPeso.setSelected(true);
             m_jSubtotalEuros.setText(Formats.NULL.formatValue(null));
             m_jTaxesEuros.setText(Formats.NULL.formatValue(null));
             m_jTotalEuros.setText(Formats.NULL.formatValue(null));
@@ -504,28 +487,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine) {
         return getUpdateLine(m_oTicket, oLine, -1);
-    }
-
-    private void refreshTicket(TicketInfo m_TicketInfo) {
-        int i = 0;
-        while (i < m_TicketInfo.getLinesCount()) {
-            Double qty = m_TicketInfo.getLine(i).getMultiply();
-            m_TicketInfo.getLine(i).setMultiply(qty);
-            ProductInfoExt prod;
-            try {
-                prod = dlSales.getProductInfo(m_TicketInfo.getLine(i).getProductID());
-                if (jRBDolar.isSelected()) {
-                    CurrencyChange.setCurrencyDollar();
-                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changePesoToDollar(prod.getPriceSell()));
-                } else if (jRBPeso.isSelected()) {
-                    m_TicketInfo.getLine(i).setPrice(CurrencyChange.changeDollarToPeso(CurrencyChange.changePesoToDollar(prod.getPriceSell())));
-                    CurrencyChange.setCurrencyLocale();
-                }
-                paintTicketLine(i, m_TicketInfo.getLine(i));
-            } catch (BasicException e) {
-            }
-            i++;
-        }
     }
 
     private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine, int index) {
@@ -662,7 +623,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             stateToZero();
             new MessageInf(eData).show(this);
         }
-        refreshTicket(m_oTicket);
     }
 
     private void incProductByCodePrice(String sCode, double dPriceSell) {
@@ -688,7 +648,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             stateToZero();
             new MessageInf(eData).show(this);
         }
-        refreshTicket(m_oTicket);
     }
 
     private void incProduct(ProductInfoExt prod) {
@@ -708,7 +667,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // No es un producto que se pese o no hay balanza
             incProduct(1.0, prod);
         }
-        refreshTicket(m_oTicket);
     }
 
     private void incProduct(double dPor, ProductInfoExt prod) {
@@ -1096,11 +1054,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                                     : "Printer.Ticket2", ticket, ticketext);
                             resultok = true;
                         }
-                    } else {
-                        jRBDolar.setSelected(false);
-                        jRBPeso.setSelected(true);
-                        ticket.setDollarCash(false);
-                        refreshTicket(ticket);
                     }
                 }
             } catch (TaxesException e) {
@@ -1416,10 +1369,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTaxesEuros = new javax.swing.JLabel();
         m_jLblTotalEuros2 = new javax.swing.JLabel();
         m_jLblTotalEuros3 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jRBPeso = new javax.swing.JRadioButton();
-        jRBDolar = new javax.swing.JRadioButton();
-        jDollar = new javax.swing.JLabel();
         m_jContEntries = new javax.swing.JPanel();
         m_jPanEntries = new javax.swing.JPanel();
         m_jNumberKeys = new com.openbravo.beans.JNumberKeys();
@@ -1731,29 +1680,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         jPanel4.add(m_jPanTotals, java.awt.BorderLayout.LINE_END);
 
-        bgCurrency.add(jRBPeso);
-        jRBPeso.setSelected(true);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pos_messages"); // NOI18N
-        jRBPeso.setText(bundle.getString("Label.Currency.Pesos")); // NOI18N
-        jRBPeso.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRBPesoActionPerformed(evt);
-            }
-        });
-        jPanel7.add(jRBPeso);
-
-        bgCurrency.add(jRBDolar);
-        jRBDolar.setText(bundle.getString("Label.Currency.Dollar")); // NOI18N
-        jRBDolar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRBDolarActionPerformed(evt);
-            }
-        });
-        jPanel7.add(jRBDolar);
-        jPanel7.add(jDollar);
-
-        jPanel4.add(jPanel7, java.awt.BorderLayout.CENTER);
-
         m_jPanelCentral.add(jPanel4, java.awt.BorderLayout.SOUTH);
 
         m_jPanTicket.add(m_jPanelCentral, java.awt.BorderLayout.CENTER);
@@ -1992,6 +1918,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
                 TicketInfo ticket1 = m_oTicket.copyTicket();
                 TicketInfo ticket2 = new TicketInfo();
+                if(ticket2.getOrderNumber() <= 0) {
+                    ticket2.setNextOrderNumber(m_App, ticket2);
+                }
                 ticket2.setCustomer(m_oTicket.getCustomer());
 
                 if (splitdialog.showDialog(ticket1, ticket2, m_oTicketExt)) {
@@ -2063,32 +1992,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }//GEN-LAST:event_m_jKeypadDiscountRateActionPerformed
 
-    private void jRBPesoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRBPesoActionPerformed
-        m_oTicket.setDollarCash(false);
-        refreshTicket(m_oTicket);
-    }//GEN-LAST:event_jRBPesoActionPerformed
-
-    private void jRBDolarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRBDolarActionPerformed
-        m_oTicket.setDollarCash(true);
-        refreshTicket(m_oTicket);
-    }//GEN-LAST:event_jRBDolarActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgCurrency;
     private javax.swing.JButton btnCustomer;
     private javax.swing.JButton btnSplit;
     private javax.swing.JPanel catcontainer;
-    private javax.swing.JLabel jDollar;
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JRadioButton jRBDolar;
-    private javax.swing.JRadioButton jRBPeso;
     private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
     private javax.swing.JPanel m_jContEntries;

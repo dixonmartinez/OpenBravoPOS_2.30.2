@@ -174,7 +174,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     public class JPaymentCashCreator implements JPaymentCreator {
         @Override
         public JPaymentInterface createJPayment() {
-            return new JPaymentCashPos(JPaymentSelect.this, dlSystem, m_Ticket.isDollarCash());
+            return new JPaymentCashPos(JPaymentSelect.this, dlSystem);
         }
         @Override
         public String getKey() { return "payment.cash"; }
@@ -185,7 +185,23 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         @Override
         public String getIconKey() { return "/com/openbravo/images/cash.png"; }
     }
+    
+    public class JPaymentCashDollarCreator implements JPaymentCreator {
+        @Override
+        public JPaymentInterface createJPayment() {
+            return new JPaymentCashDollarPos(JPaymentSelect.this, dlSystem);
+        }
+        @Override
+        public String getKey() { return "payment.cash.dollar"; }
         
+        @Override
+        public String getLabelKey() { return "tab.cash.dollar"; }
+        
+        @Override
+        public String getIconKey() { return "/com/openbravo/images/cash.png"; }
+    }
+    
+    
     public class JPaymentChequeCreator implements JPaymentCreator {
         
         @Override
@@ -312,7 +328,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(m_dTotal - m_aPaymentInfo.getTotal()));
         m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());
         m_jTabPayment.setSelectedIndex(0); // selecciono el primero
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID, m_Ticket.isDollarCash());
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
     }
     
     protected static Window getWindow(Component parent) {
@@ -488,7 +504,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void m_jTabPaymentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_m_jTabPaymentStateChanged
 
         if (m_jTabPayment.getSelectedComponent() != null) {
-            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID, m_Ticket.isDollarCash());
+            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
         }
         
     }//GEN-LAST:event_m_jTabPaymentStateChanged

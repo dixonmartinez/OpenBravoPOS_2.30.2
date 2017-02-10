@@ -38,7 +38,19 @@ public class PaymentInfoMagcard extends PaymentInfo {
     protected String pointOfSales;
     protected String carType;
     
-    /** Creates a new instance of PaymentInfoMagcard */
+    /** 
+     * Creates a new instance of PaymentInfoMagcard
+     * @param sHolderName
+     * @param sCardNumber
+     * @param sExpirationDate
+     * @param track1
+     * @param track2
+     * @param track3
+     * @param sTransactionID
+     * @param dTotal
+     * @param pointOfSales
+     * @param carType 
+     */
     public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, 
             String track3, String sTransactionID, double dTotal, String pointOfSales, String carType) {
         m_sHolderName = sHolderName;
@@ -61,11 +73,19 @@ public class PaymentInfoMagcard extends PaymentInfo {
          this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal, null, null);
      }
     
-    /** Creates a new instance of PaymentInfoMagcard */
+    /** 
+     * Creates a new instance of PaymentInfoMagcard
+     * @param sHolderName
+     * @param sCardNumber
+     * @param sExpirationDate
+     * @param sTransactionID
+     * @param dTotal 
+     */
     public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String sTransactionID, double dTotal) {
         this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal, null,null);
     }
     
+    @Override
     public PaymentInfo copyPayment(){
         PaymentInfoMagcard p = new PaymentInfoMagcard(m_sHolderName, m_sCardNumber, m_sExpirationDate, track1, track2, track3, m_sTransactionID, m_dTotal,pointOfSales,carType);
         p.m_sAuthorization = m_sAuthorization;
@@ -73,9 +93,11 @@ public class PaymentInfoMagcard extends PaymentInfo {
         return p;
     }    
     
+    @Override
     public String getName() {
-        return "magcard";
+        return this.carType; // "magcard";
     }
+    @Override
     public double getTotal() {
         return m_dTotal;
     }         
@@ -92,6 +114,7 @@ public class PaymentInfoMagcard extends PaymentInfo {
     public String getExpirationDate() {
         return m_sExpirationDate;
     }    
+    @Override
     public String getTransactionID() {
         return m_sTransactionID;
     }

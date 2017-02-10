@@ -80,7 +80,7 @@ public class PaymentPanelKeyboard extends javax.swing.JPanel implements PaymentP
         m_jKeyString.setText("");
               
         lblNroComp.setText(null);
-        lblMonto.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
+        lblMonto.setText(Formats.CURRENCY.formatValue(m_dTotal));
         cmbPunto.setSelectedIndex(-1);
         cmbCard.setSelectedIndex(-1);
         printState();
@@ -118,7 +118,7 @@ public class PaymentPanelKeyboard extends javax.swing.JPanel implements PaymentP
 
     void setAppView(AppView app) {
         this.appView = app;
-        DataLogicSystem dlSystem = (DataLogicSystem) appView.getBean("com.openbravo.pos.forms.DataLogicSystem");
+        DataLogicSystem dlSystem = (DataLogicSystem) appView.getBean(DataLogicSystem.class.getName());
         
         String posName = dlSystem.getResourceAsText("pointofsale.name");
         String cardType = dlSystem.getResourceAsText("card.type");
@@ -128,11 +128,9 @@ public class PaymentPanelKeyboard extends javax.swing.JPanel implements PaymentP
 
         cmbPunto.removeAllItems();
         cmbCard.removeAllItems();
-        
         for(int i =0; i < cardTypeList.length; i++){
             cmbCard.addItem(cardTypeList[i].trim());
         }
-        
         for(int i =0; i < posNameList.length; i++){
             cmbPunto.addItem(posNameList[i]);
         }

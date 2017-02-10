@@ -65,12 +65,14 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     private Double amountCash;
     private Double amountCashDollar;
     private Double amountCheque;
-    private Double amountCard;
+    private Double amountCreditCard;
+    private Double amountDebitCard;
     //Variables con los valores ingresados por el usuario en la pantalla anterior
     private Double insertedCash;
     private Double insertedCashDollar;
     private Double insertedCheque;
-    private Double insertedCard;
+    private Double insertedCreditCard;
+    private Double insertedDebitCard;
 
     private PaymentsModel m_PaymentsToClose = null;
 
@@ -118,12 +120,14 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         amountCashDollar = 0.0;
         amountCash = 0.0;
-        amountCard = 0.0;
+        amountDebitCard = 0.0;
+        amountCreditCard = 0.0;
         amountCheque = 0.0;
         insertedCash = 0.0;
         insertedCashDollar = 0.0;
         insertedCheque = 0.0;
-        insertedCard = 0.0;
+        insertedCreditCard = 0.0;
+        insertedDebitCard = 0.0;
     }
 
     @Override
@@ -157,7 +161,8 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         closeMoney = (JPanelCloseMoney) m_App.getBean(JPanelCloseMoney.class.getName());
         insertedCash = closeMoney.getTotalCash();
         insertedCheque = closeMoney.getTotalCheque();
-        insertedCard = closeMoney.getTotalCards();
+        insertedCreditCard = closeMoney.getTotalCreditCards();
+        insertedDebitCard = closeMoney.getTotalDebitCards();
         totalAmtCash = closeMoney.getTotalPay();
         totalAmtDollarCash = closeMoney.getTotalCashDollar();
         insertedCashDollar = closeMoney.getTotalCashDollar();
@@ -273,8 +278,11 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             if (payLine.getType().toUpperCase().equals("CASH")) {
                 amountCash = payLine.getValue();
             }
-            if (payLine.getType().toUpperCase().contains("MAGCARD")) {
-                amountCard = payLine.getValue();
+            if(payLine.getType().toUpperCase().equals("CREDITCARD")) {
+                amountCreditCard = payLine.getValue();
+            }
+            if(payLine.getType().toUpperCase().equals("DEBITCARD")) {
+                amountDebitCard = payLine.getValue();
             }
             if (payLine.getType().toUpperCase().contains("CHEQUE")) {
                 amountCheque = payLine.getValue();
@@ -286,9 +294,13 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
     }
 
     private void compararValores() {
-        if (amountCard == null) {
-            amountCard = 0.0;
+        if (amountDebitCard == null) {
+            amountDebitCard = 0.0;
         }
+        if (amountCreditCard == null) {
+            amountCreditCard = 0.0;
+        }
+        
         if (amountCash == null) {
             amountCash = 0.0;
         }
@@ -307,14 +319,24 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 
         tblDifference.setModel(modeltbl);
 
-        if (insertedCard.compareTo(amountCard) != 0) {
+        if (insertedDebitCard.compareTo(amountDebitCard) != 0) {
             Vector vectorTbl = new Vector();
-            vectorTbl.add(AppLocal.getIntString("tab.magcard"));
-            vectorTbl.add(Formats.CURRENCY.formatValue(amountCard));
-            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard));
-            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCard - amountCard));
+            vectorTbl.add(AppLocal.getIntString("tab.magdebitcard"));
+            vectorTbl.add(Formats.CURRENCY.formatValue(amountDebitCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedDebitCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedDebitCard - amountDebitCard));
             modeltbl.addRow(vectorTbl);
         }
+        
+        if (insertedCreditCard.compareTo(amountCreditCard) != 0) {
+            Vector vectorTbl = new Vector();
+            vectorTbl.add(AppLocal.getIntString("tab.magcreditcard"));
+            vectorTbl.add(Formats.CURRENCY.formatValue(amountCreditCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCreditCard));
+            vectorTbl.add(Formats.CURRENCY.formatValue(insertedCreditCard - amountCreditCard));
+            modeltbl.addRow(vectorTbl);
+        }
+        
         if (insertedCash.compareTo(amountCash) != 0) {
             Vector vectorTbl = new Vector();
             vectorTbl.add(AppLocal.getIntString("tab.cash"));
@@ -782,7 +804,8 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
                 saveDetails(valcash[0].toString(), "cash", insertedCash);
                 saveDetails(valcash[0].toString(), "cash_dollar", insertedCashDollar);
                 saveDetails(valcash[0].toString(), "cheque", insertedCheque);
-                saveDetails(valcash[0].toString(), "magcard", insertedCard);
+                saveDetails(valcash[0].toString(), "debitcard", insertedCreditCard);
+                saveDetails(valcash[0].toString(), "creditcard", insertedDebitCard);
             }
         } catch (BasicException e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
@@ -805,11 +828,21 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
 
             // we end date
             m_PaymentsToClose.setDateEnd(dNow);
+            m_PaymentsToClose.setDifferenceCash(differenceCash);
+            m_PaymentsToClose.setDifferenceDollar(differenceDollar);
+            
+            m_PaymentsToClose.setRegisteredCash(totalAmtCash);
+            m_PaymentsToClose.setRegisteredDollar(totalAmtDollarCash);
+            m_PaymentsToClose.setPrintDollarAmt(totalAmtDollarCash != null && totalAmtDollarCash > 0.0);
+            
 
             m_jMaxDate.setText(Formats.TIMESTAMP.formatValue(dNow)/*Formats.DATE.formatValue(m_PaymentsToClose.getDateEnd())*/);
 
             // print report
             printPayments("Printer.CloseCash");
+            if(closeMoney.getPrintSalesReport()) {
+                printPayments("Printer.CloseCashDetailSales");
+            }
 
             // We show the message
             JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.closecashok"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);

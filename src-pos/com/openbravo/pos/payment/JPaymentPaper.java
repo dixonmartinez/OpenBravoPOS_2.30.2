@@ -30,16 +30,20 @@ import com.openbravo.pos.util.RoundUtils;
 
 public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterface {
     
-    private JPaymentNotifier m_notifier;
+    private final JPaymentNotifier m_notifier;
     
     private double m_dTicket;
     private double m_dTotal;    
     
-    private String m_sPaper; // "paperin", "paperout"
+    private final String m_sPaper; // "paperin", "paperout"
     // private String m_sCustomer; 
     
     
-    /** Creates new form JPaymentTicket */
+    /** 
+     * Creates new form JPaymentTicket
+     * @param notifier
+     * @param sPaper 
+     */
     public JPaymentPaper(JPaymentNotifier notifier, String sPaper) {
         
         m_notifier = notifier;
@@ -51,7 +55,8 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jTendered.addEditorKeys(m_jKeys);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
+    @Override
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
         
         m_dTotal = dTotal;
         
@@ -61,10 +66,12 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         printState();        
     }
     
+    @Override
     public Component getComponent() {
         return this;
     }
     
+    @Override
     public PaymentInfo executePayment() {
 
         return new PaymentInfoTicket(m_dTicket, m_sPaper);
@@ -79,7 +86,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
             m_dTicket = value;
         } 
         
-        m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTicket)));
+        m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(m_dTicket));
         
         int iCompare = RoundUtils.compare(m_dTicket, m_dTotal);
         
@@ -88,6 +95,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     }
     
     private class RecalculateState implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             printState();
         }

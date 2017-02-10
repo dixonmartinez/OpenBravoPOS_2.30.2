@@ -54,7 +54,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         setAppView(app);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID,  boolean isDollarCash) {
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
 
         m_sTransactionID = transID;
         m_dTotal = dTotal;

@@ -105,6 +105,7 @@ INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('33', 'tipo.persona', 0
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('34', 'payment.dollar.cash', 0, $FILE{/com/openbravo/pos/templates/payment.dollar.cash.txt});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('35', 'tipo.ticket.alim', 0, $FILE{/com/openbravo/pos/templates/tipo.ticket.alim.txt});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('36', 'pointofsale.banklist', 0, $FILE{/com/openbravo/pos/templates/pointofsale.banklist.txt});
+INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('37', 'Printer.CloseCashDetailSales', 0, $FILE{/com/openbravo/pos/templates/Printer.CloseCashDetailSales.xml});
 
 
 

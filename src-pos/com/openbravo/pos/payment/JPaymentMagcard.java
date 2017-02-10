@@ -32,11 +32,15 @@ import java.awt.Component;
 public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInterface {
     
     private PaymentPanel m_cardpanel;
-    private PaymentGateway m_paymentgateway;
-    private JPaymentNotifier m_notifier;
+    private final PaymentGateway m_paymentgateway;
+    private final JPaymentNotifier m_notifier;
     private String transaction;
     
-    /** Creates new form JPaymentMagcard */
+    /** 
+     * Creates new form JPaymentMagcard
+     * @param app
+     * @param notifier 
+     */
     public JPaymentMagcard(AppView app, JPaymentNotifier notifier) {
         
         initComponents();   
@@ -53,13 +57,14 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
             m_cardpanel = PaymentPanelFac.getPaymentPanel(app.getProperties().getProperty("payment.magcardreader"), notifier);
             if(m_cardpanel instanceof PaymentPanelKeyboard)
                 ((PaymentPanelKeyboard)m_cardpanel).setAppView(app);
-            add(m_cardpanel.getComponent(), BorderLayout.CENTER);
+            super.add(m_cardpanel.getComponent(), BorderLayout.CENTER);
             jlblMessage.setText(null);
             // jlblMessage.setText(AppLocal.getIntString("message.nocardreader"));
         }
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {   
+    @Override
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {   
         this.transaction = transID;
 
         if (m_cardpanel == null) {
@@ -71,6 +76,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
             // The cardpanel sets the status
         }
     }
+    @Override
     public PaymentInfo executePayment() {
         
         jlblMessage.setText(null);
@@ -84,6 +90,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
             return null;
         }
     }  
+    @Override
     public Component getComponent() {
         return this;
     }

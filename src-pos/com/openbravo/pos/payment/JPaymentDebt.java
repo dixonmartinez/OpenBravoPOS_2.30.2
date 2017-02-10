@@ -51,7 +51,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
         
         this.customerext = customerext;
         m_dTotal = dTotal;

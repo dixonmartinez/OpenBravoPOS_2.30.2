@@ -22,7 +22,7 @@ package com.openbravo.pos.payment;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.util.CurrencyChange;
 
-public class PaymentInfoCash extends PaymentInfo {
+public class PaymentInfoCashDollar extends PaymentInfo {
     
     private final double m_dPaid;
     private final double m_dTotal;
@@ -32,19 +32,19 @@ public class PaymentInfoCash extends PaymentInfo {
      * @param dTotal
      * @param dPaid 
      */
-    public PaymentInfoCash(double dTotal, double dPaid) {
+    public PaymentInfoCashDollar(double dTotal, double dPaid) {
         m_dTotal = dTotal;
         m_dPaid = dPaid;
     }
     
     @Override
     public PaymentInfo copyPayment(){
-        return new PaymentInfoCash(m_dTotal, m_dPaid);
+        return new PaymentInfoCashDollar(m_dTotal, m_dPaid);
     }
     
     @Override
     public String getName() {
-        return "cash";
+        return "cash_dollar";
     }   
     @Override
     public double getTotal() {
@@ -59,6 +59,6 @@ public class PaymentInfoCash extends PaymentInfo {
         return Formats.CURRENCY.formatValue(m_dPaid);
     }   
     public String printChange() {
-        return Formats.CURRENCY.formatValue(m_dPaid - m_dTotal);
+        return String.valueOf(CurrencyChange.FORMAT_LOCALE.format(CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal)));
     }    
 }

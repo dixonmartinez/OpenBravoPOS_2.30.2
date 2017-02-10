@@ -48,11 +48,12 @@ public class Place implements SerializableRead, java.io.Serializable {
     public Place() {
     }        
     
+    @Override
     public void readValues(DataRead dr) throws BasicException {
         m_sId = dr.getString(1);
         m_sName = dr.getString(2);
-        m_ix = dr.getInt(3).intValue();
-        m_iy = dr.getInt(4).intValue();
+        m_ix = dr.getInt(3);
+        m_iy = dr.getInt(4);
         m_sfloor = dr.getString(5);
         
         m_bPeople = false;

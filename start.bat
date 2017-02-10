@@ -60,4 +60,4 @@ set CP=%CP%;"%DIRNAME%lib/miglayout-4.0.jar"
 set CP=%CP%;"%DIRNAME%locales/"
 set CP=%CP%;"%DIRNAME%reports/"
 
-start /B javaw -cp %CP% -Djava.util.logging.config.file="%DIRNAME%logging.properties" -Djava.library.path="%DIRNAME%lib/Windows/i368-mingw32" -Ddirname.path="%DIRNAME%./" com.openbravo.pos.forms.StartPOS ","
+start /B javaw -cp %CP% -Djava.util.logging.config.file="%DIRNAME%logging.properties" -Djava.library.path="%DIRNAME%lib/Windows/i368-mingw32" -Ddirname.path="%DIRNAME%./" com.openbravo.pos.forms.StartPOS %1

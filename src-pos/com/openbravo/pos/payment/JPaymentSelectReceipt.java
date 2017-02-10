@@ -65,6 +65,7 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
     protected void addTabs() {
         
         addTabPayment(new JPaymentSelect.JPaymentCashCreator());
+        addTabPayment(new JPaymentSelect.JPaymentCashDollarCreator());
         addTabPayment(new JPaymentSelect.JPaymentChequeCreator());
         addTabPayment(new JPaymentSelect.JPaymentPaperCreator());            
         addTabPayment(new JPaymentSelect.JPaymentMagcardCreator());                
@@ -82,6 +83,6 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
     
     @Override
     protected PaymentInfo getDefaultPayment(double total) {
-        return new PaymentInfoCash(total, total, false);
+        return new PaymentInfoCash(total, total);
     }
 }

@@ -28,7 +28,9 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
+import com.openbravo.pos.util.CurrencyChange;
 import com.openbravo.pos.util.StringUtils;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -45,6 +47,11 @@ public class PaymentsModel {
     private Double m_dPaymentsTotal;
     private Double m_dPaymentsDollarTotal;
     private Integer m_iDollarPayments;
+    
+    private Double m_dRegisteredCash;
+    private Double m_dRegisteredDollar;
+    private Double m_dDifferenceCash;
+    private Double m_dDifferenceDollar;
     
     //  Dixon Martinez
     private Integer m_ProductSalesRows;
@@ -68,8 +75,9 @@ public class PaymentsModel {
     private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
 
     private DataLogicSystem m_dlSystem;
-	private Double m_dSalesDollarTaxes;
+    private Double m_dSalesDollarTaxes;
     static protected SentenceFind m_activecash;
+    private boolean printDollarAmt;
 
     private PaymentsModel() {
     }    
@@ -106,11 +114,11 @@ public class PaymentsModel {
         PaymentsModel p = new PaymentsModel();
         
         Object[]  activeCash = (Object []) new StaticSentence(app.getSession()
-            , "SELECT A.MONEY, A.HOSTSEQUENCE, A.DATESTART, A.DATEEND, A.PERSON FROM CLOSEDCASH A INNER JOIN " +
+            , "SELECT A.MONEY, A.HOSTSEQUENCE, A.DATESTART, A.DATEEND, A.PERSON, A.DIFFERENCECASH FROM CLOSEDCASH A INNER JOIN " +
                 "(SELECT PERSON, MAX(HOSTSEQUENCE) HOSTSEQUENCE FROM CLOSEDCASH WHERE PERSON = ? AND DATEEND IS NULL GROUP BY PERSON) B " +
                 "ON A.HOSTSEQUENCE = B.HOSTSEQUENCE AND A.PERSON = B.PERSON "
             , SerializerWriteString.INSTANCE
-            , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING}))
+            , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.DOUBLE}))
             .find(user);
         String activeCashIndex = activeCash == null ? "0" : activeCash[0].toString();
 
@@ -119,6 +127,7 @@ public class PaymentsModel {
         p.m_iSeq = Integer.parseInt(activeCash == null ? "0" : activeCash[1].toString());
         p.m_dDateStart = app.getActiveCashDateStart();
         p.m_dDateEnd = null;
+        p.m_dDifferenceCash = (Double) activeCash[5];
         
         // Pagos
         Object[] valtickets = (Object []) new StaticSentence(app.getSession(),
@@ -174,10 +183,12 @@ public class PaymentsModel {
 
         // Sales
         Object[] recsales = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), TICKETS.PERSON " +
-            "FROM RECEIPTS, TICKETS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.ID = TICKETS.ID " +
-            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
-            "GROUP BY TICKETS.PERSON, TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 0 ",
+            "SELECT COUNT(r.ID), SUM(p.TOTAL), t.PERSON " +
+            "FROM PAYMENTS p " + 
+            "INNER JOIN RECEIPTS r ON (p.RECEIPT = r.ID) " +
+            "INNER JOIN TICKETS t ON (r.ID = t.ID) " +
+            " WHERE r.MONEY = ? AND t.PERSON = ? AND p.PAYMENT NOT IN ('cash_dollar')" +
+            "GROUP BY t.PERSON " ,
             new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}),
             new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.STRING}))
             .find(activeCashIndex, user);
@@ -190,10 +201,12 @@ public class PaymentsModel {
         }
         
         recsales = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), TICKETS.PERSON " +
-            "FROM RECEIPTS, TICKETS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.ID = TICKETS.ID " +
-            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? " +
-            "GROUP BY TICKETS.PERSON, TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 1 ",
+            "SELECT COUNT(r.ID), SUM(p.TOTAL), t.PERSON  " +
+            "FROM PAYMENTS p " + 
+            "INNER JOIN RECEIPTS r ON (p.RECEIPT = r.ID) " +
+            "INNER JOIN TICKETS t ON (r.ID = t.ID) " +
+            " WHERE r.MONEY = ? AND t.PERSON = ? AND p.PAYMENT IN ('cash_dollar')" +
+            "GROUP BY t.PERSON  " ,
             new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}),
             new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.STRING}))
             .find(activeCashIndex, user);
@@ -207,10 +220,13 @@ public class PaymentsModel {
     
         // Taxes
         Object[] rectaxes = (Object []) new StaticSentence(app.getSession(),
-            "SELECT SUM(TAXLINES.AMOUNT) " +
-            "FROM RECEIPTS, TAXLINES, TICKETS WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.ID = TICKETS.ID " +
-            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
-            + " GROUP BY TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 0 "
+            "SELECT SUM(tl.AMOUNT) " +
+            "FROM PAYMENTS p " +
+            "INNER JOIN RECEIPTS r ON (p.RECEIPT = r.ID) " +
+            "INNER JOIN TAXLINES tl ON (r.ID = tl.RECEIPT) " +
+            "INNER JOIN TICKETS t ON (r.ID = t.ID) " +
+            "WHERE r.MONEY = ? AND t.PERSON = ? AND p.PAYMENT NOT IN ('cash_dollar')" +
+            "GROUP BY t.PERSON "                
             , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
             , new SerializerReadBasic(new Datas[] {Datas.DOUBLE}))
             .find(activeCashIndex, user);            
@@ -219,21 +235,25 @@ public class PaymentsModel {
         } else {
             p.m_dSalesTaxes = (Double) rectaxes[0];
         } 
-        
+        /*
         rectaxes = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COALESCE(SUM(TAXLINES.AMOUNT), 0) " +
-            "FROM RECEIPTS, TAXLINES, TICKETS WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.ID = TICKETS.ID " +
-            "AND RECEIPTS.MONEY = ? AND TICKETS.PERSON = ? "
-            + " GROUP BY TICKETS.ISDOLLARCASH HAVING TICKETS.ISDOLLARCASH = 1 "
+            "SELECT SUM(tl.AMOUNT) " +
+            "FROM PAYMENTS p " +
+            "INNER JOIN RECEIPTS r ON (p.RECEIPT = r.ID) " +
+            "INNER JOIN TAXLINES tl ON (r.ID = tl.RECEIPT) " +
+            "INNER JOIN TICKETS t ON (r.ID = t.ID) " +
+            "WHERE r.MONEY = ? AND t.PERSON = ? AND p.PAYMENT IN ('cash_dollar')" +
+            "GROUP BY t.PERSON,p.PAYMENT "
             , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING})
             , new SerializerReadBasic(new Datas[] {Datas.DOUBLE}))
             .find(activeCashIndex, user);            
-        if (rectaxes == null) {
-            p.m_dSalesDollarTaxes = null;
+        if (rectaxes = null) {
+            p.m_dSalesDollarTaxes = 0.0;
         } else {
             p.m_dSalesDollarTaxes = (Double) rectaxes[0];
-        } 
+        } */
                 
+        p.m_dSalesDollarTaxes = 0.0;
         List<SalesLine> asales = new StaticSentence(app.getSession(),
                 "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT) " +
                 "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
@@ -453,7 +473,11 @@ public class PaymentsModel {
     }     
     
     public String printSalesBaseDollar() {
-        return Formats.CURRENCY.formatValue(m_dSalesBaseDollar);
+        if (m_dSalesBaseDollar == null) {
+            return CurrencyChange.formatDollarValue(null);
+        } else {
+            return CurrencyChange.formatDollarValue(m_dSalesBaseDollar);
+        }
     }     
     
     public String printSalesTaxes() {
@@ -461,7 +485,7 @@ public class PaymentsModel {
     }     
     
     public String printSalesDollarTaxes() {
-        return Formats.CURRENCY.formatValue(m_dSalesDollarTaxes);
+        return CurrencyChange.formatDollarValue(m_dSalesDollarTaxes);
     }     
     
     public String printSalesTotal() {            
@@ -471,11 +495,67 @@ public class PaymentsModel {
     }
     
     public String printSalesDollarTotal() {
-        return Formats.CURRENCY.formatValue((m_dSalesBaseDollar == null || m_dSalesDollarTaxes == null)
+        return CurrencyChange.formatDollarValue((m_dSalesBaseDollar == null || m_dSalesDollarTaxes == null)
                 ? null
-                : m_dSalesBaseDollar + m_dSalesDollarTaxes);
-
+                : m_dSalesBaseDollar + m_dSalesDollarTaxes);        
+    }
         
+    public String printDifferenceDollar() {
+        return CurrencyChange.formatDollarValue((m_dDifferenceDollar == null)
+                ? null
+                : m_dDifferenceDollar);        
+    }
+    
+    public double getDifferenceDollar() {
+        return m_dDifferenceDollar;
+    }
+    
+    public void setDifferenceDollar(Double m_dDifferenceDollar) {
+        this.m_dDifferenceDollar = m_dDifferenceDollar;
+    }
+    
+    
+    public String printDifferenceCash() {
+        return CurrencyChange.formatLocaleValue(m_dDifferenceCash == null 
+                ? null
+                : m_dDifferenceCash);        
+    }
+    
+    public double getDifferenceCash() {
+        return m_dDifferenceCash;
+    }
+    
+    public void setDifferenceCash(Double m_dDifferenceCash) {
+        this.m_dDifferenceCash = m_dDifferenceCash;
+    }
+    
+    
+    public Double getRegisteredCash() {
+        return m_dRegisteredCash;
+    }
+    
+    public Double getRegisteredDollar() {
+        return m_dRegisteredDollar;
+    }
+    
+    public void setRegisteredCash(Double m_dRegisteredCash) {
+        this.m_dRegisteredCash = m_dRegisteredCash;
+    }
+    
+    public void setRegisteredDollar(Double m_dRegisteredDollar) {
+        this.m_dRegisteredDollar = m_dRegisteredDollar;
+    }
+    
+    public String printRegisteredCash() {
+        return CurrencyChange.formatLocaleValue(m_dRegisteredCash == null 
+                ? null
+                : m_dRegisteredCash);
+    }
+    
+    public String printRegisteredDollar() {
+        return CurrencyChange.formatDollarValue(m_dRegisteredDollar == null 
+                ? null
+                : m_dRegisteredDollar);        
     }
     
     
@@ -508,6 +588,15 @@ public class PaymentsModel {
             }  
         };
     }
+
+    public void setPrintDollarAmt(boolean isPrint) {
+        this.printDollarAmt = isPrint;
+    }
+    
+    public boolean getPrintDollarAmt() {
+        return this.printDollarAmt ;
+    }
+    
     
     public static class SalesLine implements SerializableRead {
         

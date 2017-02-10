@@ -55,6 +55,34 @@
             <text align ="left" length="32" bold="true">Total</text>
             <text align ="right" length="10" bold="true">${payments.printPaymentsTotal()}</text>
         </line>
+        <line size="1">
+            <text align ="left" length="32" bold="true">Registered</text>
+            <text align ="right" length="10" bold="true">${payments.printRegisteredCash()}</text>
+        </line>
+        <line size="1">
+            <text align ="left" length="32" bold="true">Difference</text>
+            <text align ="right" length="10" bold="true">${payments.printDifferenceCash()}</text>
+        </line>
+        
+        #if ($payments.getPrintDollarAmt())
+            <line></line>
+            <line size="1">
+                <text align ="left" length="32" bold="true">Total Dollar</text>
+                <text align ="right" length="10" bold="true">${payments.printPaymentsDollarTotal()}</text>
+            </line>
+
+            <line size="1">
+                <text align ="left" length="32" bold="true">Registered Dollar</text>
+                <text align ="right" length="10" bold="true">${payments.printRegisteredDollar()}</text>
+            </line>
+
+            <line size="1">
+                <text align ="left" length="32" bold="true">Difference Dollar</text>
+                <text align ="right" length="10" bold="true">${payments.printDifferenceDollar()}</text>
+            </line>
+        #end 
+        
+        
         <line></line>
         <line>
             <text bold="true">Taxes report</text>

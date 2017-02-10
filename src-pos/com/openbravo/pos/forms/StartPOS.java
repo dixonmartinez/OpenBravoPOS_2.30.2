@@ -19,7 +19,6 @@
 
 package com.openbravo.pos.forms;
 
-import java.io.File;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Locale;
@@ -70,7 +69,7 @@ public class StartPOS {
             if (!registerApp()) {
                 System.exit(1);
             }
-            args[0] = System.getProperty("user.home") + File.separator + AppLocal.APP_ID + ".properties";
+            //args[0] = System.getProperty("user.home") + File.separator + AppLocal.APP_ID + ".properties";
             AppConfig config = new AppConfig(args);
             config.load();
             

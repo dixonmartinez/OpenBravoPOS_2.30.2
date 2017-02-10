@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Openbravo POS is a point of sales application designed for touch screens.
+    Copyright (C) 2007-2009 Openbravo, S.L.
+    http://sourceforge.net/projects/openbravopos
+
+    This file is part of Openbravo POS.
+
+    Openbravo POS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Openbravo POS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+
+<output>   
+    <ticket>
+        #if (!$payments.getTicketsSalesLine().isEmpty())
+            <image>Printer.Ticket.Logo</image>
+            <line></line>
+            <line size="1">
+                <text align ="center" length="42" bold="true">Partial cash report</text>            
+            </line>
+            <line></line>
+            <line>
+                <text bold="true">Ticket With Discount report</text>
+            </line>
+            <line>
+                <text align ="left" length="11">Tick.</text>
+                <text align ="left" length="11">Prod.</text>
+                <text align ="right" length="5">% Disc.</text>
+            </line>
+            <line>
+                <text>------------------------------------------</text>
+            </line>
+            #foreach ($line in $payments.getTicketsSalesLine())
+            <line>
+                <text align ="left" length="12">${line.printTicketID()}</text>
+                <text align ="left" length="12">${line.printProductName()}</text>
+                <text align ="right" length="4">${line.printProductRateDiscount()}</text>
+            </line>
+            #end
+            <line>
+                <text>------------------------------------------</text>
+            </line>
+            <line>
+                <text length="18">Machine:</text>
+                <text>${payments.printHost()}</text>
+            </line>
+            <line>
+                <text length="18">Cashier:</text>
+                <text>${payments.printUser()}</text>
+            </line>    
+            <line>
+                <text length="18">Sequence:</text>
+                <text length="24" align="right">${payments.printSequence()}</text>
+            </line> 
+            <line>
+                <text length="18">Start date:</text>
+                <text length="24" align="right">${payments.printDateStart()}</text>
+            </line>  
+            <line>
+                <text length="18">End date:</text>
+                <text length="24" align="right">${payments.printDateEnd()}</text>
+            </line> 
+        #end 
+    </ticket>
+</output>

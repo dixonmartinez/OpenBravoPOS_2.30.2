@@ -45,7 +45,7 @@ import com.openbravo.pos.util.ThumbNailBuilder;
  *
  * @author adrianromero
  */
-public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInterface {
+public class JPaymentCashDollarPos extends javax.swing.JPanel implements JPaymentInterface {
 
     /**
 	 * 
@@ -63,12 +63,12 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
      * @param notifier
      * @param dlSystem
      */
-    public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
+    public JPaymentCashDollarPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
         m_notifier = notifier;
         initComponents();
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
-        String code = dlSystem.getResourceAsXML("payment.cash");        
+        String code = dlSystem.getResourceAsXML("payment.dollar.cash");
         if (code != null) {
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.BEANSHELL);
@@ -93,10 +93,10 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     public PaymentInfo executePayment() {
         if (m_dPaid - m_dTotal >= 0.0) {
             // pago completo
-            return new PaymentInfoCash(m_dTotal, m_dPaid);
+            return new PaymentInfoCashDollar(m_dTotal, m_dPaid);
         } else {
             // pago parcial
-            return new PaymentInfoCash(m_dPaid, m_dPaid);
+            return new PaymentInfoCashDollar(m_dPaid, m_dPaid);
         }
     }
 
@@ -113,10 +113,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             m_dPaid = value;
         }
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
-        m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(m_dPaid));
+        m_jMoneyEuros.setText(CurrencyChange.FORMAT_DOLLAR.format(m_dPaid));
         String amt;
         if(iCompare > 0) {
-            amt = Formats.CURRENCY.formatValue(m_dPaid - m_dTotal);
+            Double amtDollar = CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal);
+            amt = String.valueOf(Formats.CURRENCY.formatValue(amtDollar));
         }else {
             amt = null;
         }
@@ -204,7 +205,6 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         jPanel4.setPreferredSize(new java.awt.Dimension(0, 100));
         jPanel4.setLayout(null);
 
-        m_jChangeEuros.setBackground(java.awt.Color.white);
         m_jChangeEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         m_jChangeEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jChangeEuros.setOpaque(true);
@@ -214,11 +214,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
 
         jLabel6.setText(AppLocal.getIntString("Label.ChangeCash")); // NOI18N
         jPanel4.add(jLabel6);
-        jLabel6.setBounds(20, 50, 100, 15);
+        jLabel6.setBounds(20, 50, 100, 14);
 
         jLabel8.setText(AppLocal.getIntString("Label.InputCash")); // NOI18N
         jPanel4.add(jLabel8);
-        jLabel8.setBounds(20, 20, 100, 15);
+        jLabel8.setBounds(20, 20, 100, 14);
 
         m_jMoneyEuros.setBackground(new java.awt.Color(153, 153, 255));
         m_jMoneyEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

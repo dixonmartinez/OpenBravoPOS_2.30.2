@@ -23,6 +23,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import com.openbravo.format.Formats;
+import javax.swing.JOptionPane;
 
 public final class CurrencyChange {
 
@@ -31,6 +32,23 @@ public final class CurrencyChange {
     public static DecimalFormat FORMAT_LOCALE = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.getDefault());
 
     private CurrencyChange() {
+    }
+    
+    public static String formatDollarValue(Object value) {
+        if (value == null) {
+            return FORMAT_DOLLAR.format(0);
+        } else {
+            JOptionPane.showMessageDialog(null, value);
+            return FORMAT_DOLLAR.format(value);
+        }
+    }
+    
+    public static String formatLocaleValue(Object value) {
+        if (value == null) {
+            return FORMAT_LOCALE.format("0");
+        } else {
+            return FORMAT_LOCALE.format(value);
+        }
     }
 
     public static double changeDollarToPeso(double dEuros) {

@@ -25,12 +25,16 @@ import com.openbravo.pos.forms.AppLocal;
 
 public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterface {
     
-    private JPaymentNotifier m_notifier;
+    private final JPaymentNotifier m_notifier;
     private double m_dTotal;
     
-    private String m_sName;
+    private final String m_sName;
     
-    /** Creates new form JPaymentChequeRefund */
+    /** 
+     * Creates new form JPaymentChequeRefund
+     * @param notifier
+     * @param sName 
+     */
     public JPaymentRefund(JPaymentNotifier notifier, String sName) {
         
         m_notifier = notifier;
@@ -39,15 +43,18 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
         initComponents();
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID, boolean isDollarCash) {
+    @Override
+    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
         m_dTotal = dTotal;
         
         m_notifier.setStatus(true, true);
     }
     
+    @Override
     public PaymentInfo executePayment() {
         return new PaymentInfoTicket(m_dTotal, m_sName);
     }
+    @Override
     public Component getComponent() {
         return this;
     } 

@@ -400,13 +400,16 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                 
                     // check if the sharedticket is the same
                     TicketInfo ticket = getTicketInfo(m_place);
-
+                    
                     // check
                     if (ticket == null && !m_place.hasPeople()) {
                         // Empty table and checked
 
                         // table occupied
                         ticket = new TicketInfo();
+                        if(ticket.getOrderNumber() <= 0) {
+                            ticket.setNextOrderNumber(m_App, ticket);
+                        }
                         try {
                             dlReceipts.insertSharedTicket(m_place.getId(), ticket);
                         } catch (BasicException e) {
@@ -439,7 +442,9 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                         // receive the customer
                         // table occupied
                         ticket = new TicketInfo();
-                        
+                        if(ticket.getOrderNumber() <= 0) {
+                            ticket.setNextOrderNumber(m_App, ticket);
+                        }
                         try {
                             ticket.setCustomer(customer.getId() == null
                                     ? null
@@ -492,6 +497,9 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
 
                         if (ticket == null) {
                             try {
+                                if(ticketclip.getOrderNumber() <= 0) {
+                                    ticketclip.setNextOrderNumber(m_App, ticket);
+                                }
                                 dlReceipts.insertSharedTicket(m_place.getId(), ticketclip);
                                 m_place.setPeople(true);
                                 dlReceipts.deleteSharedTicket(m_PlaceClipboard.getId());
@@ -531,11 +539,14 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                                     dlReceipts.deleteSharedTicket(m_PlaceClipboard.getId());
                                     m_PlaceClipboard.setPeople(false);
                                     if (ticket.getCustomer() == null) {
-                                    ticket.setCustomer(ticketclip.getCustomer());
+                                        ticket.setCustomer(ticketclip.getCustomer());
                                     }
                                     ticketclip.getLines().forEach((line) -> {
                                         ticket.addLine(line);
                                     });
+                                    if(ticketclip.getOrderNumber() <= 0) {
+                                       ticketclip.setNextOrderNumber(m_App, ticket);
+                                    }
                                     dlReceipts.updateSharedTicket(m_place.getId(), ticket);
                                 } catch (BasicException e) {
                                     new MessageInf(e).show(JTicketsBagRestaurantMap.this); // Glup. But It was empty.

@@ -30,6 +30,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -92,7 +93,7 @@ public class ReceiptSplit extends javax.swing.JDialog {
     }
     
     public boolean showDialog(TicketInfo ticket, TicketInfo ticket2, Object ticketext) {
-
+        
         receiptone.setTicket(ticket, ticketext);
         receipttwo.setTicket(ticket2, ticketext);
         
