@@ -57,6 +57,7 @@ public class PaymentsModel {
     private Double m_ProductSalesTotalUnits;
     private Double m_ProductSalesTotal;
     private java.util.List<ProductSalesLine> m_ProductSales;
+    private java.util.List<ProductSalesByCategory> m_ProductSalesByCategory;
     private String m_User;
     private List<TicketsSalesLine> m_TicketsSalesLine;
     //  End Dixon Martinez
@@ -323,6 +324,49 @@ public class PaymentsModel {
         } else {
             p.m_TicketsSalesLine = tickets;
         }
+        
+        
+        //  Products by Category
+        List productsByCategory = new StaticSentence(app.getSession()
+            , "SELECT \n" +
+                "    t.ID,\n" +
+                "    tl.LINE,\n" +
+                "    p.PRODUCTNAME,\n" +
+                "    p.CATEGORYNAME,\n" +
+                "    SUM(tl.UNITS) UNITS,\n" +
+                "    tl.PRICE\n" +
+                "FROM TICKETS t \n" +
+                "INNER JOIN TICKETLINES tl ON (t.ID = tl.TICKET)\n" +
+                "INNER JOIN RECEIPTS r ON (t.ID = r.ID )\n" +
+                "LEFT JOIN (\n" +
+                "    SELECT \n" +
+                "        p.\"NAME\" PRODUCTNAME,\n" +
+                "        c.\"NAME\" CATEGORYNAME,\n" +
+                "        p.ID PRODUCTID,\n" +
+                "        c.ID CATEGORI_ID\n" +
+                "    FROM PRODUCTS p\n" +
+                "    INNER JOIN CATEGORIES c ON (p.CATEGORY = c.ID)\n" +
+                ") p ON (tl.PRODUCT = p.PRODUCTID)\n" +
+                "WHERE r.MONEY = ? \n" +
+                "GROUP BY\n" +
+                "    p.CATEGORI_ID,\n" +
+                "    t.ID,\n" +
+                "    tl.LINE,\n" +
+                "    p.PRODUCTNAME,\n" +
+                "    p.CATEGORYNAME,\n" +
+                "    tl.PRICE"
+            , SerializerWriteString.INSTANCE
+            , new SerializerReadClass(PaymentsModel.ProductSalesByCategory.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
+            .list(app.getActiveCashIndex());
+ 
+        if (products == null) {
+            p.m_ProductSalesByCategory = new ArrayList();
+        } else {
+            p.m_ProductSalesByCategory = productsByCategory;
+        }
+        
+        
+        
         //  End Dixon Martinez
         return p;
     }
@@ -364,9 +408,14 @@ public class PaymentsModel {
         return m_ProductSales;        
     }
     
+    public List<ProductSalesByCategory> getProductSalesByCategory() {
+        return m_ProductSalesByCategory;        
+    }
+    
     public List<TicketsSalesLine> getTicketsSalesLine() {
         return m_TicketsSalesLine;
     }
+    
     //  Dixon Martinez
 
     public int getPayments() {
@@ -740,6 +789,50 @@ public class PaymentsModel {
         }
 
     }
+
+    public static class ProductSalesByCategory implements SerializableRead {
+
+        private String m_ProductName;
+        private Double m_ProductUnits;
+        private Double m_ProductPrice;
+        private String m_CategoryName;
+                
+        
+        @Override
+        public void readValues(DataRead dr) throws BasicException {
+            m_ProductName = dr.getString(3);
+            m_CategoryName = dr.getString(4);
+            m_ProductUnits = dr.getDouble(5);
+            m_ProductPrice = dr.getDouble(6);
+
+
+        }
+
+        public String printProductName() {
+            return StringUtils.encodeXML(m_ProductName);
+        }
+        
+        public String printCategoryName() {
+            return StringUtils.encodeXML(m_CategoryName);
+        }
+
+        public String printProductUnits() {
+            return Formats.DOUBLE.formatValue(m_ProductUnits);
+        }
+
+        public Double getProductUnits() {
+            return m_ProductUnits;
+        }
+
+        public String printProductPrice() {
+            return Formats.CURRENCY.formatValue(m_ProductPrice);
+        }
+
+        public Double getProductPrice() {
+            return m_ProductPrice;
+        }
+    }
+
     
     public static class TicketsSalesLine implements SerializableRead {
 

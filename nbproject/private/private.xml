@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/panels/JPanelCloseMoney.java</file>
-            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/panels/JPanelCloseMoneyFinal.java</file>
-            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/forms/StartPOS.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/JPanelTicket.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/restaurant/JTicketsBagRestaurantMap.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/restaurant/JTicketsBagRestaurant.java</file>
         </group>
     </open-files>
 </project-private>
