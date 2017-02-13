@@ -3,9 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/payment/JPaymentCashDollarPos.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/payment/JPaymentSelect.java</file>
             <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/JPanelTicket.java</file>
-            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/restaurant/JTicketsBagRestaurantMap.java</file>
-            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/sales/restaurant/JTicketsBagRestaurant.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-beans/com/openbravo/format/Formats.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/panels/JPanelCloseMoneyFinal.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/panels/PaymentsModel.java</file>
+            <file>file:/C:/Users/cjunior/Documents/NetBeansProjects/OpenBravoPOS_2.30.2/src-pos/com/openbravo/pos/ticket/TicketInfo.java</file>
         </group>
     </open-files>
 </project-private>

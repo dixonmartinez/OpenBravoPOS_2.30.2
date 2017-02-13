@@ -113,7 +113,7 @@ public class JPaymentCashDollarPos extends javax.swing.JPanel implements JPaymen
             m_dPaid = value;
         }
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
-        m_jMoneyEuros.setText(CurrencyChange.formatDollarValue(m_dPaid)); //CurrencyChange.FORMAT_DOLLAR.format(m_dPaid));
+        m_jMoneyEuros.setText(Formats.DOLLAR_CURRENCY.formatValue(m_dPaid)); //CurrencyChange.FORMAT_DOLLAR.format(m_dPaid));
         String amt;
         if(iCompare > 0) {
             Double amtDollar = CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal);

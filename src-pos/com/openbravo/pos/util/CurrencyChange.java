@@ -22,17 +22,18 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.openbravo.format.DoubleUtils;
 import com.openbravo.format.Formats;
 
 public final class CurrencyChange {
 
-    public static double DOLAR_CHANGE = 21;//0.046;
-    public static DecimalFormat FORMAT_DOLLAR = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.US);
-    public static DecimalFormat FORMAT_LOCALE = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.getDefault());
+    public static double DOLAR_CHANGE = 19;//0.046;
+    // public static DecimalFormat FORMAT_DOLLAR = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.US);
+    // public static DecimalFormat FORMAT_LOCALE = (DecimalFormat) DecimalFormat.getCurrencyInstance(Locale.getDefault());
 
     private CurrencyChange() {
     }
-    
+    /*
     public static String formatDollarValue(Object value) {
         if (value == null) {
             return FORMAT_DOLLAR.format(0);
@@ -48,23 +49,31 @@ public final class CurrencyChange {
             return FORMAT_LOCALE.format(value);
         }
     }
-
+*/
     public static double changeDollarToPeso(double dEuros) {
-        return /*Math.rint(*/ (dEuros * DOLAR_CHANGE) / 1 /*)*/;
+        return Math.rint( (dEuros * DOLAR_CHANGE) / 1 );
+        //return RoundUtils.round((dEuros * DOLAR_CHANGE) / 1);
+        //return Math.round((dEuros * DOLAR_CHANGE) / 1);
+       // return DoubleUtils.fixDecimals((dEuros * DOLAR_CHANGE) / 1);
+        
     }
 
     public static double changePesoToDollar(double dPts) {
-        //return /*Math.rint*/ (100.0 * dPts / DOLAR_CHANGE) / 100.0;
-        return (dPts * 1) / DOLAR_CHANGE;
+        return Math.rint (100.0 * dPts / DOLAR_CHANGE) / 100.0;
+        // return RoundUtils.round((dPts * 1) / DOLAR_CHANGE);
+        //return Math.round((dPts * 1) / DOLAR_CHANGE);
+    	//double value = (dPts * 1) / DOLAR_CHANGE;
+    	//return Math.round(Math.rint(value * 1000000.0) / 1000000.0);
+    	//return DoubleUtils.fixDecimals(value);
     }
 
     public static void main(String[] args) {
-        double amt = 42;
+        double amt = 12.1;
         System.out.println(changeDollarToPeso(changePesoToDollar(amt)));
         System.out.println(changePesoToDollar(amt));
         //System.out.println(changePtsToEuros(changeEurosToPts(amt)));
     }
-
+/*
     public static void setCurrencyDollar() {
         DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.US);
         String strange = "'$' #,##0.00";
@@ -73,5 +82,5 @@ public final class CurrencyChange {
 
     public static void setCurrencyLocale() {
         Formats.setCurrencyPattern(null);
-    }
+    }*/
 }

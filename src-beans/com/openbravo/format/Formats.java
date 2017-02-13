@@ -21,6 +21,8 @@ package com.openbravo.format;
 
 import java.text.*;
 import java.util.Date;
+import java.util.Locale;
+
 import com.openbravo.basic.BasicException;
 
 public abstract class Formats {
@@ -36,7 +38,8 @@ public abstract class Formats {
 	public final static Formats DATE = new FormatsDATE();
 	public final static Formats TIME = new FormatsTIME();
 	public final static Formats BYTEA = new FormatsBYTEA();
-
+	public final static Formats DOLLAR_CURRENCY = new FormatsDOLLAR_CURRENCY();
+	
 	private static NumberFormat m_integerformat = NumberFormat.getIntegerInstance();
 	private static NumberFormat m_doubleformat = NumberFormat.getNumberInstance();
 	private static NumberFormat m_currencyformat = NumberFormat.getCurrencyInstance();
@@ -45,7 +48,9 @@ public abstract class Formats {
 	private static DateFormat m_dateformat = DateFormat.getDateInstance();
 	private static DateFormat m_timeformat = DateFormat.getTimeInstance();
 	private static DateFormat m_datetimeformat = DateFormat.getDateTimeInstance();
-
+	private static String strange = "'$' #,##0.00";
+	private static NumberFormat m_DollarCurrencyFormat = new DecimalFormat(strange); //NumberFormat.getCurrencyInstance(Locale.US);
+	
 	/** Creates a new instance of Formats */
 	protected Formats() {
 	}
@@ -54,6 +59,11 @@ public abstract class Formats {
 
 		return m_currencyformat.getMaximumFractionDigits();
 	}
+
+	public static int getDollarCurrencyDecimals() {
+		return m_DollarCurrencyFormat.getMaximumFractionDigits();
+	}
+	
 
 	public String formatValue(Object value) {
 		if (value == null) {
@@ -103,11 +113,27 @@ public abstract class Formats {
 		}
 	}
 
+	public static void setDollarCurrencyPattern(String pattern) {
+		if (pattern == null || pattern.equals("")) {
+			m_DollarCurrencyFormat = NumberFormat.getCurrencyInstance();
+		} else {
+			m_DollarCurrencyFormat = new DecimalFormat(pattern);
+		}
+	}
+
 	public static void setCurrencyPattern(String pattern, DecimalFormatSymbols dfs) {
 		if (pattern == null || pattern.equals("")) {
 			m_currencyformat = NumberFormat.getCurrencyInstance();
 		} else {
 			m_currencyformat = new DecimalFormat(pattern, dfs);
+		}
+	}
+
+	public static void setCDollarurrencyPattern(String pattern, DecimalFormatSymbols dfs) {
+		if (pattern == null || pattern.equals("")) {
+			m_DollarCurrencyFormat = NumberFormat.getCurrencyInstance();
+		} else {
+			m_DollarCurrencyFormat = new DecimalFormat(pattern, dfs);
 		}
 	}
 
@@ -267,6 +293,32 @@ public abstract class Formats {
 		}
 	}
 
+	
+	private static final class FormatsDOLLAR_CURRENCY extends Formats {
+		@Override
+		protected String formatValueInt(Object value) {
+			return m_DollarCurrencyFormat.format((Number) value); // quickfix
+																						// for
+																						// 3838
+		}
+
+		@Override
+		protected Object parseValueInt(String value) throws ParseException {
+			try {
+				return m_DollarCurrencyFormat.parse(value).doubleValue();
+			} catch (ParseException e) {
+				// Segunda oportunidad como numero normalito
+				return m_DollarCurrencyFormat.parse(value).doubleValue();
+			}
+		}
+
+		@Override
+		public int getAlignment() {
+			return javax.swing.SwingConstants.RIGHT;
+		}
+	}
+
+	
 	private static final class FormatsBOOLEAN extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {

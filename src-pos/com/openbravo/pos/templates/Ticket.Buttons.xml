@@ -39,7 +39,7 @@
     
     <cat-visible value="true"/>
     <taxesincluded value="false"/>
-    <attributes-autoset value="true"/>   
+    <attributes-autoset value="true"/> 
 	<refmultcontrol value="true"/>
     <discount-rate-visible value="true"/>
     <discount-rate-1 value="5"/>

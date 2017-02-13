@@ -31,11 +31,11 @@ report.setSentence("SELECT " +
                     "CLOSEDCASH.DATEEND, " +
                     "PAYMENTS.PAYMENT, " +
                     "SUM(PAYMENTS.TOTAL) AS TOTAL " +
-                    "FROM CLOSEDCASH, PAYMENTS, RECEIPTS " +
+                    "FROM CLOSEDCASH,PAYMENTS, RECEIPTS " +
                     "WHERE CLOSEDCASH.MONEY = RECEIPTS.MONEY AND PAYMENTS.RECEIPT = RECEIPTS.ID AND ?(QBF_FILTER) " +
                     "GROUP BY CLOSEDCASH.HOST, CLOSEDCASH.HOSTSEQUENCE, CLOSEDCASH.MONEY, CLOSEDCASH.DATESTART, CLOSEDCASH.DATEEND, PAYMENTS.PAYMENT " +
                     "ORDER BY CLOSEDCASH.HOST, CLOSEDCASH.HOSTSEQUENCE");
-report.addParameter("CLOSEDCASH.DATEEND");
+report.addParameter("CLOSEDCASH.DATESTART");
 report.addParameter("CLOSEDCASH.DATEEND");
 paramdates = new com.openbravo.pos.reports.JParamsDatesInterval();
 paramdates.setStartDate(com.openbravo.beans.DateUtils.getToday());

@@ -349,7 +349,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public double getSubTotal() {
         double sum = 0.0;
-        sum = m_aLines.stream().map((line) -> line.getSubValue()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        for (TicketLineInfo line : m_aLines) {
+            sum += line.getSubValue();
+        }
         return sum;
     }
 
@@ -357,11 +359,16 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
         double sum = 0.0;
         if (hasTaxesCalculated()) {
-            sum = taxes.stream().map((tax) -> tax.getTax()).reduce(sum, (accumulator, _item) -> accumulator + _item); // Taxes are already rounded...
+            for (TicketTaxInfo tax : taxes) {
+                sum += tax.getTax(); // Taxes are already rounded...
+            }
         } else {
-            sum = m_aLines.stream().map((line) -> line.getTax()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+            for (TicketLineInfo line : m_aLines) {
+                sum += line.getTax();
+            }
         }
         return sum;
+
     }
 
     public double getTotal() {
@@ -370,9 +377,12 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public double getTotalPaid() {
-
         double sum = 0.0;
-        sum = payments.stream().filter((p) -> (!"debtpaid".equals(p.getName()))).map((p) -> p.getTotal()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        for (PaymentInfo p : payments) {
+            if (!"debtpaid".equals(p.getName())) {
+                sum += p.getTotal();
+            }
+        }
         return sum;
     }
 

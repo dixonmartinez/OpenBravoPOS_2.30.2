@@ -29,15 +29,15 @@
         </line>
         <line></line>
 	<line>
-            <text bold="true">Sales report</text>
+            <text bold="true">Reporte de Ventas</text>
         </line>
         <line>
             <text align ="left" length="11">Prod.</text>
-            <text align ="right" length="8">Pri+Tax</text>
+            <text align ="right" length="8">Pre+Imp.</text>
             <text align ="right" length="1"></text>
-            <text align ="right" length="5">Unit</text>
+            <text align ="right" length="5">Unid</text>
             <text align ="right" length="1"></text>
-            <text align ="right" length="5">% Disc.</text>
+            <text align ="right" length="5">% Desc.</text>
             <text align ="right" length="8">Tot.</text>
         </line>
         <line>
@@ -70,23 +70,23 @@
         </line>
 	<line></line>
         <line>
-            <text length="18">Machine:</text>
+            <text length="18">Máquina:</text>
             <text>${payments.printHost()}</text>
         </line>    
         <line>
-            <text length="18">Cashier:</text>
+            <text length="18">Cajero:</text>
             <text>${payments.printUser()}</text>
         </line>  
         <line>
-            <text length="18">Sequence:</text>
+            <text length="18">Secuencia:</text>
             <text length="24" align="right">${payments.printSequence()}</text>
         </line> 
         <line>
-            <text length="18">Start date:</text>
+            <text length="18">Inicio:</text>
             <text length="24" align="right">${payments.printDateStart()}</text>
         </line>  
         <line>
-            <text length="18">End date:</text>
+            <text length="18">Cierre:</text>
             <text length="24" align="right">${payments.printDateEnd()}</text>
         </line> 
     </ticket>
@@ -99,12 +99,12 @@
         </line>
         <line></line>
         <line>
-            <text bold="true">Ticket With Discount report</text>
+            <text bold="true">Reporte de Ticket con descuento</text>
         </line>
         <line>
-            <text align ="left" length="11">Tick.</text>
+            <text align ="left" length="11">Tiq.</text>
             <text align ="left" length="11">Prod.</text>
-            <text align ="right" length="5">% Disc.</text>
+            <text align ="right" length="5">% Desc</text>
         </line>
         <line>
             <text>------------------------------------------</text>
@@ -120,23 +120,23 @@
             <text>------------------------------------------</text>
         </line>
         <line>
-            <text length="18">Machine:</text>
+            <text length="18">Máquina:</text>
             <text>${payments.printHost()}</text>
         </line>
         <line>
-            <text length="18">Cashier:</text>
+            <text length="18">Cajero:</text>
             <text>${payments.printUser()}</text>
         </line>    
         <line>
-            <text length="18">Sequence:</text>
+            <text length="18">Secuencia:</text>
             <text length="24" align="right">${payments.printSequence()}</text>
         </line> 
         <line>
-            <text length="18">Start date:</text>
+            <text length="18">Inicio:</text>
             <text length="24" align="right">${payments.printDateStart()}</text>
         </line>  
         <line>
-            <text length="18">End date:</text>
+            <text length="18">Cierre:</text>
             <text length="24" align="right">${payments.printDateEnd()}</text>
         </line> 
     </ticket>
@@ -149,13 +149,12 @@
         </line>
         <line></line>
         <line>
-            <text bold="true">Products by Category</text>
+            <text bold="true">Productos por Categoría</text>
         </line>
         <line>
-            <text align ="left" length="11">Cate.</text>
-            <text align ="left" length="11">Prod.</text>
-            <text align ="right" length="5">Price.</text>
-            <text align ="right" length="5">Units.</text>
+            <text align ="left" length="11">Cat.</text>
+            <text align ="left" length="11"></text>
+            <text align ="right" length="6">Monto.</text>
         </line>
         <line>
             <text>------------------------------------------</text>
@@ -163,32 +162,31 @@
         #foreach ($line in $payments.getProductSalesByCategory())
         <line>
             <text align ="left" length="12">${line.printCategoryName()}</text>
-            <text align ="left" length="12">${line.printProductName()}</text>
-            <text align ="right" length="4">${line.printProductPrice()}</text>
-            <text align ="right" length="4">${line.printProductUnits()}</text>
+            <text align ="left" length="12"></text>
+            <text align ="right" length="15">${line.printAmount()}</text>
         </line>
         #end
         <line>
             <text>------------------------------------------</text>
         </line>
         <line>
-            <text length="18">Machine:</text>
+            <text length="18">Máquina</text>
             <text>${payments.printHost()}</text>
         </line>
         <line>
-            <text length="18">Cashier:</text>
+            <text length="18">Cajero:</text>
             <text>${payments.printUser()}</text>
         </line>    
         <line>
-            <text length="18">Sequence:</text>
+            <text length="18">Secuencia:</text>
             <text length="24" align="right">${payments.printSequence()}</text>
         </line> 
         <line>
-            <text length="18">Start date:</text>
+            <text length="18">Inicio:</text>
             <text length="24" align="right">${payments.printDateStart()}</text>
         </line>  
         <line>
-            <text length="18">End date:</text>
+            <text length="18">Cierre:</text>
             <text length="24" align="right">${payments.printDateEnd()}</text>
         </line> 
     </ticket>

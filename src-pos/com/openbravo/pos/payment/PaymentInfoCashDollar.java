@@ -19,6 +19,7 @@
 
 package com.openbravo.pos.payment;
 
+import com.openbravo.format.Formats;
 import com.openbravo.pos.util.CurrencyChange;
 
 public class PaymentInfoCashDollar extends PaymentInfo {
@@ -55,10 +56,10 @@ public class PaymentInfoCashDollar extends PaymentInfo {
     }
     
     public String printPaid() {
-        return CurrencyChange.formatDollarValue(m_dPaid);
+        return Formats.DOLLAR_CURRENCY.formatValue(m_dPaid);
     }   
     
     public String printChange() {
-        return String.valueOf(CurrencyChange.FORMAT_LOCALE.format(CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal)));
+        return String.valueOf(Formats.CURRENCY.formatValue(CurrencyChange.changeDollarToPeso(m_dPaid - m_dTotal)));
     }    
 }

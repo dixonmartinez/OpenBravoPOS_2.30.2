@@ -104,7 +104,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(
-                new Formats[]{new FormatsPayment(), Formats.CURRENCY}));
+                new Formats[]{new FormatsPayment(), Formats.CURRENCY, Formats.DOLLAR_CURRENCY}));
         m_jTicketTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_jScrollTableTicket.getVerticalScrollBar().setPreferredSize(new Dimension(25, 25));
         m_jTicketTable.getTableHeader().setReorderingAllowed(false);
@@ -164,7 +164,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         insertedCreditCard = closeMoney.getTotalCreditCards();
         insertedDebitCard = closeMoney.getTotalDebitCards();
         totalAmtCash = closeMoney.getTotalPay();
-        totalAmtDollarCash = closeMoney.getTotalCashDollar();
+        totalAmtDollarCash = closeMoney.getTotalPayDollar();
         insertedCashDollar = closeMoney.getTotalCashDollar();
         m_UserID = closeMoney.getUserID();
         m_People = closeMoney.getPeople();
@@ -207,18 +207,18 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             m_jCount.setText(m_PaymentsToClose.printPayments());
             m_jCountDollar.setText(m_PaymentsToClose.printDollarPayments());
             m_jRegister.setText(Formats.CURRENCY.formatValue(totalAmtCash));
-            m_jRegisterDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(totalAmtDollarCash));
+            m_jRegisterDollar.setText(Formats.DOLLAR_CURRENCY.formatValue(totalAmtDollarCash));
             m_jCash.setText(m_PaymentsToClose.printPaymentsTotal());
-            m_jCashDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(m_PaymentsToClose.getPaymentsDollarTotal()));
+            m_jCashDollar.setText(Formats.DOLLAR_CURRENCY.formatValue(m_PaymentsToClose.getPaymentsDollarTotal()));
             differenceCash = totalAmtCash - m_PaymentsToClose.getPaymentsTotal(); // .subtract(BigDecimal.valueOf());
             m_jDifference.setText(Formats.CURRENCY.formatValue(differenceCash));
             if (differenceCash != 0.0) {
                 m_jDifference.setForeground(Color.red);
             }
 
-            sDifferenceDollar = Formats.DOUBLE.formatValue(totalAmtDollarCash - m_PaymentsToClose.getPaymentsDollarTotal());
-            differenceDollar = (Double) Formats.DOUBLE.parseValue(sDifferenceDollar);
-            m_jDifferenceDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(differenceDollar));
+            sDifferenceDollar = Formats.DOLLAR_CURRENCY.formatValue(totalAmtDollarCash - m_PaymentsToClose.getPaymentsDollarTotal());
+            differenceDollar = (Double) Formats.DOLLAR_CURRENCY.parseValue(sDifferenceDollar);
+            m_jDifferenceDollar.setText(Formats.DOLLAR_CURRENCY.formatValue(differenceDollar));
             if (differenceDollar != 0.0) {
                 m_jDifferenceDollar.setForeground(Color.red);
             }
@@ -349,9 +349,10 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         if (insertedCashDollar.compareTo(amountCashDollar) != 0) {
             Vector vectorTbl = new Vector();
             vectorTbl.add(AppLocal.getIntString("tab.dollar"));
-            vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(amountCashDollar));
-            vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(insertedCashDollar));
-            vectorTbl.add(CurrencyChange.FORMAT_DOLLAR.format(insertedCashDollar - amountCashDollar));
+            //vectorTbl.add(CurrencyChange.changePesoToDollar(amountCashDollar));
+            vectorTbl.add(amountCashDollar);
+            vectorTbl.add(Formats.DOLLAR_CURRENCY.formatValue(insertedCashDollar));
+            vectorTbl.add(Formats.DOLLAR_CURRENCY.formatValue(insertedCashDollar - amountCashDollar));
             modeltbl.addRow(vectorTbl);
         }
 

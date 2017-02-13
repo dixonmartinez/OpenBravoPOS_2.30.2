@@ -187,7 +187,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         pnlCash.add(new JSeparator(), "gapleft rel, growx,wrap,span");
         createPanelFromScript(pnlCash, "payment.dollar.cash", vectorTxtCashDollar);
         JLabel lblTotal = new JLabel(AppLocal.getIntString("label.money"));
-        lblTotalDollarCash = new JLabel(CurrencyChange.FORMAT_DOLLAR.format(0.0));
+        lblTotalDollarCash = new JLabel(Formats.DOLLAR_CURRENCY.formatValue(0.0));
         pnlCash.add(new JSeparator(), "gapleft rel, growx,wrap,span");
         pnlCash.add(lblTotal, "align center");
         pnlCash.add(lblTotalDollarCash, "width 50,align center");
@@ -354,7 +354,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         addKeyListenertoCombo(JCBPeople);
 
         lblTotalPay = new JLabel(Formats.CURRENCY.formatValue(0.0));
-        lblTotalPayDollar = new JLabel(CurrencyChange.FORMAT_DOLLAR.format(0.0));
+        lblTotalPayDollar = new JLabel(Formats.DOLLAR_CURRENCY.formatValue(0.0));
         lblInfo = new JLabel();
         lblInfo.setForeground(Color.RED);
 
@@ -419,7 +419,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         }
 
         if (lblTotalDollarCash != null) {
-            lblTotalDollarCash.setText(CurrencyChange.FORMAT_DOLLAR.format(0.0));
+            lblTotalDollarCash.setText(Formats.DOLLAR_CURRENCY.formatValue(0.0));
         }
         if (lblTotalPay != null) {
             lblTotalPay.setText(Formats.CURRENCY.formatValue(0.0));
@@ -491,7 +491,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         totalPay = totalCash + totalDebitCards + totalCreditCards + totalCheque;
         totalPayDollar = totalCashDollar;
         lblTotalPay.setText(Formats.CURRENCY.formatValue(totalPay));
-        lblTotalPayDollar.setText(CurrencyChange.FORMAT_DOLLAR.format(totalPayDollar));
+        lblTotalPayDollar.setText(Formats.DOLLAR_CURRENCY.formatValue(totalPayDollar));
         buttonsActions(totalPay + totalPayDollar);
     }
 
@@ -556,7 +556,7 @@ public class JPanelCloseMoney extends javax.swing.JPanel implements JPanelView, 
         }
         if (lblTotalDollarCash != null) {
             amtCashDollar = amount;
-            String amt = CurrencyChange.FORMAT_DOLLAR.format(amtCashDollar);
+            String amt = Formats.DOLLAR_CURRENCY.formatValue(amtCashDollar);
             lblTotalDollarCash.setText(amt);
 
         }

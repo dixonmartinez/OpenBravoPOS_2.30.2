@@ -459,27 +459,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             visorTicketLine(oLine);
             printPartialTotals();
             stateToZero();
-
-            //  Dixon Martinez
-            //  Display attributes windows
-            if (propConfig.getPropertyAsBoolean("attributes-autoset")) {
-                int i = m_ticketlines.getSelectedIndex();
-                try {
-                    TicketLineInfo lineInfo = m_oTicket.getLine(i);
-                    JProductAttEdit productAttEdit = JProductAttEdit.getAttributesEditor(this, m_App.getSession());
-                    productAttEdit.editAttributes(lineInfo.getProductAttSetId(), lineInfo.getProductAttSetInstId());
-                    productAttEdit.setVisible(true);
-                    if (productAttEdit.isOK()) {
-                        lineInfo.setProductAttSetInstId(productAttEdit.getAttributeSetInst());
-                        lineInfo.setProductAttSetInstDesc(productAttEdit.getAttributeSetInstDescription());
-                        paintTicketLine(i, lineInfo);
-                    } else {
-                        removeTicketLine(i);
-                    }
-                } catch (BasicException e) {
-                }
-            }
-
             // event receipt
             executeEventAndRefresh("ticket.change");
         }
@@ -492,8 +471,26 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private TicketLineInfo getUpdateLine(TicketInfo m_oTicket, TicketLineInfo oLine, int index) {
         int i = 0;
         boolean update = false;
+        String instanceID = null;
+        if (propConfig.getPropertyAsBoolean("attributes-autoset")) {
+            try {
+                JProductAttEdit productAttEdit = JProductAttEdit.getAttributesEditor(this, m_App.getSession());
+                productAttEdit.editAttributes(oLine.getProductAttSetId(), oLine.getProductAttSetInstId());
+                productAttEdit.setVisible(true);
+                if (productAttEdit.isOK()) {
+                    oLine.setProductAttSetInstId(productAttEdit.getAttributeSetInst());
+                    oLine.setProductAttSetInstDesc(productAttEdit.getAttributeSetInstDescription());
+                    instanceID = productAttEdit.getAttributeSetInstDescription();
+                } 
+            } catch (BasicException e) {
+            }
+        }
         while (i < m_oTicket.getLinesCount()) {
-            if (m_oTicket.getLine(i).getProductID().equals(oLine.getProductID())) {
+        	if(instanceID == null ) {
+        		instanceID = m_oTicket.getLine(i).getProductAttSetInstDesc() ;
+        	}
+            if (m_oTicket.getLine(i).getProductID().equals(oLine.getProductID())
+            		&& m_oTicket.getLine(i).getProductAttSetInstDesc().equals(instanceID )) {
                 update = true;
                 Double cant = m_oTicket.getLine(i).getMultiply() + oLine.getMultiply();
                 m_oTicket.getLine(i).setMultiply(cant);
@@ -1027,7 +1024,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         dlSales.loadCustomerExt(ticket.getCustomer().getId());
                     }
 
-                    if (paymentdialog.showDialog(ticket.getTotal(), customer, ticket)) {
+                    if (paymentdialog.showDialog(new Double(Formats.DOUBLE.formatValue(ticket.getTotal())), customer, ticket)) {
 
                         // assign the payments selected and calculate taxes.         
                         ticket.setPayments(paymentdialog.getSelectedPayments());

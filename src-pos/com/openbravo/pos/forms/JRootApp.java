@@ -44,6 +44,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.scale.DeviceScale;
 import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerFactory;
+import com.openbravo.pos.util.CurrencyChange;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -115,7 +116,8 @@ public class JRootApp extends JPanel implements AppView {
         m_dlSystem = (DataLogicSystem) getBean(DataLogicSystem.class.getName());
         
         // Create or upgrade the database if database version is not the expected
-        String sDBVersion = readDataBaseVersion();        
+        String sDBVersion = readDataBaseVersion();      
+        
         if (!AppLocal.APP_VERSION.equals(sDBVersion)) {
             
             // Create or upgrade database
@@ -188,8 +190,10 @@ public class JRootApp extends JPanel implements AppView {
         if(m_sDollarValue == null) {
         	m_sDollarValue = "0.0";
         	m_propsdb.setProperty("dollar.amount", m_sDollarValue);
+                CurrencyChange.DOLAR_CHANGE = Double.parseDouble(m_sDollarValue);
         } else {
         	m_dDollarValue = Double.parseDouble(m_propsdb.getProperty("dollar.amount")); 
+                CurrencyChange.DOLAR_CHANGE = m_dDollarValue;
         }
         
         //  End Dixon Martinez
