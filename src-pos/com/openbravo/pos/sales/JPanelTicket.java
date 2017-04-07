@@ -196,9 +196,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         //  This panel of Discount
         m_jDiscountRatePanel.setVisible(propConfig.getPropertyAsBoolean("discount-rate-visible"));
-        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discount-rate-1", "5")) / 100;
-        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discount-rate-2", "10")) / 100;
-        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discount-rate-3", "15")) / 100;
+        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discount-rate-1", "0")) / 100;
+        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discount-rate-2", "0")) / 100;
+        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discount-rate-3", "0")) / 100;
 
         //  This multi control
         isMultiplyControl = propConfig.getPropertyAsBoolean("refmultcontrol");

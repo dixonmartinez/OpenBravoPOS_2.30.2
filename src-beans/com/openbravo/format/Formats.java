@@ -19,9 +19,13 @@
 
 package com.openbravo.format;
 
-import java.text.*;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import com.openbravo.basic.BasicException;
 
@@ -229,7 +233,7 @@ public abstract class Formats {
 	private static final class FormatsDOUBLE extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
+			return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
 																					// for
 																					// 3838
 		}
@@ -248,7 +252,7 @@ public abstract class Formats {
 	private static final class FormatsPERCENT extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_percentformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
+			return m_percentformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
 																					// for
 																					// 3838
 		}
@@ -272,7 +276,7 @@ public abstract class Formats {
 	private static final class FormatsCURRENCY extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
+			return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
 																						// for
 																						// 3838
 		}

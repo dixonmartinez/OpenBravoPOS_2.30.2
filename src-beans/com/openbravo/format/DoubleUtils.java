@@ -11,7 +11,19 @@ package com.openbravo.format;
  */
 public class DoubleUtils {
 
-    public static double fixDecimals(Number value) {
-        return Math.round(Math.rint((value).doubleValue() * 1000000.0) / 1000000.0);
+	/**
+	 * Fix Decimals
+	 * Add parameter boolean round verify if is necesary round amount
+	 * @param value
+	 * @param round
+	 * @return
+	 */
+    public static double fixDecimals(Number value, boolean round) {
+    	if(round) {
+    		return Math.round(Math.rint((value).doubleValue() * 1000000.0) / 1000000.0);
+    	}else {    		
+    		return Math.rint((value).doubleValue() * 1000000.0) / 1000000.0;
+    	}
     }
+    
 }
