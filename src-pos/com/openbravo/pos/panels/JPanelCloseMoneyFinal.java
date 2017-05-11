@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.Vector;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -51,8 +52,6 @@ import com.openbravo.pos.printer.TicketPrinterException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
-import com.openbravo.pos.util.CurrencyChange;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -317,8 +316,6 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         modeltbl.addColumn(AppLocal.getIntString("Label.MoneyRegistered"));
         modeltbl.addColumn(AppLocal.getIntString("label.difference"));
 
-        tblDifference.setModel(modeltbl);
-
         if (insertedDebitCard.compareTo(amountDebitCard) != 0) {
             Vector vectorTbl = new Vector();
             vectorTbl.add(AppLocal.getIntString("tab.magdebitcard"));
@@ -440,9 +437,6 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
         m_jSalesSubtotalDollar = new javax.swing.JTextField();
         m_jSalesTaxesDollar = new javax.swing.JTextField();
         m_jPrintCash = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        m_jScrollTableTicket1 = new javax.swing.JScrollPane();
-        tblDifference = new javax.swing.JTable();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -551,7 +545,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(m_jScrollTableTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(m_jScrollTableTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
@@ -579,7 +573,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
                             .addComponent(m_jDifferenceDollar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(m_jCashDollar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(m_jRegisterDollar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -660,7 +654,7 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(m_jScrollSales, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(m_jScrollSales, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
@@ -727,31 +721,6 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
             }
         });
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("label.differenceDetail"))); // NOI18N
-
-        m_jScrollTableTicket1.setFocusable(false);
-        m_jScrollTableTicket1.setMinimumSize(new java.awt.Dimension(350, 140));
-        m_jScrollTableTicket1.setPreferredSize(new java.awt.Dimension(450, 140));
-
-        tblDifference.setFocusable(false);
-        m_jScrollTableTicket1.setViewportView(tblDifference);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(m_jScrollTableTicket1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(m_jScrollTableTicket1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -767,22 +736,19 @@ public class JPanelCloseMoneyFinal extends JPanel implements JPanelView, BeanFac
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addComponent(m_jPrintCash)
                 .addContainerGap())
         );
@@ -891,7 +857,6 @@ private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -916,11 +881,9 @@ private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JTextField m_jSalesTotalDollar;
     private javax.swing.JScrollPane m_jScrollSales;
     private javax.swing.JScrollPane m_jScrollTableTicket;
-    private javax.swing.JScrollPane m_jScrollTableTicket1;
     private javax.swing.JTextField m_jSequence;
     private javax.swing.JTable m_jTicketTable;
     private javax.swing.JTable m_jsalestable;
-    private javax.swing.JTable tblDifference;
     // End of variables declaration//GEN-END:variables
 
 }

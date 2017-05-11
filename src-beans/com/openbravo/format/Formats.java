@@ -233,7 +233,7 @@ public abstract class Formats {
 	private static final class FormatsDOUBLE extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
+			return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
 																					// for
 																					// 3838
 		}
@@ -252,7 +252,7 @@ public abstract class Formats {
 	private static final class FormatsPERCENT extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_percentformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
+			return m_percentformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
 																					// for
 																					// 3838
 		}
@@ -276,7 +276,7 @@ public abstract class Formats {
 	private static final class FormatsCURRENCY extends Formats {
 		@Override
 		protected String formatValueInt(Object value) {
-			return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value, false)); // quickfix
+			return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix
 																						// for
 																						// 3838
 		}

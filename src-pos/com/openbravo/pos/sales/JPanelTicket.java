@@ -196,9 +196,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         //  This panel of Discount
         m_jDiscountRatePanel.setVisible(propConfig.getPropertyAsBoolean("discount-rate-visible"));
-        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discount-rate-1", "0")) / 100;
-        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discount-rate-2", "0")) / 100;
-        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discount-rate-3", "0")) / 100;
+        m_DiscRate1 = Double.parseDouble(propConfig.getProperty("discount-rate-1", "5")) / 100;
+        m_DiscRate2 = Double.parseDouble(propConfig.getProperty("discount-rate-2", "10")) / 100;
+        m_DiscRate3 = Double.parseDouble(propConfig.getProperty("discount-rate-3", "15")) / 100;
 
         //  This multi control
         isMultiplyControl = propConfig.getPropertyAsBoolean("refmultcontrol");
@@ -295,8 +295,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     @Override
     public boolean deactivate() {
-
-        return m_ticketsbag.deactivate();
+    	if(verifyAcces()) {
+    		return m_ticketsbag.deactivate();
+    	} else {
+    		return false;
+    	}
     }
 
     protected abstract JTicketsBag getJTicketsBag();
@@ -1024,8 +1027,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         dlSales.loadCustomerExt(ticket.getCustomer().getId());
                     }
 
-                    if (paymentdialog.showDialog(new Double(Formats.DOUBLE.formatValue(ticket.getTotal())), customer, ticket)) {
-
+                    if (paymentdialog.showDialog(ticket.getTotal(), customer, ticket)) {
                         // assign the payments selected and calculate taxes.         
                         ticket.setPayments(paymentdialog.getSelectedPayments());
 
@@ -1867,6 +1869,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                             msg.show(JPanelTicket.this);
                             return false;
                         }
+                    } else {
+                    	MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.RequiredPassword"));
+                        msg.show(JPanelTicket.this);
+                        return false;
                     }
                 }
             } catch (BasicException e) {

@@ -18,12 +18,8 @@ public class DoubleUtils {
 	 * @param round
 	 * @return
 	 */
-    public static double fixDecimals(Number value, boolean round) {
-    	if(round) {
-    		return Math.round(Math.rint((value).doubleValue() * 1000000.0) / 1000000.0);
-    	}else {    		
-    		return Math.rint((value).doubleValue() * 1000000.0) / 1000000.0;
-    	}
+    public static double fixDecimals(Number value) {
+		return Math.rint((value).doubleValue() * 1000000.0) / 1000000.0;
     }
     
 }

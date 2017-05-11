@@ -266,8 +266,12 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     }
     
     public void activate() {
-        
-        setMenuVisible(getBounds().width > 800);
+    	if(!m_appuser.getRole().equals("0")) {
+        	setMenuVisible(false);
+        } else {
+        	setMenuVisible(getBounds().width > 800);
+        }
+
         
         // arranco la primera opcion
         if (m_actionfirst != null) {
@@ -377,8 +381,11 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
 
                 // se tiene que mostrar el panel                
                 m_jLastView = m_jMyView;
-
-                setMenuVisible(getBounds().width > 800);
+                if(!m_appuser.getRole().equals("0")) {
+                	setMenuVisible(false);
+                } else {
+                	setMenuVisible(getBounds().width > 800);
+                }
 
                 showView(sTaskClass);   
                 // Y ahora que he cerrado la antigua me abro yo            

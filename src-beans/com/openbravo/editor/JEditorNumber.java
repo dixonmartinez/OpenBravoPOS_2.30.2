@@ -125,7 +125,7 @@ public abstract class JEditorNumber extends JEditorAbstract {
     }    
     
     private String formatDouble(Double value) {
-        String sNumber = Double.toString(DoubleUtils.fixDecimals(value, false));
+        String sNumber = Double.toString(DoubleUtils.fixDecimals(value));
         if (sNumber.endsWith(".0")) {
             sNumber = sNumber.substring(0,  sNumber.length() - 2);
         }
