@@ -23,7 +23,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -34,6 +33,7 @@ import org.jvnet.substance.api.SubstanceSkin;
 
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -41,7 +41,7 @@ import com.openbravo.pos.instance.InstanceQuery;
  */
 public class StartPOS {
 
-	private static final Logger logger = Logger.getLogger(StartPOS.class.getName());
+    private static final Logger logger = Logger.getLogger(StartPOS.class.getName());
     
     private static final String FULL_SCREEN = "fullscreen";
     
@@ -64,7 +64,10 @@ public class StartPOS {
     }
     
     public static void main (String args[]) {
+        logger.info("Hola inicio el uso de Logger");
+        // log4j.appender.
         
+                
         java.awt.EventQueue.invokeLater(() -> {
             if (!registerApp()) {
                 System.exit(1);
@@ -99,7 +102,8 @@ public class StartPOS {
                     SubstanceLookAndFeel.setSkin((SubstanceSkin) laf);
                 }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                logger.log(Level.WARNING, "Cannot set look and feel", e);
+               // logger.log(Level.WARNING, "Cannot set look and feel", e);
+               logger.info("Cannot set look and feel", e);
             }
             String screenmode = config.getProperty("machine.screenmode");
             JRootFrame rootframe = new JRootFrame(FULL_SCREEN.equals(screenmode));

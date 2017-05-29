@@ -145,12 +145,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private JPaymentSelect paymentdialogreceipt;
     private JPaymentSelect paymentdialogrefund;
 
+    //  Dixon Martinez
+    private static final Logger logger = Logger.getLogger(JPanelTicket.class.getSimpleName());
     /**
      * Creates new form JTicketView
      */
     public JPanelTicket() {
-
+        logger.entering(getClass().getSimpleName(), "JPanelTicket()");
         initComponents();
+        logger.exiting(getClass().getSimpleName(), "JPanelTicket()");
     }
 
     @Override
@@ -1333,6 +1336,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         bgCurrency = new javax.swing.ButtonGroup();
         m_jPanContainer = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        catcontainer = new javax.swing.JPanel();
+        m_jPanelImageViewer = new javax.swing.JPanel();
+        m_jImage = new com.openbravo.data.gui.JImageViewer();
         m_jOptions = new javax.swing.JPanel();
         m_jButtons = new javax.swing.JPanel();
         m_jTicketId = new javax.swing.JLabel();
@@ -1378,14 +1385,36 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTax = new javax.swing.JComboBox();
         m_jaddtax = new javax.swing.JToggleButton();
         m_jKeyFactory = new javax.swing.JTextField();
-        m_jPanelImageViewer = new javax.swing.JPanel();
-        m_jImage = new com.openbravo.data.gui.JImageViewer();
-        catcontainer = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 204, 153));
         setLayout(new java.awt.CardLayout());
 
         m_jPanContainer.setLayout(new java.awt.BorderLayout());
+
+        catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        catcontainer.setLayout(new java.awt.BorderLayout());
+
+        m_jPanelImageViewer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        m_jPanelImageViewer.setLayout(new java.awt.BorderLayout());
+        m_jPanelImageViewer.add(m_jImage, java.awt.BorderLayout.CENTER);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(catcontainer, javax.swing.GroupLayout.DEFAULT_SIZE, 790, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addComponent(m_jPanelImageViewer, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addGap(1, 1, 1))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(catcontainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(m_jPanelImageViewer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        m_jPanContainer.add(jPanel3, java.awt.BorderLayout.PAGE_END);
 
         m_jOptions.setLayout(new java.awt.BorderLayout());
 
@@ -1787,17 +1816,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jContEntries.add(m_jPanEntries, java.awt.BorderLayout.NORTH);
 
-        m_jPanelImageViewer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        m_jPanelImageViewer.setLayout(new java.awt.BorderLayout());
-        m_jPanelImageViewer.add(m_jImage, java.awt.BorderLayout.CENTER);
-
-        m_jContEntries.add(m_jPanelImageViewer, java.awt.BorderLayout.CENTER);
-
         m_jPanContainer.add(m_jContEntries, java.awt.BorderLayout.LINE_END);
-
-        catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        catcontainer.setLayout(new java.awt.BorderLayout());
-        m_jPanContainer.add(catcontainer, java.awt.BorderLayout.SOUTH);
 
         add(m_jPanContainer, "ticket");
     }// </editor-fold>//GEN-END:initComponents
@@ -2004,6 +2023,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel9;

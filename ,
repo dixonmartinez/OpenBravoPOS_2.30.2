@@ -1,0 +1,45 @@
+#Openbravo POS. Configuration file.
+#Fri Apr 07 14:55:45 VET 2017
+payment.commerceid=
+paper.receipt.height=546
+format.time=
+format.integer=
+db.driver=org.apache.derby.jdbc.EmbeddedDriver
+payment.gateway=external
+format.date=
+machine.printer=screen
+paper.standard.y=72
+paper.standard.x=72
+format.datetime=
+user.country=VE
+payment.magcardreader=Not defined
+db.type=Derby
+machine.scanner=Not defined
+payment.commercepassword=password
+db.password=crypt\:2A396841DF90414B
+db.URL=jdbc\:derby\:/home/tt-01/openbravopos-db;create\=true
+db.driverlib=/home/tt-01/NetBeansProjects/OpenBravoPOS_2.30.2/lib/lib-jdbc/derby.jar
+user.variant=
+paper.standard.width=451
+paper.standard.height=698
+format.percent=
+machine.scale=Not defined
+machine.ticketsbag=standard
+machine.screenmode=window
+machine.hostname=Technical-Team-01
+machine.display=screen
+machine.printer.3=Not defined
+paper.standard.mediasizename=A4
+machine.printer.2=Not defined
+user.language=es
+db.user=
+swing.defaultlaf=org.jvnet.substance.skin.BusinessBlackSteelSkin
+paper.receipt.width=190
+machine.uniqueinstance=false
+machine.printername=(Default)
+format.double=
+format.currency=
+payment.testmode=false
+paper.receipt.y=287
+paper.receipt.x=10
+paper.receipt.mediasizename=A4
